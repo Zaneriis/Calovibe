@@ -1,6 +1,7 @@
 # Cadre local — L0-CADRE et préparation L1
 
-Statut : proposition technique locale, sans intégration ni production autorisées par ce document.
+Statut : cadre du développement et de la CI ; les règles Git ci-dessous appliquent la décision
+humaine du 23 octobre 2026. Aucun service de production n'est livré par ce document.
 Les décisions validées restent celles de CAHIER-DES-CHARGES.md et BACKLOG.md.
 Cette tâche ne termine ni L0 ni L1. Aucun service métier ajouté.
 
@@ -80,8 +81,9 @@ Les fixtures d'approbation des tests sont synthétiques et ne valent jamais revu
 **Limite de confiance :** cette barrière locale valide la cohérence d'un rapport déclaré.
 Elle n'authentifie pas les agents, ne déduit pas les suites obligatoires du diff et ne
 prouve pas le contenu des pièces jointes. Elle n'autorise aucun merge ni déploiement.
-La protection réelle nécessite identités et statuts contrôlés par la plateforme, hors
-des droits du développeur ; ne pas lui donner de secret d'administration ni de bypass.
+Une protection technique exigerait identités et statuts imposés par la plateforme.
+Le propriétaire a choisi de fonctionner sans ce verrou : l'intégration dépend de la
+vérification des preuves et du respect des règles Git d'AGENTS.md par le coordinateur.
 
 ## Organisation des contrôles L1
 
@@ -99,13 +101,19 @@ Une non-applicabilité UI est un statut explicite du réviseur, pas un contrôle
 La liste des commandes et noms de statuts sera fixée dans la configuration de la
 plateforme retenue ; le workflow actuel ne prétend pas exécuter des services absents.
 
-Protection attendue : branche principale sans push direct ni force-push, contrôles requis,
-approbations invalidées par nouveau commit, développeur sans auto-approbation/bypass,
-modifications des workflows et règles revues indépendamment. Vérifier les possibilités
-réelles de la plateforme et du plan, notamment les identités des agents.
-Constat GitHub au 23 octobre 2026 : protection de `master` refusée par l'API (403,
-Pro ou dépôt public demandé). La CI ne remplace pas cette protection absente.
-Le dépôt reste privé ; aucune dépense ni assouplissement des critères.
+Politique Git validée par le propriétaire le 23 octobre 2026, après refus de protection
+GitHub (403, Pro ou dépôt public demandé) : dépôt privé sans protection payante,
+`master` figée, sans fusion, push, réécriture, suppression, renommage ni déploiement.
+`develop` est la branche par défaut et d'intégration ; chaque tâche part de cette branche,
+avec pull request vers `develop`. La première intégration de la CI amorce cette organisation.
+
+Le coordinateur vérifie la cible de la PR, le SHA exact, la suite complète verte et les
+verdicts indépendants sans blocage. Il avance `develop` uniquement en fast-forward vers
+ce SHA, sans squash/rebase, puis vérifie le résultat distant et le maintien du SHA de
+`master`. La CI tourne aussi après intégration. Une nouvelle candidate invalide les revues.
+Les règles, seuils et workflows restent soumis à revue indépendante ; aucune auto-approbation.
+La convention ne bloque pas techniquement un push ou une fusion sur GitHub ; ne jamais
+la présenter comme une protection de plateforme. Aucun achat ni changement de visibilité.
 
 Après succès uniquement : images identifiées par SHA et digest, déploiement sérialisé
 par exécutant persistant sur le réseau du serveur Ubuntu, indépendant du PC fixe,

@@ -32,5 +32,9 @@ l'accès Ubuntu sert au raccordement et à la validation de la production, pas �
 Le 23 octobre 2026, Actions est activé mais l'API de protection de `master` retourne
 403 : GitHub demande Pro ou un dépôt public. Le dépôt reste privé ; aucun achat autorisé.
 Cette CI ne rend donc pas la branche protégée et n'authentifie pas les revues d'agents.
+Décision humaine ultérieure du même jour : abandon de l'exigence de protection payante,
+`master` figée sans fusion ni push, `develop` comme branche par défaut et d'intégration.
+La tâche [L1-GIT](L1-GIT.md) formalise et fait revoir ce changement de règle ; les tests et
+revues restent obligatoires avant intégration. Le refus 403 ne bloque plus ce fonctionnement.
 Le moteur Docker Linux local ne répond pas ; aucun essai conteneur n'est revendiqué.
 Le résultat exécuté sera consigné dans le compte rendu du run et le rapport de tâche.

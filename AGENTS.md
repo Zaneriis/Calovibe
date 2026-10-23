@@ -29,6 +29,14 @@ Lire `docs/CAHIER-DES-CHARGES.md` et `docs/BACKLOG.md` avant toute implémentati
 - Les approbations portent sur le commit exact. Modifier les règles de validation exige leur revue indépendante.
 - Après trois cycles infructueux sur le même blocage, fournir un diagnostic et arrêter l’intégration sans assouplir les exigences.
 
+## Git — règle impérative
+
+- **Ne jamais fusionner vers `master`, ni y pousser un commit**, directement ou indirectement. Cette branche est figée ; ne pas la réécrire, supprimer, renommer ou utiliser comme cible d’une pull request ou d’un déploiement.
+- `develop` est la branche d’intégration et la branche par défaut. Créer les branches de tâche depuis `develop` ; toutes les pull requests ciblent `develop`.
+- Avant toute intégration vers `develop`, vérifier la cible, la suite complète réussie et les revues indépendantes applicables sur le commit exact. Tout blocage interdit l’intégration. Avancer `develop` uniquement en fast-forward vers ce commit approuvé, sans squash ni rebase qui changerait son SHA.
+- Le dépôt reste privé et fonctionne sans GitHub Pro ni protection de branche. Décision explicite du propriétaire du 23 octobre 2026 : cette discipline remplace l’exigence précédente de protection par la plateforme, pas les tests ni les revues. Elle ne constitue pas un verrou technique GitHub.
+- Ne jamais utiliser l’absence de protection pour contourner ces règles. Ne pas modifier cette politique de sa propre initiative ; toute évolution exige une instruction humaine explicite et une revue indépendante.
+
 ## Données et livraison
 
 - Conserver les données existantes. Séparer brouillons et écritures confirmées.

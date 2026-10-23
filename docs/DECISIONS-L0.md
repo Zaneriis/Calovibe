@@ -9,6 +9,12 @@ services conteneurisés sur Ubuntu personnel ; données sur ce serveur ; HTTPS e
 sur les interfaces Internet ; livraison automatique après contrôles et revues indépendantes.
 Les autres exigences validées restent dans le cahier des charges, sans modification ici.
 
+Décision humaine du 23 octobre 2026 : dépôt privé sans GitHub Pro ni protection de branche.
+Interdiction formelle dans AGENTS.md de fusionner ou pousser vers `master`, qui reste figée.
+`develop` sert à l'intégration et devient la branche par défaut ; CI et revues indépendantes
+restent requises sur le SHA exact, intégré en fast-forward. Cette discipline ne constitue
+pas une interdiction techniquement imposée par GitHub.
+
 ## Choix ouverts et recommandation de travail
 
 | ADR | Proposition, non décision utilisateur | Condition avant clôture |
@@ -54,7 +60,7 @@ Ne pas commencer L2 sur cette seule description.
 | Élément | Constat local | Ce qui manque / action attendue |
 |---|---|---|
 | Git | dépôt privé Zaneriis/Calovibe créé et premier commit poussé ; authentification rétablie | aucun accès supplémentaire nécessaire pour la CI |
-| Protections/revues | API GitHub de protection master : 403, Pro ou dépôt public demandé | limitation du forfait pour le dépôt privé ; conserver le dépôt privé, aucun achat ; revues indépendantes locales et absence de protection signalée |
+| Protections/revues | API GitHub de protection master : 403 ; propriétaire choisit explicitement de fonctionner sans protection | aucun achat ; master figée selon AGENTS.md, develop pour intégration ; CI et revues indépendantes obligatoires, risque technique résiduel accepté dans cette décision |
 | Docker local | CLI présente, moteur Linux inaccessible | démarrer Docker Desktop si essais conteneur locaux souhaités ; pas nécessaire au pilote de revue |
 | Ubuntu | aucune connexion serveur vérifiée | accès LAN/SSH pour préparer et vérifier la production uniquement ; développement et essais Docker locaux possibles sans cet accès |
 | Exposition | domaine/proxy/TLS non fournis | accès à l'existant et décision domaine si absent ; aucune ouverture administrative implicite |

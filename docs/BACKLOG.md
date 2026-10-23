@@ -1,6 +1,6 @@
 # Calovibe — Ordre de réalisation et acceptation
 
-Version 1.0 — 22 octobre 2026. Complète [le cahier des charges](CAHIER-DES-CHARGES.md). Aucun lot ci-dessous n’est déclaré implémenté par la présence d’une maquette.
+Version 1.1 — 23 octobre 2026. Complète [le cahier des charges](CAHIER-DES-CHARGES.md). Aucun lot ci-dessous n’est déclaré implémenté par la présence d’une maquette.
 
 ## Mode d’exécution
 
@@ -39,7 +39,7 @@ Acceptation :
 - Le navigateur, l’API et le MCP atteignent leurs services sans accès direct client à la base.
 - Les routes privées refusent une requête non authentifiée.
 - Les secrets sont absents des images et du dépôt.
-- CI à chaque push ; suite complète requise et protections avant intégration.
+- CI à chaque push ; suite complète et revues indépendantes requises avant intégration en fast-forward sur `develop`. `master` figée, jamais de fusion ni push ; sans protection GitHub selon la décision humaine du 23 octobre 2026 consignée dans AGENTS.md.
 - Le même commit produit des images identifiables. Une erreur de compilation/test bloque l’intégration et le déploiement.
 
 Preuves : démarrage propre, refus d’accès, contrôle CI volontairement en échec puis rétabli. Mettre en place le canal de déploiement local sans encore exposer un journal incomplet contenant des données personnelles.

@@ -2,7 +2,7 @@
 
 ## Statut et décisions
 
-Version 1.0 — 22 octobre 2026. Document destiné à des agents qui réalisent le projet sans intervention humaine dans le code. La présente version formalise les décisions prises avec le propriétaire ; elle ne signifie pas que l’application est déjà implémentée.
+Version 1.1 — 23 octobre 2026. Document destiné à des agents qui réalisent le projet sans intervention humaine dans le code. La présente version formalise les décisions prises avec le propriétaire ; elle ne signifie pas que l’application est déjà implémentée.
 
 Termes : **DOIT** = exigence de livraison ; **DEVRAIT** = recommandation dont une exception doit être motivée ; **À DÉCIDER** = choix non encore arrêté. Les propositions techniques ne doivent pas être présentées comme des décisions utilisateur.
 
@@ -239,7 +239,7 @@ Restent obligatoires : vérification des critères d’acceptation, calculs nutr
 
 Chaque défaut corrigé reçoit un test automatisé qui échoue sur le défaut et réussit après correction, au niveau pertinent. Si cela est techniquement impossible, expliquer et faire examiner l’exception ; le développeur ne la décide pas seul.
 
-Les tests des fonctionnalités livrées restent dans la suite permanente. Avant intégration à la branche principale, toute la suite requise passe. Les tests des fournisseurs externes utilisent des réponses contrôlées pour la répétabilité ; un contrôle distinct vérifie l’intégration réelle, sans prétendre à une estimation photo parfaitement déterministe.
+Les tests des fonctionnalités livrées restent dans la suite permanente. Avant intégration à `develop`, toute la suite requise passe. Les tests des fournisseurs externes utilisent des réponses contrôlées pour la répétabilité ; un contrôle distinct vérifie l’intégration réelle, sans prétendre à une estimation photo parfaitement déterministe.
 
 ### Contrôles et revues par agents
 
@@ -253,7 +253,16 @@ Trois responsabilités distinctes :
 
 Les revues sont indépendantes du développeur et attachées au commit exact. Chaque défaut bloquant cite exigence/règle/risque, preuve reproductible et résultat attendu. Une préférence esthétique supplémentaire est une suggestion, pas un blocage.
 
-Toute modification invalide les approbations concernées. Un changement des tests, seuils ou workflows exige une revue de ces contrôles. La branche principale est protégée par la plateforme ; l’agent ne peut pas s’auto-approuver ou contourner la protection.
+Toute modification invalide les approbations concernées. Un changement des tests, seuils ou workflows exige une revue de ces contrôles. L’agent ne peut pas s’auto-approuver.
+
+Décision humaine du 23 octobre 2026 : conserver le dépôt privé sans GitHub Pro ni protection
+de branche. `master` est figée : aucune fusion, aucun push, aucune réécriture ni suppression,
+aucun déploiement depuis cette branche. `develop` devient la branche d’intégration et par
+défaut. Les pull requests la ciblent ; l’intégration avance uniquement en fast-forward vers
+le commit exact ayant réussi la suite complète et les revues indépendantes applicables.
+Cette règle formelle dans AGENTS.md remplace l’exigence de protection par la plateforme.
+Elle repose sur la discipline des agents et n’empêche pas techniquement un détenteur des
+droits Git d’écrire sur ces branches. Les tests, revues et critères de livraison restent obligatoires.
 
 Pas de score global compensatoire. Utiliser des barrières indépendantes. Après trois cycles de corrections sur un même désaccord bloquant, produire un diagnostic et arrêter l’intégration ; ne pas affaiblir la règle ni tourner indéfiniment.
 
