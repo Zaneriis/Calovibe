@@ -66,7 +66,7 @@ Client MCP ── HTTPS /mcp ────> MCP Fastify/SDK ── HTTP interne �
 Ces valeurs sont des **candidates verrouillables**, pas un lock applicatif livré.
 Elles ont été interrogées via `npm view` sans modifier les dépendances du projet.
 Les versions transitives et images par digest restent à verrouiller et tester avant
-clôture ; un tag de conteneur exact reste mutable.
+qualification du socle ; un tag de conteneur exact reste mutable.
 
 | Usage | Version proposée | Vérification / justification |
 |---|---|---|
@@ -109,7 +109,7 @@ Il ne suffit pas de changer l'image ou une seule valeur.
 ## Contrat de commandes proposé pour L1
 
 Les scripts suivants **n'existent pas encore**. Ils ne sont ni lancés ni annoncés verts.
-Le propriétaire du socle les ajoutera ensemble, avec leurs configurations et tests,
+Le responsable de l'amorçage technique L0 les qualifiera, avec leurs configurations et tests,
 avant tout code métier qui dépend de cet ADR. Les noms sont proposés comme interface
 stable de la CI, sans `--if-present` qui masquerait un workspace incomplet.
 
@@ -146,10 +146,17 @@ applicatifs n'a été exécuté : les composants correspondants n'existent pas e
 Docker CLI répond, mais le moteur Linux n'est pas joignable localement.
 
 ADR-01 reste ouverte jusqu'à : choix d'architecture/runtime validé explicitement ;
-convergence avec ADR-02 et contrat API/MCP ; lock applicatif et digests réels ; commandes
-ci-dessus implémentées et exécutées sur le runtime retenu ; trois services construits
-et démarrés avec tests de santé et preuve d'accès sans accès client direct à la base ;
-revues indépendantes applicables sur le commit exact. Le fournisseur/authentification
-ne sont pas choisis ici. Domaine, accès production et inventaire matériel restent
-ADR-03 ; absence de serveur n'empêche pas la proposition L0. L0 et L1 ne sont pas clos
-par ce document. Aucun achat, déploiement ou changement de visibilité n'est engagé.
+convergence avec ADR-02 et contrat API/MCP ; versions directes/transitives verrouillées ;
+commandes lint/types/tests/build qualifiées dans un amorçage technique L0 sans métier
+sur le runtime retenu ; revues indépendantes applicables sur le commit exact.
+Les suites de services futurs restent décrites avec leur portée, sans résultat fictif.
+
+La construction/démarrage des trois services, santé, accès sans accès client direct
+à la base, digests d'images et refus d'accès sont des preuves de réalisation **L1**,
+conformément au backlog. Elles ne deviennent pas des prérequis circulaires à clôturer
+ADR-01/L0. Les scripts d'intégration et E2E applicatifs seront activés avec les services
+qu'ils vérifient ; un script vide ou ignoré ne vaut pas qualification.
+Le fournisseur/authentification ne sont pas choisis ici. Domaine, accès production et
+inventaire matériel restent ADR-03 ; absence de serveur n'empêche pas la proposition L0.
+L0 et L1 ne sont pas clos par ce document. Aucun achat, déploiement ou changement de
+visibilité n'est engagé.

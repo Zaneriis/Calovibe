@@ -50,3 +50,5 @@ Limites : les métadonnées prouvent publication et plages déclarées, pas comp
 
 Revues fonctionnelle, qualité des tests et non-applicabilité UI à demander au coordinateur sur le SHA exact. Aucune auto-approbation. Aucun blocage ni cycle de correction recensé à ce stade.
 
+
+Correction coordinateur avant revue : distinguer clôture ADR-01 (choix explicite, versions verrouillées et commandes qualifiées par amorçage technique L0 sans métier) et réalisation L1 (services construits/démarrés, santé, droits, digests). Aucun prérequis L1 ajouté à L0. Ce retour de cadrage n'est pas une revue indépendante.
