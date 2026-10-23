@@ -22,6 +22,7 @@ Statut : proposition livrée pour revue, ADR-01 ouverte. Aucun service applicati
 | A3 | Définir lint/types/tests/build stables | Distinguer commandes existantes exécutées et commandes L1 proposées ; ne pas déclarer exécuté un build absent |
 | A4 | Préserver les décisions ouvertes et le périmètre | Auth, fournisseurs et production restent conditionnés à leurs ADR ; aucun L0/L1 déclaré terminé |
 | A5 | Vérifier le cadre existant et publier une candidate isolée | Installer le lock existant, exécuter `npm run check` et `npm run test:browser` ; consigner échecs/limites exacts et revue indépendante sur SHA |
+| A6 | Actualiser la candidate et préciser le mandat technique sans fermeture prématurée | Fusionner develop, réutiliser le schéma DATA intégré, réserver les deux docs à cette tâche ; choix technique consigné par le coordinateur après qualification/revues, sans validation propriétaire inventée ; relancer npm test/check et navigateur sur le SHA final |
 
 Sources à lire : AGENTS.md, CAHIER-DES-CHARGES.md, BACKLOG.md, DECISIONS-L0.md, DEVELOPPEMENT-AUTONOME.md, ORCHESTRATION.md et MODELES-AGENTS.md ; lus avant rédaction. Skill Ponytail lu et appliqué.
 
@@ -29,7 +30,7 @@ Sources à lire : AGENTS.md, CAHIER-DES-CHARGES.md, BACKLOG.md, DECISIONS-L0.md,
 
 Résultat : ADR comparant React/Vite et Next.js, recommandation React/Vite + Fastify + PostgreSQL + SDK MCP v2. Versions directes exactes vérifiées auprès du registre npm et sources officielles. Les scripts applicatifs sont proposés ; aucun build absent déclaré exécuté. La PR cible uniquement `develop`. Aucune intégration par le développeur. Le SHA et l'URL de PR sont conservés dans le compte rendu de PR, sans nouveau commit après revue.
 
-Commandes réellement exécutées le 23 octobre 2026 dans ce worktree :
+Commandes initiales réellement exécutées le 23 octobre 2026 dans ce worktree, avant actualisation sur develop :
 
 | Commande | Résultat |
 |---|---|
@@ -52,3 +53,12 @@ Revues fonctionnelle, qualité des tests et non-applicabilité UI à demander au
 
 
 Correction coordinateur avant revue : distinguer clôture ADR-01 (choix explicite, versions verrouillées et commandes qualifiées par amorçage technique L0 sans métier) et réalisation L1 (services construits/démarrés, santé, droits, digests). Aucun prérequis L1 ajouté à L0. Ce retour de cadrage n'est pas une revue indépendante.
+
+## Actualisation après intégration L0-DATA
+
+- Dépendance intégrée : `origin/develop` à `33f736276d31bd9c245a5987db905e10ce643a95`.
+- `git fetch origin`, puis `git merge --no-edit origin/develop` : fusion sans conflit, commit `429b959` ; aucun rebase. Les modifications package/CI/check proviennent uniquement de develop, pas de cette tâche.
+- Propriété conservée : seuls ADR-01 et cette fiche sont édités. Package/CI/check sont attribués exclusivement à L0-CONTRACTS pour les travaux suivants.
+- Mandat humain directement relu : le coordinateur peut arrêter et tracer le choix technique après qualification et revues indépendantes, sans solliciter une validation humaine routinière. Aucune décision déjà prise ni validation du propriétaire n'est inventée.
+- ADR-01 reste ouverte tant que versions/lock et commandes applicatives ne sont pas qualifiés. Santé et démarrage des trois services restent des critères L1 ; aucun prérequis circulaire ajouté à L0.
+- Vérification locale exécutée après fusion : `npm ci --ignore-scripts` réussie (9 paquets, audit 0 vulnérabilité détectée), `npm test` et `npm run check` réussis (75/75 chacun, aucun échec ni test ignoré), `npm run test:browser` et `git diff --check` réussis. Les commandes sont relancées sur le SHA final et leurs preuves publiées dans PR5. Les anciennes revues ne valent pas pour ce nouveau SHA.

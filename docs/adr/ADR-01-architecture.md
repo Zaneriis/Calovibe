@@ -5,6 +5,14 @@
 - Tâche : [L0-ADR01](../tasks/L0-ADR01.md).
 - Autorité : [cahier des charges](../CAHIER-DES-CHARGES.md), [backlog L0](../BACKLOG.md), décisions humaines ; cette recommandation ne vaut pas approbation du propriétaire.
 
+Le mandat humain de développement autonome autorise le coordinateur à arrêter et
+consigner les choix techniques d'architecture/runtime après qualification et revues
+indépendantes, avec décision, date et SHA de référence. Il n'exige pas d'approbation
+humaine routinière pour ces choix dans le périmètre autorisé. Ce mandat ne transforme
+pas la présente proposition en décision déjà prise ; les décisions explicitement
+réservées au propriétaire et les limites de dépense, de données et d'exposition
+administrative restent applicables.
+
 ## Contexte et comparaison
 
 Le serveur Ubuntu personnel héberge trois services applicatifs conteneurisés : web,
@@ -46,7 +54,10 @@ Client MCP ── HTTPS /mcp ────> MCP Fastify/SDK ── HTTP interne �
   ressource : ce schéma n'autorise pas de transmettre tel quel un jeton MCP à l'API.
 - `contracts` porte les schémas et exemples approuvés du contrat, partagés par les
   validateurs/adaptateurs et vérifiés automatiquement. Il n'importe pas l'accès SQL
-  et n'expose pas de secret. Format OpenAPI/JSON Schema et noms définis par L0 contrat.
+  et n'expose pas de secret. Le [schéma de données L0-DATA](../../contracts/data.schema.json)
+  et sa [documentation](../contracts/DATA.md), désormais intégrés à develop, sont à
+  réutiliser ; le regroupement éventuel ne doit pas créer de copie divergente.
+  Format OpenAPI/JSON Schema et noms API/MCP restent à définir par L0-CONTRACTS.
 - PostgreSQL : accès `pg`, SQL paramétré, migrations SQL versionnées ; pas d'ORM proposé
   sans besoin démontré. Les transactions atomiques utilisent un même client du pool,
   conformément à [node-postgres](https://node-postgres.com/features/transactions).
@@ -106,7 +117,7 @@ converger ces contrôles, CI et documentation vers la version applicative retenu
 avec revue indépendante des règles de validation et suite complète sur ce runtime.
 Il ne suffit pas de changer l'image ou une seule valeur.
 
-## Contrat de commandes proposé pour L1
+## Commandes proposées : qualification L0 et suites L1
 
 Les scripts suivants **n'existent pas encore**. Ils ne sont ni lancés ni annoncés verts.
 Le responsable de l'amorçage technique L0 les qualifiera, avec leurs configurations et tests,
@@ -139,13 +150,18 @@ déploiement restent ceux d'AGENTS.md ; cet ADR ne les assouplit pas.
 ## Preuves de cette proposition et conditions de clôture
 
 Le [compte rendu de tâche](../tasks/L0-ADR01.md) consigne les commandes exécutées :
-`npm ci --ignore-scripts`, `npm run check` (29/29), `npm run test:browser` (succès).
-Ces preuves portent uniquement sur le cadre/prototypes inchangés, sous Node 26.2.0.
+`npm ci --ignore-scripts`, `npm test`, `npm run check` (75/75 après fusion de develop),
+`npm run test:browser` (succès). Les 29 tests initiaux restent un constat historique ;
+les 75 actuels incluent les contrats de données et les contrôles du miroir CI intégrés.
+Ces preuves portent sur le cadre, les prototypes et les schémas L0 existants, sous Node
+26.2.0 ; elles ne prouvent pas les commandes et composants applicatifs proposés.
 Aucun build, lint sémantique, contrôle TS, test PostgreSQL ni interopérabilité MCP
 applicatifs n'a été exécuté : les composants correspondants n'existent pas encore.
-Docker CLI répond, mais le moteur Linux n'est pas joignable localement.
+Au dernier contrôle Docker de cette étude, la CLI répondait mais le moteur Linux
+n'était pas joignable ; ce constat ne prouve pas son état courant.
 
-ADR-01 reste ouverte jusqu'à : choix d'architecture/runtime validé explicitement ;
+ADR-01 reste ouverte jusqu'à : choix d'architecture/runtime arrêté et consigné par
+le coordinateur dans son mandat après qualification et revues indépendantes ;
 convergence avec ADR-02 et contrat API/MCP ; versions directes/transitives verrouillées ;
 commandes lint/types/tests/build qualifiées dans un amorçage technique L0 sans métier
 sur le runtime retenu ; revues indépendantes applicables sur le commit exact.
