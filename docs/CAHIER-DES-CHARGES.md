@@ -70,6 +70,11 @@ Hermès dispose déjà de la transcription et de l’agent conversationnel. Le M
 
 Les ambiguïtés sont remontées comme des informations manquantes structurées ; un outil ne doit pas choisir silencieusement une portion, un aliment ou un repas incertain.
 
+Précision humaine du 23 octobre 2026 : Hermès est un client utilisateur externe, comme
+un navigateur vis-à-vis d'une API. Ne pas accéder à sa configuration ni le modifier.
+Vérifier le contrat MCP avec un client de référence ; la configuration d'Hermès ne
+conditionne pas le développement de Calovibe.
+
 ## Règles métier et données
 
 ### Calculs et unités
@@ -139,6 +144,10 @@ Les erreurs distinguent au minimum : authentification, autorisation, validation,
 ## Architecture et exploitation
 
 ### Découpage
+
+Le développement et les essais Docker peuvent se faire sur le PC actuel. L'accès au
+serveur Ubuntu sert à préparer et vérifier le déploiement de production ; il n'est pas
+un prérequis au développement local ni à la CI.
 
 - Front-end web responsive servi depuis un conteneur.
 - API métier modulaire dans un conteneur.

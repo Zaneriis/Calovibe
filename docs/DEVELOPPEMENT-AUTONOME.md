@@ -67,9 +67,10 @@ npm run gate -- artifacts/candidate.json
 et des prototypes. Ce n'est ni un linter sémantique ni une vérification TypeScript.
 Il n'existe pas encore de build/types applicatifs : non applicables au cadre, à définir
 avec ADR-01 avant L1. Aucun contrôle applicatif fictif n'est déclaré réussi.
-Le test navigateur existant dépend de Playwright et Chrome aux chemins Windows déjà
-présents dans son script ; il reste requis pour les changements des prototypes.
-Sa portabilité devra être résolue avant de le déclarer exécutable en CI.
+Le test navigateur utilise Playwright et Lucide verrouillés dans package-lock.json et
+Chromium installé par Playwright. Exécuter `npm ci --ignore-scripts`, puis
+`npx playwright install chromium` (Linux CI : `--with-deps`). Il reste requis pour
+les changements des prototypes ; ses captures sont dans `artifacts/browser/`.
 
 Le rapport JSON passé à `gate` suit le format testé dans `tests/review-gate.test.cjs`.
 Il est conservé hors des sources dans `artifacts/`, avec sorties des commandes et rapports.
@@ -82,7 +83,13 @@ prouve pas le contenu des pièces jointes. Elle n'autorise aucun merge ni déplo
 La protection réelle nécessite identités et statuts contrôlés par la plateforme, hors
 des droits du développeur ; ne pas lui donner de secret d'administration ni de bypass.
 
-## Organisation des contrôles L1 (à connecter après accès)
+## Organisation des contrôles L1
+
+Le workflow `.github/workflows/ci.yml` exécute actuellement syntaxe, tests du cadre et
+des prototypes, puis navigateur, à chaque push et pull request, sans filtre de chemins.
+Il fonctionne sur Ubuntu avec jeton en lecture, sans secret applicatif ni déploiement.
+Les actions sont épinglées à leur SHA et les captures conservées trois jours.
+Les contrôles applicatifs ci-dessous s'ajouteront à mesure de leur implémentation.
 
 Sur chaque push : syntaxe/lint, types, contrats, unités et intégrations concernées.
 Une modification partagée ou des contrôles déclenche toute la suite. Sur la candidate :
@@ -90,12 +97,15 @@ suite complète permanente, intégrations PostgreSQL réelle isolée, E2E web/AP
 build des trois images, contrôles de secrets, trois statuts de revue applicables.
 Une non-applicabilité UI est un statut explicite du réviseur, pas un contrôle absent.
 La liste des commandes et noms de statuts sera fixée dans la configuration de la
-plateforme retenue ; aucun YAML de fournisseur hypothétique n'est installé.
+plateforme retenue ; le workflow actuel ne prétend pas exécuter des services absents.
 
 Protection attendue : branche principale sans push direct ni force-push, contrôles requis,
 approbations invalidées par nouveau commit, développeur sans auto-approbation/bypass,
 modifications des workflows et règles revues indépendamment. Vérifier les possibilités
 réelles de la plateforme et du plan, notamment les identités des agents.
+Constat GitHub au 23 octobre 2026 : protection de `master` refusée par l'API (403,
+Pro ou dépôt public demandé). La CI ne remplace pas cette protection absente.
+Le dépôt reste privé ; aucune dépense ni assouplissement des critères.
 
 Après succès uniquement : images identifiées par SHA et digest, déploiement sérialisé
 par exécutant persistant sur le réseau du serveur Ubuntu, indépendant du PC fixe,

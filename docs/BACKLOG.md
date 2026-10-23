@@ -22,7 +22,7 @@ Acceptation :
 - Schémas de quantités, dates, erreurs, versions, objectifs et idempotence documentés avec exemples valides et invalides.
 - Calcul d’une portion défini, arrondis compris. Cas : base 100 g à 200 kcal, quantité 150 g → 300 kcal.
 - Incompatibilité g/ml sans équivalence explicitée.
-- Contrat des outils MCP et compatibilité Hermès vérifiés.
+- Contrat des outils MCP et interopérabilité vérifiés avec un client de référence ; Hermès reste un client externe, sans accès ni modification (précision humaine du 23 octobre 2026).
 - Commandes stables de lint/types/tests/build et stratégie de suites requises définies.
 
 Preuves : ADR, contrat validable, exemples vérifiés automatiquement. Aucun développement métier ne doit figer un contrat contradictoire à ce lot.

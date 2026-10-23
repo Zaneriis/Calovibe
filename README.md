@@ -22,8 +22,16 @@ validées, propositions techniques et accès manquants. Démarrer par `npm run c
 avec Node 26.2.0 ; aucun paquet n'est nécessaire pour ce contrôle local.
 
 ```sh
-node --test mockups/tests/navigation.test.cjs
-node mockups/tests/browser-check.cjs
+npm ci --ignore-scripts
+npm run check
+npx playwright install chromium
+npm run test:browser
 ```
 
-Le second script utilise le runtime Playwright et Chrome de l’environnement Windows dans lequel les maquettes ont été créées. Le lot L0 doit définir les dépendances et commandes portables du futur projet ; ce script n’est pas une configuration CI de production.
+GitHub Actions exécute ces contrôles à chaque push et pull request sur Ubuntu, avec
+`npx playwright install --with-deps chromium`. Les captures sont générées dans
+`artifacts/browser/` et conservées trois jours par run. Voir la [tâche CI](docs/tasks/L1-CI.md).
+Ces tests portent sur le cadre et les maquettes ; les tests des futurs services restent à ajouter.
+
+Hermès est un client externe du contrat MCP ; aucun accès à sa configuration n'est requis.
+Le socle peut être développé sous Docker sur ce PC. Ubuntu intervient pour le déploiement réel.

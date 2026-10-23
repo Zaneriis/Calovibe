@@ -8,5 +8,9 @@
     "test": "node --test tests/review-gate.test.cjs mockups/tests/navigation.test.cjs",
     "test:browser": "node mockups/tests/browser-check.cjs",
     "gate": "node scripts/review-gate.cjs"
+  },
+  "devDependencies": {
+    "lucide": "1.61.0",
+    "playwright": "1.64.1"
   }
 }

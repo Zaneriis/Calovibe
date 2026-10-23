@@ -1,21 +1,18 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const assert = require('node:assert/strict');
-const { createRequire } = require('node:module');
-const runtime = createRequire('C:/Users/Leo14/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/package.json');
-const { chromium } = runtime('playwright');
+const { chromium } = require('playwright');
 const source = path.join(__dirname, '..', 'calovibe-photo.html');
 
 (async () => {
-  const browser = await chromium.launch({ headless: true, executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe' });
+  const browser = await chromium.launch({ headless: true });
   const page = await browser.newPage({ viewport: { width: 1024, height: 1000 } });
   const errors = [];
   page.on('pageerror', error => errors.push(error.message));
   page.setDefaultTimeout(6000);
   try {
     await page.setContent('<style>body{margin:0}[hidden]{display:none!important}</style>' + fs.readFileSync(source, 'utf8'));
-    const lucidePath = path.resolve(path.dirname(runtime.resolve('lucide')), '..', 'umd', 'lucide.js');
-    if (fs.existsSync(lucidePath)) await page.addScriptTag({ path: lucidePath });
+    await page.addScriptTag({ path: require.resolve('lucide/dist/umd/lucide.js') });
     await page.evaluate(() => globalThis.lucide?.createIcons());
     const app = page.locator('[data-variant]').first();
     await app.locator('[data-photo-name="0"]').click();
@@ -66,7 +63,7 @@ const source = path.join(__dirname, '..', 'calovibe-photo.html');
       assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true, `Débordement à ${width}px`);
     }
     assert.deepEqual(errors, []);
-    const checkDir=path.join(__dirname,'..','checks');fs.mkdirSync(checkDir,{recursive:true});
+    const checkDir=path.join(__dirname,'..','..','artifacts','browser');fs.mkdirSync(checkDir,{recursive:true});
     await page.setViewportSize({width:1024,height:1000});
     await page.setContent('<style>body{margin:0}[hidden]{display:none!important}</style>'+fs.readFileSync(source,'utf8'));
     for(const [variant,label] of ['desktop-light','desktop-dark','phone-light','phone-dark'].entries()){

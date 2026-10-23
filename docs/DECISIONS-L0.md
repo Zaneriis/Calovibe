@@ -14,7 +14,7 @@ Les autres exigences validées restent dans le cahier des charges, sans modifica
 | ADR | Proposition, non décision utilisateur | Condition avant clôture |
 |---|---|---|
 | 01 | monorepo, API modulaire, web et adaptateur MCP, Compose et PostgreSQL conformément aux recommandations existantes ; préférer un même langage si les bibliothèques le permettent | comparaison courte, versions supportées exactes, dépendances verrouillées et commandes lint/types/tests/build vérifiées avant code applicatif |
-| 02 | web avec session sécurisée ; MCP HTTP avec autorisation conforme au protocole, validation d'audience et droits ; MCP appelle l'API | accès à la configuration/documentation Hermès, transport/version/auth et essai réel lecture/écriture/refus ; choisir l'autorité d'identité sans inventer de fournisseur |
+| 02 | web avec session sécurisée ; MCP HTTP avec autorisation conforme au protocole, validation d'audience et droits ; MCP appelle l'API | transport/version/auth documentés et essais lecture/écriture/refus avec client MCP de référence ; Hermès reste un client externe sans accès ni modification ; choisir l'autorité d'identité sans inventer de fournisseur |
 | 03 | exécutant dédié sur Ubuntu/LAN, reverse proxy existant si adapté, images par digest | inventaire réel CPU/RAM/disque, Docker/Compose, domaine/DNS/TLS, réseau, sauvegardes, plateforme Git et droits disponibles |
 | 04–07 | inchangées, différées aux échéances du backlog | pas nécessaires pour préparer le cadre ; photo et budget avec propriétaire avant intégration |
 
@@ -53,12 +53,12 @@ Ne pas commencer L2 sur cette seule description.
 
 | Élément | Constat local | Ce qui manque / action attendue |
 |---|---|---|
-| Git | dépôt initial sans commit ni remote au début de la tâche | destination Git choisie et accès dépôt ; si GitHub retenu, reconnecter le compte via l'interface sûre ou `gh auth login` (auth locale invalide) |
-| Protections/revues | aucune plateforme reliée | accès permettant de configurer et vérifier protections/statuts et comptes indépendants ; conserver les droits admin hors développeur |
+| Git | dépôt privé Zaneriis/Calovibe créé et premier commit poussé ; authentification rétablie | aucun accès supplémentaire nécessaire pour la CI |
+| Protections/revues | API GitHub de protection master : 403, Pro ou dépôt public demandé | limitation du forfait pour le dépôt privé ; conserver le dépôt privé, aucun achat ; revues indépendantes locales et absence de protection signalée |
 | Docker local | CLI présente, moteur Linux inaccessible | démarrer Docker Desktop si essais conteneur locaux souhaités ; pas nécessaire au pilote de revue |
-| Ubuntu | aucune connexion serveur vérifiée | point d'accès LAN et accès SSH délégué, ou session connectée pour inventaire ; ne jamais coller de clé privée ici |
+| Ubuntu | aucune connexion serveur vérifiée | accès LAN/SSH pour préparer et vérifier la production uniquement ; développement et essais Docker locaux possibles sans cet accès |
 | Exposition | domaine/proxy/TLS non fournis | accès à l'existant et décision domaine si absent ; aucune ouverture administrative implicite |
-| Hermès | aucune configuration client fournie | documentation ou accès de test transport/auth ; test réel indispensable ADR-02 |
+| Hermès | client utilisateur externe, décision de session | aucun accès requis ; contrat standard et client MCP de référence, sans modifier Hermès |
 | Secrets/déploiement | aucun magasin configuré | choisir celui de la plateforme réelle, déléguer uniquement injection/exécution ; générer les secrets lors du raccordement, sans valeurs dans le dépôt |
 
 Le propriétaire ne doit modifier aucun code. Un accès peut suffire à laisser les agents
