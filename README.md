@@ -32,7 +32,8 @@ preuves et barrières locales. Le [registre L0](docs/DECISIONS-L0.md) sépare le
 validées, propositions techniques et accès manquants. Avec Node 26.2.0, installer d'abord
 les dépendances verrouillées par `npm ci --ignore-scripts`, puis lancer `npm run check`.
 Le contrôle utilise Ajv et ajv-formats pour vérifier la proposition de schémas L0 ;
-il exécute 67 tests, dont 38 tests de contrat, ainsi que la syntaxe de six scripts.
+il vérifie aussi la syntaxe des scripts et les suites du cadre, des prototypes et
+du correctif de miroir CI.
 
 ```sh
 npm ci --ignore-scripts
@@ -44,7 +45,7 @@ npm run test:browser
 GitHub Actions exécute ces contrôles à chaque push et pull request sur Ubuntu, avec
 `npx playwright install --with-deps chromium`. Les captures sont générées dans
 `artifacts/browser/` et conservées trois jours par run. Voir la [tâche CI](docs/tasks/L1-CI.md).
-Ces tests portent sur le cadre, les maquettes et la proposition de schémas L0 ;
+Ces tests portent sur le cadre, les maquettes, la proposition de schémas L0 et le miroir CI ;
 ils ne prouvent pas une fonctionnalité de production. Les tests des futurs services restent à ajouter.
 
 Hermès est un client externe du contrat MCP ; aucun accès à sa configuration n'est requis.

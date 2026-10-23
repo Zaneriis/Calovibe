@@ -7,7 +7,7 @@
   },
   "scripts": {
     "check": "node scripts/check.cjs",
-    "test": "node --test tests/review-gate.test.cjs mockups/tests/navigation.test.cjs tests/contracts-data.test.cjs",
+    "test": "node --test tests/review-gate.test.cjs tests/ci-mirror.test.cjs mockups/tests/navigation.test.cjs tests/contracts-data.test.cjs",
     "test:browser": "node mockups/tests/browser-check.cjs",
     "gate": "node scripts/review-gate.cjs"
   },

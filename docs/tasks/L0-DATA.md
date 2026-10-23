@@ -64,3 +64,18 @@ et nouveau SHA dans la PR, nouvelles revues indépendantes requises.
 origin/develop db7c222f87db4321eeb1fb24e6de8ac4acac49bf fusionnée dans la branche de tâche
 sans rebase, sans conflit et sans modification du registre de coordination. Les preuves
 ci-dessus concernent la candidate initiale ; elles ne valent pas approbation du nouveau SHA.
+
+## Actualisation après CI-L0DATA-APT-01 — 23 octobre 2026
+
+origin/develop 7b9e9788b8248e78ae2d5b1699f4d109cca716b7 est fusionné sans rebase.
+Avant résolution : critères = conserver les suites DATA (38), cadre/prototypes (29),
+miroir CI (8), ainsi que les vérifications de syntaxe de leurs scripts et tests.
+Nominal : npm ci --ignore-scripts puis npm test/check (75 attendus), navigateur et audit.
+Erreur/limite : les deux conflits check/documentation ne doivent supprimer aucune suite ;
+aucun nouveau schéma métier. Vérifier le workflow identique à develop, notamment miroir,
+with-deps, timeout et captures. README et cadre décrivent les suites sans compte global
+susceptible de périmer ; les comptes exacts restent dans les preuves datées de la PR.
+Les deux tentatives CI PR4 arrêtées pendant APT avant le navigateur ne valent pas validation
+navigateur. Le correctif miroir a été revu et intégré séparément ; la CI réelle du nouveau
+SHA reste nécessaire. Anciennes revues invalides, nouvelles revues indépendantes requises.
+Les commandes finales seront exécutées après commit et leurs résultats publiés dans PR4.

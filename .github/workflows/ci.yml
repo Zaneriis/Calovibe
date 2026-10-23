@@ -26,6 +26,8 @@ jobs:
           cache: npm
       - run: npm ci --ignore-scripts
       - run: npm run check
+      - name: Utiliser le dépôt Ubuntu principal sur le runner éphémère
+        run: sudo "$(command -v node)" scripts/configure-apt-mirror.cjs /etc/apt/apt-mirrors.txt
       - run: npx playwright install --with-deps chromium
       - run: npm run test:browser
       - name: Conserver les captures de ce run
