@@ -1,0 +1,72 @@
+[
+  {
+    "definition": "quantity",
+    "value": "-1"
+  },
+  {
+    "definition": "quantity",
+    "value": ""
+  },
+  {
+    "definition": "quantity",
+    "value": "0"
+  },
+  {
+    "definition": "quantity",
+    "value": "0.000"
+  },
+  {
+    "definition": "quantity",
+    "value": "1000000.001"
+  },
+  {
+    "definition": "quantity",
+    "value": 150
+  },
+  {
+    "definition": "quantity",
+    "value": "1.0001"
+  },
+  {
+    "definition": "localDate",
+    "value": "2026-02-29"
+  },
+  {
+    "definition": "utcTimestamp",
+    "value": "2026-10-23T12:00:00+02:00"
+  },
+  {
+    "definition": "version",
+    "value": 0
+  },
+  {
+    "definition": "uuid",
+    "value": "operation-1"
+  },
+  {
+    "definition": "nutrition",
+    "value": {
+      "kcal": "0",
+      "proteinG": "0",
+      "fatG": "0"
+    }
+  },
+  {
+    "definition": "error",
+    "value": {
+      "code": "VALIDATION",
+      "message": "Erreur",
+      "fields": [],
+      "operationId": null
+    }
+  },
+  {
+    "definition": "mutation",
+    "value": {
+      "schemaVersion": "0.1.0",
+      "action": "update",
+      "operationId": "11111111-1111-4111-8111-111111111111",
+      "targets": []
+    }
+  }
+]
