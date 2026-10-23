@@ -75,7 +75,7 @@ Client proposé : **MCP Inspector 2.12.0**, Node `>=22.19.0`, confirmé par npm 
 
 La commande de préparation réellement exécutée avec succès (code 0), `npm exec --yes --package=@modelcontextprotocol/inspector@2.12.0 -- inspector --cli --help` a affiché l'aide CLI ; elle vérifie seulement son démarrage. Aucun faux serveur OAuth Node n'est livré dans cette étude : il pourrait tester le client et le transport dans une tâche dédiée, mais ne qualifierait ni Logto ni Keycloak. Pour l'implémentation, verrouiller aussi les dépendances transitives du client de test ; une commande npm à version racine seule n'établit pas une chaîne d'essai reproductible complète. Ensuite lancer contre la vraie URL de test : `inspector --cli https://example.test/mcp --transport http --client-id <client-public-de-test> --method tools/list`. Cette dernière commande est un exemple à adapter, **pas un test exécuté**.
 
-Les échéances suivent le backlog : L0 qualifie le contrat et le client de référence sur des fixtures sans métier ; L1 vérifie les services et leur authentification réels ; L2 vérifie les données et parcours métier. Une fixture synthétique ne qualifie pas l'autorité retenue. La clôture de L0 ne dépend pas d'un journal L2 implémenté. Aucun scénario ci-dessous n'a été exécuté dans cette étude.
+Les échéances suivent le backlog : L0 qualifie le contrat et le client de référence sur des fixtures sans métier ; L1 vérifie les services et leur authentification réels ; L2 vérifie les données et parcours métier ; L8 vérifie la restauration complète en environnement isolé. Une fixture synthétique ne qualifie pas l'autorité retenue. La clôture de L0 ne dépend pas d'un journal L2 implémenté. Aucun scénario ci-dessous n'a été exécuté dans cette étude.
 
 | ID | Lot exigible | Scénario à automatiser | Résultat requis |
 |---|---|---|---|
@@ -89,7 +89,7 @@ Les échéances suivent le backlog : L0 qualifie le contrat et le client de réf
 | AUTH-07 | L1 | Échange indisponible/refusé ou tentative d'augmentation des scopes sur mutation technique | Refus explicite, aucun effet, aucun compte technique de repli |
 | AUTH-08 | L1 | PKCE absent/incorrect, state/iss/redirect URI incorrects, réutilisation du code | Flux arrêté avant session/jeton utilisable |
 | AUTH-09 | L2 | Expiration/reconnexion avec brouillon et date/repas d'origine ; nouvelle tentative après réponse d'écriture perdue ; conflit de version | Brouillon et contexte conservés sans écriture implicite ; une opération, pas de doublon ; conflit sans écrasement et annulation ciblée |
-| AUTH-10 | L1 | Rotation de clés/refresh, révocation, redémarrage et restauration isolée de l'autorité | Refus conforme après invalidation, récupération documentée, aucune donnée personnelle exposée |
+| AUTH-10 | L1 puis L8 | L1 : rotation de clés/refresh, révocation et redémarrage de l'autorité ; L8 : restauration complète dans un environnement isolé | L1 : refus conforme après invalidation et récupération documentée ; L8 : identité/configuration et données attendues récupérées sans exposition de données personnelles |
 
 Les erreurs métier de l'API gardent leurs codes structurés distincts (validation, conflit, introuvable, données incomplètes, dépendance). Les tests de contrats MCP du lot L0 fixeront leur enveloppe typée. Les annotations MCP de lecture/écriture ne remplacent jamais l'autorisation.
 
