@@ -100,11 +100,17 @@ d'effet la plus récente ne dépassant pas la journée consultée ; leur histori
 conservé. Le schéma ne prouve ni cette sélection ni l'immutabilité ni l'absence de doublons.
 Les cas d'objectifs ayant la même date d'effet devront être réglés dans le contrat métier.
 
-Idempotence **proposée, non ratifiée** : portée utilisateur + client + opération ; même
-UUID et même requête canonique = résultat d'origine, même UUID et corps différent = conflit.
-Ne pas comparer des JSON sérialisés naïvement (l'ordre des clés ne définit pas une nouvelle
-opération). Recommandation de conservation : garder les opérations tant que les données
-ciblées existent. Cette durée et la portée exacte restent à ratifier avant contrat final.
+Idempotence **proposée, non ratifiée** après convergence technique du coordinateur :
+portée utilisateur authentifié + operationId, indépendante du client/canal ; même UUID
+et même requête canonique = résultat d’origine, même UUID et corps différent = conflit.
+L’identité vient de l’authentification vérifiée, jamais d’un userId/clientId libre. Les
+scopes et l’appartenance sont vérifiés avant tout accès au résultat, même lors d’une reprise.
+Ne pas comparer des JSON sérialisés naïvement (l’ordre des clés ne définit pas une nouvelle
+opération). Recommandation de conservation précisée dans [API-MCP.md](API-MCP.md) : garder
+registre, résultats et tombstones pendant la vie du compte, y compris après suppression
+des cibles ; aucune expiration/recréation silencieuse. L’effacement du compte et la purge
+des données nécessitent une décision explicite avant production ; aucune rétention
+d’image déduite. Cette durée et la portée exacte restent à ratifier avant contrat final.
 
 Annulation **proposée, non ratifiée** : viser l'opération identifiée et toutes ses cibles,
 vérifier leurs versions et inverser atomiquement ; refuser sans écrasement si un changement

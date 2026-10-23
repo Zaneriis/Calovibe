@@ -1,0 +1,2045 @@
+{
+  "note": "Exemples fictifs de forme ; image hello base64 non média valide, aucune analyse ou transaction exécutée.",
+  "capabilities": [
+    {
+      "label": "journal_day_read",
+      "tool": "journal_day_read",
+      "input": {
+        "path": {
+          "localDate": "2026-10-22"
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": {
+          "localDate": "2026-10-22",
+          "timeZone": "Europe/Paris",
+          "meals": [
+            {
+              "meal": "breakfast",
+              "entries": [],
+              "displayTotals": {
+                "kcal": "0",
+                "proteinG": "0",
+                "fatG": "0",
+                "carbohydrateG": "0"
+              }
+            },
+            {
+              "meal": "lunch",
+              "entries": [],
+              "displayTotals": {
+                "kcal": "0",
+                "proteinG": "0",
+                "fatG": "0",
+                "carbohydrateG": "0"
+              }
+            },
+            {
+              "meal": "dinner",
+              "entries": [
+                {
+                  "entry": {
+                    "schemaVersion": "0.1.0",
+                    "id": "00000001-1111-4111-8111-111111111111",
+                    "version": 1,
+                    "localDate": "2026-10-22",
+                    "meal": "dinner",
+                    "quantity": "150",
+                    "unit": "g",
+                    "snapshot": {
+                      "name": "Aliment fictif",
+                      "reference": {
+                        "quantity": "100",
+                        "unit": "g",
+                        "nutrition": {
+                          "kcal": "200",
+                          "proteinG": "0",
+                          "fatG": null,
+                          "carbohydrateG": "30"
+                        }
+                      }
+                    },
+                    "provenance": {
+                      "method": "manual",
+                      "sourceId": null,
+                      "estimated": false
+                    },
+                    "operationId": "00000099-1111-4111-8111-111111111111"
+                  },
+                  "displayNutrition": {
+                    "kcal": "300",
+                    "proteinG": "0",
+                    "fatG": null,
+                    "carbohydrateG": "45"
+                  }
+                }
+              ],
+              "displayTotals": {
+                "kcal": "300",
+                "proteinG": "0",
+                "fatG": null,
+                "carbohydrateG": "45"
+              }
+            },
+            {
+              "meal": "snack",
+              "entries": [],
+              "displayTotals": {
+                "kcal": "0",
+                "proteinG": "0",
+                "fatG": "0",
+                "carbohydrateG": "0"
+              }
+            }
+          ],
+          "displayTotals": {
+            "kcal": "300",
+            "proteinG": "0",
+            "fatG": null,
+            "carbohydrateG": "45"
+          },
+          "goals": {
+            "schemaVersion": "0.1.0",
+            "id": "00000001-1111-4111-8111-111111111111",
+            "version": 1,
+            "effectiveDate": "2026-10-01",
+            "values": {
+              "nutrition": {
+                "kcal": "2000",
+                "proteinG": "120",
+                "fatG": "60",
+                "carbohydrateG": "245"
+              },
+              "waterMl": "2000"
+            },
+            "origin": "manual",
+            "formulaVersion": null,
+            "operationId": "00000099-1111-4111-8111-111111111111"
+          },
+          "water": {
+            "localDate": "2026-10-22",
+            "entries": [
+              {
+                "id": "00000001-1111-4111-8111-111111111111",
+                "version": 1,
+                "localDate": "2026-10-22",
+                "quantity": "250",
+                "unit": "ml",
+                "operationId": "00000099-1111-4111-8111-111111111111"
+              }
+            ],
+            "totalMl": "250",
+            "goalMl": "2000"
+          }
+        }
+      }
+    },
+    {
+      "label": "journal_entry_read",
+      "tool": "journal_entry_read",
+      "input": {
+        "path": {
+          "entryId": "00000001-1111-4111-8111-111111111111"
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": {
+          "entry": {
+            "schemaVersion": "0.1.0",
+            "id": "00000001-1111-4111-8111-111111111111",
+            "version": 1,
+            "localDate": "2026-10-22",
+            "meal": "dinner",
+            "quantity": "150",
+            "unit": "g",
+            "snapshot": {
+              "name": "Aliment fictif",
+              "reference": {
+                "quantity": "100",
+                "unit": "g",
+                "nutrition": {
+                  "kcal": "200",
+                  "proteinG": "0",
+                  "fatG": null,
+                  "carbohydrateG": "30"
+                }
+              }
+            },
+            "provenance": {
+              "method": "manual",
+              "sourceId": null,
+              "estimated": false
+            },
+            "operationId": "00000099-1111-4111-8111-111111111111"
+          },
+          "displayNutrition": {
+            "kcal": "300",
+            "proteinG": "0",
+            "fatG": null,
+            "carbohydrateG": "45"
+          }
+        }
+      }
+    },
+    {
+      "label": "journal_entry_create",
+      "tool": "journal_entry_create",
+      "input": {
+        "body": {
+          "mutation": {
+            "schemaVersion": "0.1.0",
+            "action": "create",
+            "operationId": "00000099-1111-4111-8111-111111111111"
+          },
+          "data": {
+            "localDate": "2026-10-22",
+            "meal": "dinner",
+            "quantity": "150",
+            "unit": "g",
+            "source": {
+              "kind": "inline",
+              "snapshot": {
+                "name": "Aliment fictif",
+                "reference": {
+                  "quantity": "100",
+                  "unit": "g",
+                  "nutrition": {
+                    "kcal": "200",
+                    "proteinG": "0",
+                    "fatG": null,
+                    "carbohydrateG": "30"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": {
+          "schemaVersion": "0.1.0",
+          "operationId": "00000099-1111-4111-8111-111111111111",
+          "createdAt": "2026-10-23T15:00:00Z",
+          "status": "succeeded",
+          "targets": [
+            {
+              "resource": "journal_entry",
+              "id": "00000001-1111-4111-8111-111111111111",
+              "version": 1,
+              "deleted": false
+            }
+          ],
+          "undoState": "eligible",
+          "result": {
+            "kind": "journal_entry",
+            "value": {
+              "entry": {
+                "schemaVersion": "0.1.0",
+                "id": "00000001-1111-4111-8111-111111111111",
+                "version": 1,
+                "localDate": "2026-10-22",
+                "meal": "dinner",
+                "quantity": "150",
+                "unit": "g",
+                "snapshot": {
+                  "name": "Aliment fictif",
+                  "reference": {
+                    "quantity": "100",
+                    "unit": "g",
+                    "nutrition": {
+                      "kcal": "200",
+                      "proteinG": "0",
+                      "fatG": null,
+                      "carbohydrateG": "30"
+                    }
+                  }
+                },
+                "provenance": {
+                  "method": "manual",
+                  "sourceId": null,
+                  "estimated": false
+                },
+                "operationId": "00000099-1111-4111-8111-111111111111"
+              },
+              "displayNutrition": {
+                "kcal": "300",
+                "proteinG": "0",
+                "fatG": null,
+                "carbohydrateG": "45"
+              }
+            }
+          },
+          "error": null
+        }
+      }
+    },
+    {
+      "label": "journal_entry_update",
+      "tool": "journal_entry_update",
+      "input": {
+        "path": {
+          "entryId": "00000001-1111-4111-8111-111111111111"
+        },
+        "body": {
+          "mutation": {
+            "schemaVersion": "0.1.0",
+            "action": "update",
+            "operationId": "00000099-1111-4111-8111-111111111111",
+            "targets": [
+              {
+                "id": "00000001-1111-4111-8111-111111111111",
+                "expectedVersion": 1
+              }
+            ]
+          },
+          "data": {
+            "localDate": "2026-10-22",
+            "meal": "dinner",
+            "quantity": "150",
+            "unit": "g"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": {
+          "schemaVersion": "0.1.0",
+          "operationId": "00000099-1111-4111-8111-111111111111",
+          "createdAt": "2026-10-23T15:00:00Z",
+          "status": "succeeded",
+          "targets": [
+            {
+              "resource": "journal_entry",
+              "id": "00000001-1111-4111-8111-111111111111",
+              "version": 2,
+              "deleted": false
+            }
+          ],
+          "undoState": "eligible",
+          "result": {
+            "kind": "journal_entry",
+            "value": {
+              "entry": {
+                "schemaVersion": "0.1.0",
+                "id": "00000001-1111-4111-8111-111111111111",
+                "version": 2,
+                "localDate": "2026-10-22",
+                "meal": "dinner",
+                "quantity": "150",
+                "unit": "g",
+                "snapshot": {
+                  "name": "Aliment fictif",
+                  "reference": {
+                    "quantity": "100",
+                    "unit": "g",
+                    "nutrition": {
+                      "kcal": "200",
+                      "proteinG": "0",
+                      "fatG": null,
+                      "carbohydrateG": "30"
+                    }
+                  }
+                },
+                "provenance": {
+                  "method": "manual",
+                  "sourceId": null,
+                  "estimated": false
+                },
+                "operationId": "00000099-1111-4111-8111-111111111111"
+              },
+              "displayNutrition": {
+                "kcal": "300",
+                "proteinG": "0",
+                "fatG": null,
+                "carbohydrateG": "45"
+              }
+            }
+          },
+          "error": null
+        }
+      }
+    },
+    {
+      "label": "journal_entry_delete",
+      "tool": "journal_entry_delete",
+      "input": {
+        "path": {
+          "entryId": "00000001-1111-4111-8111-111111111111"
+        },
+        "body": {
+          "mutation": {
+            "schemaVersion": "0.1.0",
+            "action": "delete",
+            "operationId": "00000099-1111-4111-8111-111111111111",
+            "targets": [
+              {
+                "id": "00000001-1111-4111-8111-111111111111",
+                "expectedVersion": 1
+              }
+            ]
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": {
+          "schemaVersion": "0.1.0",
+          "operationId": "00000099-1111-4111-8111-111111111111",
+          "createdAt": "2026-10-23T15:00:00Z",
+          "status": "succeeded",
+          "targets": [
+            {
+              "resource": "journal_entry",
+              "id": "00000001-1111-4111-8111-111111111111",
+              "version": 2,
+              "deleted": true
+            }
+          ],
+          "undoState": "eligible",
+          "result": {
+            "kind": "deleted",
+            "value": {
+              "targets": [
+                {
+                  "resource": "journal_entry",
+                  "id": "00000001-1111-4111-8111-111111111111",
+                  "version": 2,
+                  "deleted": true
+                }
+              ]
+            }
+          },
+          "error": null
+        }
+      }
+    },
+    {
+      "label": "library_search",
+      "tool": "library_search",
+      "input": {
+        "query": {
+          "query": "fictif",
+          "kind": "food",
+          "limit": 50,
+          "cursor": "opaque-cursor"
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": {
+          "items": [
+            {
+              "id": "00000001-1111-4111-8111-111111111111",
+              "version": 1,
+              "definition": {
+                "kind": "food",
+                "name": "Aliment fictif",
+                "reference": {
+                  "quantity": "100",
+                  "unit": "g",
+                  "nutrition": {
+                    "kcal": "200",
+                    "proteinG": "0",
+                    "fatG": null,
+                    "carbohydrateG": "30"
+                  }
+                }
+              },
+              "reference": {
+                "quantity": "100",
+                "unit": "g",
+                "nutrition": {
+                  "kcal": "200",
+                  "proteinG": "0",
+                  "fatG": null,
+                  "carbohydrateG": "30"
+                }
+              },
+              "operationId": "00000099-1111-4111-8111-111111111111"
+            }
+          ],
+          "nextCursor": null
+        }
+      }
+    },
+    {
+      "label": "library_item_read",
+      "tool": "library_item_read",
+      "input": {
+        "path": {
+          "itemId": "00000001-1111-4111-8111-111111111111"
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": {
+          "id": "00000001-1111-4111-8111-111111111111",
+          "version": 1,
+          "definition": {
+            "kind": "food",
+            "name": "Aliment fictif",
+            "reference": {
+              "quantity": "100",
+              "unit": "g",
+              "nutrition": {
+                "kcal": "200",
+                "proteinG": "0",
+                "fatG": null,
+                "carbohydrateG": "30"
+              }
+            }
+          },
+          "reference": {
+            "quantity": "100",
+            "unit": "g",
+            "nutrition": {
+              "kcal": "200",
+              "proteinG": "0",
+              "fatG": null,
+              "carbohydrateG": "30"
+            }
+          },
+          "operationId": "00000099-1111-4111-8111-111111111111"
+        }
+      }
+    },
+    {
+      "label": "library_item_create",
+      "tool": "library_item_create",
+      "input": {
+        "body": {
+          "mutation": {
+            "schemaVersion": "0.1.0",
+            "action": "create",
+            "operationId": "00000099-1111-4111-8111-111111111111"
+          },
+          "data": {
+            "kind": "food",
+            "name": "Aliment fictif",
+            "reference": {
+              "quantity": "100",
+              "unit": "g",
+              "nutrition": {
+                "kcal": "200",
+                "proteinG": "0",
+                "fatG": null,
+                "carbohydrateG": "30"
+              }
+            }
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": {
+          "schemaVersion": "0.1.0",
+          "operationId": "00000099-1111-4111-8111-111111111111",
+          "createdAt": "2026-10-23T15:00:00Z",
+          "status": "succeeded",
+          "targets": [
+            {
+              "resource": "library_item",
+              "id": "00000001-1111-4111-8111-111111111111",
+              "version": 1,
+              "deleted": false
+            }
+          ],
+          "undoState": "eligible",
+          "result": {
+            "kind": "library_item",
+            "value": {
+              "id": "00000001-1111-4111-8111-111111111111",
+              "version": 1,
+              "definition": {
+                "kind": "food",
+                "name": "Aliment fictif",
+                "reference": {
+                  "quantity": "100",
+                  "unit": "g",
+                  "nutrition": {
+                    "kcal": "200",
+                    "proteinG": "0",
+                    "fatG": null,
+                    "carbohydrateG": "30"
+                  }
+                }
+              },
+              "reference": {
+                "quantity": "100",
+                "unit": "g",
+                "nutrition": {
+                  "kcal": "200",
+                  "proteinG": "0",
+                  "fatG": null,
+                  "carbohydrateG": "30"
+                }
+              },
+              "operationId": "00000099-1111-4111-8111-111111111111"
+            }
+          },
+          "error": null
+        }
+      }
+    },
+    {
+      "label": "library_item_update",
+      "tool": "library_item_update",
+      "input": {
+        "path": {
+          "itemId": "00000001-1111-4111-8111-111111111111"
+        },
+        "body": {
+          "mutation": {
+            "schemaVersion": "0.1.0",
+            "action": "update",
+            "operationId": "00000099-1111-4111-8111-111111111111",
+            "targets": [
+              {
+                "id": "00000001-1111-4111-8111-111111111111",
+                "expectedVersion": 1
+              }
+            ]
+          },
+          "data": {
+            "kind": "dish_ingredients",
+            "name": "Plat ingrédients fictif",
+            "ingredients": [
+              {
+                "itemId": "00000002-1111-4111-8111-111111111111",
+                "itemVersion": 1,
+                "quantity": "100",
+                "unit": "g",
+                "snapshot": {
+                  "name": "Aliment fictif",
+                  "reference": {
+                    "quantity": "100",
+                    "unit": "g",
+                    "nutrition": {
+                      "kcal": "200",
+                      "proteinG": "0",
+                      "fatG": null,
+                      "carbohydrateG": "30"
+                    }
+                  }
+                }
+              }
+            ],
+            "yield": {
+              "quantity": "2",
+              "unit": "portion"
+            }
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": {
+          "schemaVersion": "0.1.0",
+          "operationId": "00000099-1111-4111-8111-111111111111",
+          "createdAt": "2026-10-23T15:00:00Z",
+          "status": "succeeded",
+          "targets": [
+            {
+              "resource": "library_item",
+              "id": "00000001-1111-4111-8111-111111111111",
+              "version": 2,
+              "deleted": false
+            }
+          ],
+          "undoState": "eligible",
+          "result": {
+            "kind": "library_item",
+            "value": {
+              "id": "00000001-1111-4111-8111-111111111111",
+              "version": 2,
+              "definition": {
+                "kind": "dish_ingredients",
+                "name": "Plat ingrédients fictif",
+                "ingredients": [
+                  {
+                    "itemId": "00000002-1111-4111-8111-111111111111",
+                    "itemVersion": 1,
+                    "quantity": "100",
+                    "unit": "g",
+                    "snapshot": {
+                      "name": "Aliment fictif",
+                      "reference": {
+                        "quantity": "100",
+                        "unit": "g",
+                        "nutrition": {
+                          "kcal": "200",
+                          "proteinG": "0",
+                          "fatG": null,
+                          "carbohydrateG": "30"
+                        }
+                      }
+                    }
+                  }
+                ],
+                "yield": {
+                  "quantity": "2",
+                  "unit": "portion"
+                }
+              },
+              "reference": {
+                "quantity": "2",
+                "unit": "portion",
+                "nutrition": {
+                  "kcal": "200",
+                  "proteinG": "0",
+                  "fatG": null,
+                  "carbohydrateG": "30"
+                }
+              },
+              "operationId": "00000099-1111-4111-8111-111111111111"
+            }
+          },
+          "error": null
+        }
+      }
+    },
+    {
+      "label": "library_item_delete",
+      "tool": "library_item_delete",
+      "input": {
+        "path": {
+          "itemId": "00000001-1111-4111-8111-111111111111"
+        },
+        "body": {
+          "mutation": {
+            "schemaVersion": "0.1.0",
+            "action": "delete",
+            "operationId": "00000099-1111-4111-8111-111111111111",
+            "targets": [
+              {
+                "id": "00000001-1111-4111-8111-111111111111",
+                "expectedVersion": 1
+              }
+            ]
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": {
+          "schemaVersion": "0.1.0",
+          "operationId": "00000099-1111-4111-8111-111111111111",
+          "createdAt": "2026-10-23T15:00:00Z",
+          "status": "succeeded",
+          "targets": [
+            {
+              "resource": "library_item",
+              "id": "00000001-1111-4111-8111-111111111111",
+              "version": 2,
+              "deleted": true
+            }
+          ],
+          "undoState": "eligible",
+          "result": {
+            "kind": "deleted",
+            "value": {
+              "targets": [
+                {
+                  "resource": "library_item",
+                  "id": "00000001-1111-4111-8111-111111111111",
+                  "version": 2,
+                  "deleted": true
+                }
+              ]
+            }
+          },
+          "error": null
+        }
+      }
+    },
+    {
+      "label": "portion_preview",
+      "tool": "portion_preview",
+      "input": {
+        "body": {
+          "source": {
+            "kind": "inline",
+            "snapshot": {
+              "name": "Aliment fictif",
+              "reference": {
+                "quantity": "100",
+                "unit": "g",
+                "nutrition": {
+                  "kcal": "200",
+                  "proteinG": "0",
+                  "fatG": null,
+                  "carbohydrateG": "30"
+                }
+              }
+            }
+          },
+          "quantity": "150",
+          "unit": "g"
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": {
+          "quantity": "150",
+          "unit": "g",
+          "displayNutrition": {
+            "kcal": "300",
+            "proteinG": "0",
+            "fatG": null,
+            "carbohydrateG": "45"
+          }
+        }
+      }
+    },
+    {
+      "label": "water_day_read",
+      "tool": "water_day_read",
+      "input": {
+        "path": {
+          "localDate": "2026-10-22"
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": {
+          "localDate": "2026-10-22",
+          "entries": [
+            {
+              "id": "00000001-1111-4111-8111-111111111111",
+              "version": 1,
+              "localDate": "2026-10-22",
+              "quantity": "250",
+              "unit": "ml",
+              "operationId": "00000099-1111-4111-8111-111111111111"
+            }
+          ],
+          "totalMl": "250",
+          "goalMl": "2000"
+        }
+      }
+    },
+    {
+      "label": "water_entry_create",
+      "tool": "water_entry_create",
+      "input": {
+        "body": {
+          "mutation": {
+            "schemaVersion": "0.1.0",
+            "action": "create",
+            "operationId": "00000099-1111-4111-8111-111111111111"
+          },
+          "data": {
+            "localDate": "2026-10-22",
+            "quantity": "250",
+            "unit": "ml"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": {
+          "schemaVersion": "0.1.0",
+          "operationId": "00000099-1111-4111-8111-111111111111",
+          "createdAt": "2026-10-23T15:00:00Z",
+          "status": "succeeded",
+          "targets": [
+            {
+              "resource": "water_entry",
+              "id": "00000001-1111-4111-8111-111111111111",
+              "version": 1,
+              "deleted": false
+            }
+          ],
+          "undoState": "eligible",
+          "result": {
+            "kind": "water_entry",
+            "value": {
+              "id": "00000001-1111-4111-8111-111111111111",
+              "version": 1,
+              "localDate": "2026-10-22",
+              "quantity": "250",
+              "unit": "ml",
+              "operationId": "00000099-1111-4111-8111-111111111111"
+            }
+          },
+          "error": null
+        }
+      }
+    },
+    {
+      "label": "water_entry_update",
+      "tool": "water_entry_update",
+      "input": {
+        "path": {
+          "waterId": "00000001-1111-4111-8111-111111111111"
+        },
+        "body": {
+          "mutation": {
+            "schemaVersion": "0.1.0",
+            "action": "update",
+            "operationId": "00000099-1111-4111-8111-111111111111",
+            "targets": [
+              {
+                "id": "00000001-1111-4111-8111-111111111111",
+                "expectedVersion": 1
+              }
+            ]
+          },
+          "data": {
+            "localDate": "2026-10-22",
+            "quantity": "250",
+            "unit": "ml"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": {
+          "schemaVersion": "0.1.0",
+          "operationId": "00000099-1111-4111-8111-111111111111",
+          "createdAt": "2026-10-23T15:00:00Z",
+          "status": "succeeded",
+          "targets": [
+            {
+              "resource": "water_entry",
+              "id": "00000001-1111-4111-8111-111111111111",
+              "version": 2,
+              "deleted": false
+            }
+          ],
+          "undoState": "eligible",
+          "result": {
+            "kind": "water_entry",
+            "value": {
+              "id": "00000001-1111-4111-8111-111111111111",
+              "version": 2,
+              "localDate": "2026-10-22",
+              "quantity": "250",
+              "unit": "ml",
+              "operationId": "00000099-1111-4111-8111-111111111111"
+            }
+          },
+          "error": null
+        }
+      }
+    },
+    {
+      "label": "water_entry_delete",
+      "tool": "water_entry_delete",
+      "input": {
+        "path": {
+          "waterId": "00000001-1111-4111-8111-111111111111"
+        },
+        "body": {
+          "mutation": {
+            "schemaVersion": "0.1.0",
+            "action": "delete",
+            "operationId": "00000099-1111-4111-8111-111111111111",
+            "targets": [
+              {
+                "id": "00000001-1111-4111-8111-111111111111",
+                "expectedVersion": 1
+              }
+            ]
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": {
+          "schemaVersion": "0.1.0",
+          "operationId": "00000099-1111-4111-8111-111111111111",
+          "createdAt": "2026-10-23T15:00:00Z",
+          "status": "succeeded",
+          "targets": [
+            {
+              "resource": "water_entry",
+              "id": "00000001-1111-4111-8111-111111111111",
+              "version": 2,
+              "deleted": true
+            }
+          ],
+          "undoState": "eligible",
+          "result": {
+            "kind": "deleted",
+            "value": {
+              "targets": [
+                {
+                  "resource": "water_entry",
+                  "id": "00000001-1111-4111-8111-111111111111",
+                  "version": 2,
+                  "deleted": true
+                }
+              ]
+            }
+          },
+          "error": null
+        }
+      }
+    },
+    {
+      "label": "weights_list",
+      "tool": "weights_list",
+      "input": {
+        "query": {
+          "from": "2026-10-01",
+          "to": "2026-10-31",
+          "limit": 50,
+          "cursor": "opaque-cursor"
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": {
+          "items": [
+            {
+              "id": "00000001-1111-4111-8111-111111111111",
+              "version": 1,
+              "localDate": "2026-10-22",
+              "measuredAt": "2026-10-22T08:00:00Z",
+              "quantity": "75.2",
+              "unit": "kg",
+              "operationId": "00000099-1111-4111-8111-111111111111"
+            }
+          ],
+          "nextCursor": null
+        }
+      }
+    },
+    {
+      "label": "weight_create",
+      "tool": "weight_create",
+      "input": {
+        "body": {
+          "mutation": {
+            "schemaVersion": "0.1.0",
+            "action": "create",
+            "operationId": "00000099-1111-4111-8111-111111111111"
+          },
+          "data": {
+            "localDate": "2026-10-22",
+            "measuredAt": "2026-10-22T08:00:00Z",
+            "quantity": "75.2",
+            "unit": "kg"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": {
+          "schemaVersion": "0.1.0",
+          "operationId": "00000099-1111-4111-8111-111111111111",
+          "createdAt": "2026-10-23T15:00:00Z",
+          "status": "succeeded",
+          "targets": [
+            {
+              "resource": "weight_entry",
+              "id": "00000001-1111-4111-8111-111111111111",
+              "version": 1,
+              "deleted": false
+            }
+          ],
+          "undoState": "eligible",
+          "result": {
+            "kind": "weight_entry",
+            "value": {
+              "id": "00000001-1111-4111-8111-111111111111",
+              "version": 1,
+              "localDate": "2026-10-22",
+              "measuredAt": "2026-10-22T08:00:00Z",
+              "quantity": "75.2",
+              "unit": "kg",
+              "operationId": "00000099-1111-4111-8111-111111111111"
+            }
+          },
+          "error": null
+        }
+      }
+    },
+    {
+      "label": "weight_update",
+      "tool": "weight_update",
+      "input": {
+        "path": {
+          "weightId": "00000001-1111-4111-8111-111111111111"
+        },
+        "body": {
+          "mutation": {
+            "schemaVersion": "0.1.0",
+            "action": "update",
+            "operationId": "00000099-1111-4111-8111-111111111111",
+            "targets": [
+              {
+                "id": "00000001-1111-4111-8111-111111111111",
+                "expectedVersion": 1
+              }
+            ]
+          },
+          "data": {
+            "localDate": "2026-10-22",
+            "measuredAt": "2026-10-22T08:00:00Z",
+            "quantity": "75.2",
+            "unit": "kg"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": {
+          "schemaVersion": "0.1.0",
+          "operationId": "00000099-1111-4111-8111-111111111111",
+          "createdAt": "2026-10-23T15:00:00Z",
+          "status": "succeeded",
+          "targets": [
+            {
+              "resource": "weight_entry",
+              "id": "00000001-1111-4111-8111-111111111111",
+              "version": 2,
+              "deleted": false
+            }
+          ],
+          "undoState": "eligible",
+          "result": {
+            "kind": "weight_entry",
+            "value": {
+              "id": "00000001-1111-4111-8111-111111111111",
+              "version": 2,
+              "localDate": "2026-10-22",
+              "measuredAt": "2026-10-22T08:00:00Z",
+              "quantity": "75.2",
+              "unit": "kg",
+              "operationId": "00000099-1111-4111-8111-111111111111"
+            }
+          },
+          "error": null
+        }
+      }
+    },
+    {
+      "label": "weight_delete",
+      "tool": "weight_delete",
+      "input": {
+        "path": {
+          "weightId": "00000001-1111-4111-8111-111111111111"
+        },
+        "body": {
+          "mutation": {
+            "schemaVersion": "0.1.0",
+            "action": "delete",
+            "operationId": "00000099-1111-4111-8111-111111111111",
+            "targets": [
+              {
+                "id": "00000001-1111-4111-8111-111111111111",
+                "expectedVersion": 1
+              }
+            ]
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": {
+          "schemaVersion": "0.1.0",
+          "operationId": "00000099-1111-4111-8111-111111111111",
+          "createdAt": "2026-10-23T15:00:00Z",
+          "status": "succeeded",
+          "targets": [
+            {
+              "resource": "weight_entry",
+              "id": "00000001-1111-4111-8111-111111111111",
+              "version": 2,
+              "deleted": true
+            }
+          ],
+          "undoState": "eligible",
+          "result": {
+            "kind": "deleted",
+            "value": {
+              "targets": [
+                {
+                  "resource": "weight_entry",
+                  "id": "00000001-1111-4111-8111-111111111111",
+                  "version": 2,
+                  "deleted": true
+                }
+              ]
+            }
+          },
+          "error": null
+        }
+      }
+    },
+    {
+      "label": "goals_effective_read",
+      "tool": "goals_effective_read",
+      "input": {
+        "path": {
+          "localDate": "2026-10-22"
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": {
+          "localDate": "2026-10-22",
+          "goals": {
+            "schemaVersion": "0.1.0",
+            "id": "00000001-1111-4111-8111-111111111111",
+            "version": 1,
+            "effectiveDate": "2026-10-01",
+            "values": {
+              "nutrition": {
+                "kcal": "2000",
+                "proteinG": "120",
+                "fatG": "60",
+                "carbohydrateG": "245"
+              },
+              "waterMl": "2000"
+            },
+            "origin": "manual",
+            "formulaVersion": null,
+            "operationId": "00000099-1111-4111-8111-111111111111"
+          }
+        }
+      }
+    },
+    {
+      "label": "goals_history",
+      "tool": "goals_history",
+      "input": {
+        "query": {
+          "from": "2026-10-01",
+          "to": "2026-10-31",
+          "limit": 50,
+          "cursor": "opaque-cursor"
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": {
+          "items": [
+            {
+              "schemaVersion": "0.1.0",
+              "id": "00000001-1111-4111-8111-111111111111",
+              "version": 1,
+              "effectiveDate": "2026-10-01",
+              "values": {
+                "nutrition": {
+                  "kcal": "2000",
+                  "proteinG": "120",
+                  "fatG": "60",
+                  "carbohydrateG": "245"
+                },
+                "waterMl": "2000"
+              },
+              "origin": "manual",
+              "formulaVersion": null,
+              "operationId": "00000099-1111-4111-8111-111111111111"
+            }
+          ],
+          "nextCursor": null
+        }
+      }
+    },
+    {
+      "label": "goals_create",
+      "tool": "goals_create",
+      "input": {
+        "body": {
+          "mutation": {
+            "schemaVersion": "0.1.0",
+            "action": "create",
+            "operationId": "00000099-1111-4111-8111-111111111111"
+          },
+          "data": {
+            "effectiveDate": "2026-10-01",
+            "values": {
+              "nutrition": {
+                "kcal": "2000",
+                "proteinG": "120",
+                "fatG": "60",
+                "carbohydrateG": "245"
+              },
+              "waterMl": "2000"
+            }
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": {
+          "schemaVersion": "0.1.0",
+          "operationId": "00000099-1111-4111-8111-111111111111",
+          "createdAt": "2026-10-23T15:00:00Z",
+          "status": "succeeded",
+          "targets": [
+            {
+              "resource": "goals",
+              "id": "00000001-1111-4111-8111-111111111111",
+              "version": 1,
+              "deleted": false
+            }
+          ],
+          "undoState": "eligible",
+          "result": {
+            "kind": "goals",
+            "value": {
+              "schemaVersion": "0.1.0",
+              "id": "00000001-1111-4111-8111-111111111111",
+              "version": 1,
+              "effectiveDate": "2026-10-01",
+              "values": {
+                "nutrition": {
+                  "kcal": "2000",
+                  "proteinG": "120",
+                  "fatG": "60",
+                  "carbohydrateG": "245"
+                },
+                "waterMl": "2000"
+              },
+              "origin": "manual",
+              "formulaVersion": null,
+              "operationId": "00000099-1111-4111-8111-111111111111"
+            }
+          },
+          "error": null
+        }
+      }
+    },
+    {
+      "label": "goals_update",
+      "tool": "goals_update",
+      "input": {
+        "path": {
+          "goalId": "00000001-1111-4111-8111-111111111111"
+        },
+        "body": {
+          "mutation": {
+            "schemaVersion": "0.1.0",
+            "action": "update",
+            "operationId": "00000099-1111-4111-8111-111111111111",
+            "targets": [
+              {
+                "id": "00000001-1111-4111-8111-111111111111",
+                "expectedVersion": 1
+              }
+            ]
+          },
+          "data": {
+            "effectiveDate": "2026-10-01",
+            "values": {
+              "nutrition": {
+                "kcal": "2000",
+                "proteinG": "120",
+                "fatG": "60",
+                "carbohydrateG": "245"
+              },
+              "waterMl": "2000"
+            }
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": {
+          "schemaVersion": "0.1.0",
+          "operationId": "00000099-1111-4111-8111-111111111111",
+          "createdAt": "2026-10-23T15:00:00Z",
+          "status": "succeeded",
+          "targets": [
+            {
+              "resource": "goals",
+              "id": "00000001-1111-4111-8111-111111111111",
+              "version": 2,
+              "deleted": false
+            }
+          ],
+          "undoState": "eligible",
+          "result": {
+            "kind": "goals",
+            "value": {
+              "schemaVersion": "0.1.0",
+              "id": "00000001-1111-4111-8111-111111111111",
+              "version": 2,
+              "effectiveDate": "2026-10-01",
+              "values": {
+                "nutrition": {
+                  "kcal": "2000",
+                  "proteinG": "120",
+                  "fatG": "60",
+                  "carbohydrateG": "245"
+                },
+                "waterMl": "2000"
+              },
+              "origin": "manual",
+              "formulaVersion": null,
+              "operationId": "00000099-1111-4111-8111-111111111111"
+            }
+          },
+          "error": null
+        }
+      }
+    },
+    {
+      "label": "goals_delete",
+      "tool": "goals_delete",
+      "input": {
+        "path": {
+          "goalId": "00000001-1111-4111-8111-111111111111"
+        },
+        "body": {
+          "mutation": {
+            "schemaVersion": "0.1.0",
+            "action": "delete",
+            "operationId": "00000099-1111-4111-8111-111111111111",
+            "targets": [
+              {
+                "id": "00000001-1111-4111-8111-111111111111",
+                "expectedVersion": 1
+              }
+            ]
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": {
+          "schemaVersion": "0.1.0",
+          "operationId": "00000099-1111-4111-8111-111111111111",
+          "createdAt": "2026-10-23T15:00:00Z",
+          "status": "succeeded",
+          "targets": [
+            {
+              "resource": "goals",
+              "id": "00000001-1111-4111-8111-111111111111",
+              "version": 2,
+              "deleted": true
+            }
+          ],
+          "undoState": "eligible",
+          "result": {
+            "kind": "deleted",
+            "value": {
+              "targets": [
+                {
+                  "resource": "goals",
+                  "id": "00000001-1111-4111-8111-111111111111",
+                  "version": 2,
+                  "deleted": true
+                }
+              ]
+            }
+          },
+          "error": null
+        }
+      }
+    },
+    {
+      "label": "photo_submit",
+      "tool": "photo_submit",
+      "input": {
+        "body": {
+          "mutation": {
+            "schemaVersion": "0.1.0",
+            "action": "create",
+            "operationId": "00000099-1111-4111-8111-111111111111"
+          },
+          "data": {
+            "localDate": "2026-10-22",
+            "meal": "dinner",
+            "image": {
+              "mediaType": "image/png",
+              "base64": "aGVsbG8="
+            }
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": {
+          "schemaVersion": "0.1.0",
+          "operationId": "00000099-1111-4111-8111-111111111111",
+          "createdAt": "2026-10-23T15:00:00Z",
+          "status": "succeeded",
+          "targets": [
+            {
+              "resource": "photo_proposal",
+              "id": "00000001-1111-4111-8111-111111111111",
+              "version": 1,
+              "deleted": false
+            }
+          ],
+          "undoState": "not_supported",
+          "result": {
+            "kind": "photo_proposal",
+            "value": {
+              "id": "00000001-1111-4111-8111-111111111111",
+              "version": 1,
+              "localDate": "2026-10-22",
+              "meal": "dinner",
+              "status": "queued",
+              "items": [],
+              "error": null,
+              "confirmationOperationId": null
+            }
+          },
+          "error": null
+        }
+      }
+    },
+    {
+      "label": "photo_read",
+      "tool": "photo_read",
+      "input": {
+        "path": {
+          "proposalId": "00000001-1111-4111-8111-111111111111"
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": {
+          "id": "00000001-1111-4111-8111-111111111111",
+          "version": 1,
+          "localDate": "2026-10-22",
+          "meal": "dinner",
+          "status": "ready",
+          "items": [
+            {
+              "id": "00000002-1111-4111-8111-111111111111",
+              "snapshot": {
+                "name": "Aliment fictif",
+                "reference": {
+                  "quantity": "100",
+                  "unit": "g",
+                  "nutrition": {
+                    "kcal": "200",
+                    "proteinG": "0",
+                    "fatG": null,
+                    "carbohydrateG": "30"
+                  }
+                }
+              },
+              "quantity": "150",
+              "unit": "g",
+              "identity": {
+                "kind": "manual",
+                "itemId": null,
+                "itemVersion": null
+              },
+              "nutritionVerified": true
+            }
+          ],
+          "error": null,
+          "confirmationOperationId": null
+        }
+      }
+    },
+    {
+      "label": "photo_correct",
+      "tool": "photo_correct",
+      "input": {
+        "path": {
+          "proposalId": "00000001-1111-4111-8111-111111111111"
+        },
+        "body": {
+          "mutation": {
+            "schemaVersion": "0.1.0",
+            "action": "update",
+            "operationId": "00000099-1111-4111-8111-111111111111",
+            "targets": [
+              {
+                "id": "00000001-1111-4111-8111-111111111111",
+                "expectedVersion": 1
+              }
+            ]
+          },
+          "data": {
+            "items": [
+              {
+                "id": "00000002-1111-4111-8111-111111111111",
+                "snapshot": {
+                  "name": "Aliment fictif",
+                  "reference": {
+                    "quantity": "100",
+                    "unit": "g",
+                    "nutrition": {
+                      "kcal": "200",
+                      "proteinG": "0",
+                      "fatG": null,
+                      "carbohydrateG": "30"
+                    }
+                  }
+                },
+                "quantity": "150",
+                "unit": "g",
+                "identity": {
+                  "kind": "manual",
+                  "itemId": null,
+                  "itemVersion": null
+                },
+                "verificationAction": "preserve"
+              }
+            ]
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": {
+          "schemaVersion": "0.1.0",
+          "operationId": "00000099-1111-4111-8111-111111111111",
+          "createdAt": "2026-10-23T15:00:00Z",
+          "status": "succeeded",
+          "targets": [
+            {
+              "resource": "photo_proposal",
+              "id": "00000001-1111-4111-8111-111111111111",
+              "version": 2,
+              "deleted": false
+            }
+          ],
+          "undoState": "eligible",
+          "result": {
+            "kind": "photo_proposal",
+            "value": {
+              "id": "00000001-1111-4111-8111-111111111111",
+              "version": 2,
+              "localDate": "2026-10-22",
+              "meal": "dinner",
+              "status": "ready",
+              "items": [
+                {
+                  "id": "00000002-1111-4111-8111-111111111111",
+                  "snapshot": {
+                    "name": "Aliment fictif",
+                    "reference": {
+                      "quantity": "100",
+                      "unit": "g",
+                      "nutrition": {
+                        "kcal": "200",
+                        "proteinG": "0",
+                        "fatG": null,
+                        "carbohydrateG": "30"
+                      }
+                    }
+                  },
+                  "quantity": "150",
+                  "unit": "g",
+                  "identity": {
+                    "kind": "manual",
+                    "itemId": null,
+                    "itemVersion": null
+                  },
+                  "nutritionVerified": true
+                }
+              ],
+              "error": null,
+              "confirmationOperationId": null
+            }
+          },
+          "error": null
+        }
+      }
+    },
+    {
+      "label": "photo_delete",
+      "tool": "photo_delete",
+      "input": {
+        "path": {
+          "proposalId": "00000001-1111-4111-8111-111111111111"
+        },
+        "body": {
+          "mutation": {
+            "schemaVersion": "0.1.0",
+            "action": "delete",
+            "operationId": "00000099-1111-4111-8111-111111111111",
+            "targets": [
+              {
+                "id": "00000001-1111-4111-8111-111111111111",
+                "expectedVersion": 1
+              }
+            ]
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": {
+          "schemaVersion": "0.1.0",
+          "operationId": "00000099-1111-4111-8111-111111111111",
+          "createdAt": "2026-10-23T15:00:00Z",
+          "status": "succeeded",
+          "targets": [
+            {
+              "resource": "photo_proposal",
+              "id": "00000001-1111-4111-8111-111111111111",
+              "version": 2,
+              "deleted": true
+            }
+          ],
+          "undoState": "eligible",
+          "result": {
+            "kind": "deleted",
+            "value": {
+              "targets": [
+                {
+                  "resource": "photo_proposal",
+                  "id": "00000001-1111-4111-8111-111111111111",
+                  "version": 2,
+                  "deleted": true
+                }
+              ]
+            }
+          },
+          "error": null
+        }
+      }
+    },
+    {
+      "label": "photo_confirm",
+      "tool": "photo_confirm",
+      "input": {
+        "path": {
+          "proposalId": "00000001-1111-4111-8111-111111111111"
+        },
+        "body": {
+          "mutation": {
+            "schemaVersion": "0.1.0",
+            "action": "update",
+            "operationId": "00000099-1111-4111-8111-111111111111",
+            "targets": [
+              {
+                "id": "00000001-1111-4111-8111-111111111111",
+                "expectedVersion": 1
+              }
+            ]
+          },
+          "data": {
+            "localDate": "2026-10-22",
+            "meal": "dinner"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": {
+          "schemaVersion": "0.1.0",
+          "operationId": "00000099-1111-4111-8111-111111111111",
+          "createdAt": "2026-10-23T15:00:00Z",
+          "status": "succeeded",
+          "targets": [
+            {
+              "resource": "photo_proposal",
+              "id": "00000001-1111-4111-8111-111111111111",
+              "version": 2,
+              "deleted": false
+            },
+            {
+              "resource": "journal_entry",
+              "id": "00000002-1111-4111-8111-111111111111",
+              "version": 1,
+              "deleted": false
+            }
+          ],
+          "undoState": "eligible",
+          "result": {
+            "kind": "photo_batch",
+            "value": {
+              "photoProposalId": "00000001-1111-4111-8111-111111111111",
+              "localDate": "2026-10-22",
+              "meal": "dinner",
+              "entries": [
+                {
+                  "schemaVersion": "0.1.0",
+                  "id": "00000002-1111-4111-8111-111111111111",
+                  "version": 1,
+                  "localDate": "2026-10-22",
+                  "meal": "dinner",
+                  "quantity": "150",
+                  "unit": "g",
+                  "snapshot": {
+                    "name": "Aliment fictif",
+                    "reference": {
+                      "quantity": "100",
+                      "unit": "g",
+                      "nutrition": {
+                        "kcal": "200",
+                        "proteinG": "0",
+                        "fatG": null,
+                        "carbohydrateG": "30"
+                      }
+                    }
+                  },
+                  "provenance": {
+                    "method": "photo",
+                    "sourceId": "00000001-1111-4111-8111-111111111111",
+                    "estimated": true
+                  },
+                  "operationId": "00000099-1111-4111-8111-111111111111"
+                }
+              ]
+            }
+          },
+          "error": null
+        }
+      }
+    },
+    {
+      "label": "operation_read",
+      "tool": "operation_read",
+      "input": {
+        "path": {
+          "operationId": "00000001-1111-4111-8111-111111111111"
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": {
+          "schemaVersion": "0.1.0",
+          "operationId": "00000099-1111-4111-8111-111111111111",
+          "createdAt": "2026-10-23T15:00:00Z",
+          "status": "succeeded",
+          "targets": [
+            {
+              "resource": "journal_entry",
+              "id": "00000001-1111-4111-8111-111111111111",
+              "version": 1,
+              "deleted": false
+            }
+          ],
+          "undoState": "eligible",
+          "result": {
+            "kind": "journal_entry",
+            "value": {
+              "entry": {
+                "schemaVersion": "0.1.0",
+                "id": "00000001-1111-4111-8111-111111111111",
+                "version": 1,
+                "localDate": "2026-10-22",
+                "meal": "dinner",
+                "quantity": "150",
+                "unit": "g",
+                "snapshot": {
+                  "name": "Aliment fictif",
+                  "reference": {
+                    "quantity": "100",
+                    "unit": "g",
+                    "nutrition": {
+                      "kcal": "200",
+                      "proteinG": "0",
+                      "fatG": null,
+                      "carbohydrateG": "30"
+                    }
+                  }
+                },
+                "provenance": {
+                  "method": "manual",
+                  "sourceId": null,
+                  "estimated": false
+                },
+                "operationId": "00000099-1111-4111-8111-111111111111"
+              },
+              "displayNutrition": {
+                "kcal": "300",
+                "proteinG": "0",
+                "fatG": null,
+                "carbohydrateG": "45"
+              }
+            }
+          },
+          "error": null
+        }
+      }
+    },
+    {
+      "label": "operation_undo",
+      "tool": "operation_undo",
+      "input": {
+        "path": {
+          "targetOperationId": "00000001-1111-4111-8111-111111111111"
+        },
+        "body": {
+          "schemaVersion": "0.1.0",
+          "operationId": "00000099-1111-4111-8111-111111111111",
+          "targetOperationId": "00000001-1111-4111-8111-111111111111",
+          "targets": [
+            {
+              "id": "00000002-1111-4111-8111-111111111111",
+              "expectedVersion": 1
+            }
+          ]
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": {
+          "schemaVersion": "0.1.0",
+          "operationId": "00000099-1111-4111-8111-111111111111",
+          "createdAt": "2026-10-23T15:00:00Z",
+          "status": "succeeded",
+          "targets": [
+            {
+              "resource": "journal_entry",
+              "id": "00000002-1111-4111-8111-111111111111",
+              "version": 2,
+              "deleted": true
+            }
+          ],
+          "undoState": "not_supported",
+          "result": {
+            "kind": "undone",
+            "value": {
+              "targets": [
+                {
+                  "resource": "journal_entry",
+                  "id": "00000002-1111-4111-8111-111111111111",
+                  "version": 2,
+                  "deleted": true
+                }
+              ]
+            }
+          },
+          "error": null
+        }
+      }
+    }
+  ],
+  "components": [
+    {
+      "label": "plat direct",
+      "component": "LibraryDefinition",
+      "value": {
+        "kind": "dish_direct",
+        "name": "Plat direct fictif",
+        "reference": {
+          "quantity": "100",
+          "unit": "g",
+          "nutrition": {
+            "kcal": "200",
+            "proteinG": "0",
+            "fatG": null,
+            "carbohydrateG": "30"
+          }
+        }
+      }
+    },
+    {
+      "label": "plat ingrédients rendement portions",
+      "component": "LibraryDefinition",
+      "value": {
+        "kind": "dish_ingredients",
+        "name": "Plat ingrédients fictif",
+        "ingredients": [
+          {
+            "itemId": "00000002-1111-4111-8111-111111111111",
+            "itemVersion": 1,
+            "quantity": "100",
+            "unit": "g",
+            "snapshot": {
+              "name": "Aliment fictif",
+              "reference": {
+                "quantity": "100",
+                "unit": "g",
+                "nutrition": {
+                  "kcal": "200",
+                  "proteinG": "0",
+                  "fatG": null,
+                  "carbohydrateG": "30"
+                }
+              }
+            }
+          }
+        ],
+        "yield": {
+          "quantity": "2",
+          "unit": "portion"
+        }
+      }
+    },
+    {
+      "label": "plat ingrédients rendement poids final",
+      "component": "LibraryDefinition",
+      "value": {
+        "kind": "dish_ingredients",
+        "name": "Plat ingrédients fictif",
+        "ingredients": [
+          {
+            "itemId": "00000002-1111-4111-8111-111111111111",
+            "itemVersion": 1,
+            "quantity": "100",
+            "unit": "g",
+            "snapshot": {
+              "name": "Aliment fictif",
+              "reference": {
+                "quantity": "100",
+                "unit": "g",
+                "nutrition": {
+                  "kcal": "200",
+                  "proteinG": "0",
+                  "fatG": null,
+                  "carbohydrateG": "30"
+                }
+              }
+            }
+          }
+        ],
+        "yield": {
+          "quantity": "500",
+          "unit": "g"
+        }
+      }
+    },
+    {
+      "label": "source bibliothèque versionnée",
+      "component": "EntrySource",
+      "value": {
+        "kind": "library",
+        "itemId": "00000001-1111-4111-8111-111111111111",
+        "itemVersion": 1
+      }
+    },
+    {
+      "label": "photo items corrigés vide sans confirmer",
+      "component": "PhotoCorrection",
+      "value": {
+        "items": []
+      }
+    },
+    {
+      "label": "opération pending sans résultat",
+      "component": "Operation",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "operationId": "00000099-1111-4111-8111-111111111111",
+        "createdAt": "2026-10-23T15:00:00Z",
+        "status": "pending",
+        "targets": [],
+        "undoState": "not_supported",
+        "result": null,
+        "error": null
+      }
+    },
+    {
+      "label": "opération failed consultable",
+      "component": "Operation",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "operationId": "00000099-1111-4111-8111-111111111111",
+        "createdAt": "2026-10-23T15:00:00Z",
+        "status": "failed",
+        "targets": [],
+        "undoState": "not_supported",
+        "result": null,
+        "error": {
+          "schemaVersion": "0.1.0",
+          "code": "DEPENDENCY_UNAVAILABLE",
+          "message": "Traitement indisponible.",
+          "fields": [],
+          "operationId": "00000099-1111-4111-8111-111111111111"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,2400 @@
+{
+  "contractVersion": "0.1.0",
+  "protocolVersion": "2026-07-28",
+  "status": "proposed",
+  "description": "Catalogue local, pas une réponse tools/list. Lier toutes les références avant wire ; interop SDK/client séparée. Photo provisoire ADR-05.",
+  "tools": [
+    {
+      "name": "journal_day_read",
+      "description": "Lire une journée et ses quatre repas. L2/L3 proposé. Date explicitement fournie ; jour vide isolé. displayTotals déjà arrondis, ne pas les sommer. Lecture sans effet de journalisation.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "object",
+            "properties": {
+              "localDate": {
+                "$ref": "data.schema.json#/$defs/localDate"
+              }
+            },
+            "required": [
+              "localDate"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "path"
+        ],
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "ok": {
+                "const": true
+              },
+              "data": {
+                "$ref": "api.openapi.json#/components/schemas/JournalDay"
+              }
+            },
+            "required": [
+              "ok",
+              "data"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "ok": {
+                "const": false
+              },
+              "error": {
+                "$ref": "api.openapi.json#/components/schemas/ToolBusinessError"
+              }
+            },
+            "required": [
+              "ok",
+              "error"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "x-api": {
+        "method": "get",
+        "path": "/v1/journal/days/{localDate}",
+        "operationId": "journal_day_read"
+      },
+      "x-required-scopes": [
+        "calovibe:read"
+      ]
+    },
+    {
+      "name": "journal_entry_read",
+      "description": "Consulter une entrée. L2 proposé.  Lecture sans effet de journalisation.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "object",
+            "properties": {
+              "entryId": {
+                "$ref": "data.schema.json#/$defs/uuid"
+              }
+            },
+            "required": [
+              "entryId"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "path"
+        ],
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "ok": {
+                "const": true
+              },
+              "data": {
+                "$ref": "api.openapi.json#/components/schemas/EntryView"
+              }
+            },
+            "required": [
+              "ok",
+              "data"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "ok": {
+                "const": false
+              },
+              "error": {
+                "$ref": "api.openapi.json#/components/schemas/ToolBusinessError"
+              }
+            },
+            "required": [
+              "ok",
+              "error"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "x-api": {
+        "method": "get",
+        "path": "/v1/journal/entries/{entryId}",
+        "operationId": "journal_entry_read"
+      },
+      "x-required-scopes": [
+        "calovibe:read"
+      ]
+    },
+    {
+      "name": "journal_entry_create",
+      "description": "Ajouter une entrée. L2 proposé. Date, repas, quantité, unité et source explicites ; instantané serveur. operationId obligatoire ; ne pas changer la clé lors de nouvelles tentatives.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "body": {
+            "$ref": "api.openapi.json#/components/schemas/EntryCreateBody"
+          }
+        },
+        "required": [
+          "body"
+        ],
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "ok": {
+                "const": true
+              },
+              "data": {
+                "$ref": "api.openapi.json#/components/schemas/Mutation_journal_entry_create"
+              }
+            },
+            "required": [
+              "ok",
+              "data"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "ok": {
+                "const": false
+              },
+              "error": {
+                "$ref": "api.openapi.json#/components/schemas/ToolBusinessError"
+              }
+            },
+            "required": [
+              "ok",
+              "error"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "x-api": {
+        "method": "post",
+        "path": "/v1/journal/entries",
+        "operationId": "journal_entry_create"
+      },
+      "x-required-scopes": [
+        "calovibe:write"
+      ]
+    },
+    {
+      "name": "journal_entry_update",
+      "description": "Corriger la quantité ou déplacer une entrée. L2 proposé. Conserver snapshot ; data remplace le contexte et la quantité. Une cible dont ID égale entryId. operationId obligatoire ; ne pas changer la clé lors de nouvelles tentatives.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "object",
+            "properties": {
+              "entryId": {
+                "$ref": "data.schema.json#/$defs/uuid"
+              }
+            },
+            "required": [
+              "entryId"
+            ],
+            "additionalProperties": false
+          },
+          "body": {
+            "$ref": "api.openapi.json#/components/schemas/EntryUpdateBody"
+          }
+        },
+        "required": [
+          "path",
+          "body"
+        ],
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "ok": {
+                "const": true
+              },
+              "data": {
+                "$ref": "api.openapi.json#/components/schemas/Mutation_journal_entry_update"
+              }
+            },
+            "required": [
+              "ok",
+              "data"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "ok": {
+                "const": false
+              },
+              "error": {
+                "$ref": "api.openapi.json#/components/schemas/ToolBusinessError"
+              }
+            },
+            "required": [
+              "ok",
+              "error"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "x-api": {
+        "method": "put",
+        "path": "/v1/journal/entries/{entryId}",
+        "operationId": "journal_entry_update"
+      },
+      "x-required-scopes": [
+        "calovibe:write"
+      ]
+    },
+    {
+      "name": "journal_entry_delete",
+      "description": "Supprimer une entrée. L2 proposé.  operationId obligatoire ; ne pas changer la clé lors de nouvelles tentatives.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "object",
+            "properties": {
+              "entryId": {
+                "$ref": "data.schema.json#/$defs/uuid"
+              }
+            },
+            "required": [
+              "entryId"
+            ],
+            "additionalProperties": false
+          },
+          "body": {
+            "$ref": "api.openapi.json#/components/schemas/DeleteBody"
+          }
+        },
+        "required": [
+          "path",
+          "body"
+        ],
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "ok": {
+                "const": true
+              },
+              "data": {
+                "$ref": "api.openapi.json#/components/schemas/Mutation_journal_entry_delete"
+              }
+            },
+            "required": [
+              "ok",
+              "data"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "ok": {
+                "const": false
+              },
+              "error": {
+                "$ref": "api.openapi.json#/components/schemas/ToolBusinessError"
+              }
+            },
+            "required": [
+              "ok",
+              "error"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "x-api": {
+        "method": "delete",
+        "path": "/v1/journal/entries/{entryId}",
+        "operationId": "journal_entry_delete"
+      },
+      "x-required-scopes": [
+        "calovibe:write"
+      ]
+    },
+    {
+      "name": "library_search",
+      "description": "Rechercher aliments et plats personnels. L2/L4 proposé. Recherche locale seulement ; fournisseurs et code-barres ADR-04 différés. Lecture sans effet de journalisation.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "object",
+            "properties": {
+              "query": {
+                "type": "string",
+                "maxLength": 200
+              },
+              "kind": {
+                "enum": [
+                  "food",
+                  "dish_direct",
+                  "dish_ingredients"
+                ]
+              },
+              "limit": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 100,
+                "default": 50
+              },
+              "cursor": {
+                "$ref": "api.openapi.json#/components/schemas/Cursor"
+              }
+            },
+            "required": [
+              "query"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "query"
+        ],
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "ok": {
+                "const": true
+              },
+              "data": {
+                "$ref": "api.openapi.json#/components/schemas/LibraryPage"
+              }
+            },
+            "required": [
+              "ok",
+              "data"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "ok": {
+                "const": false
+              },
+              "error": {
+                "$ref": "api.openapi.json#/components/schemas/ToolBusinessError"
+              }
+            },
+            "required": [
+              "ok",
+              "error"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "x-api": {
+        "method": "get",
+        "path": "/v1/library/items",
+        "operationId": "library_search"
+      },
+      "x-required-scopes": [
+        "calovibe:read"
+      ]
+    },
+    {
+      "name": "library_item_read",
+      "description": "Consulter un aliment ou plat. L2/L4 proposé.  Lecture sans effet de journalisation.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "object",
+            "properties": {
+              "itemId": {
+                "$ref": "data.schema.json#/$defs/uuid"
+              }
+            },
+            "required": [
+              "itemId"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "path"
+        ],
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "ok": {
+                "const": true
+              },
+              "data": {
+                "$ref": "api.openapi.json#/components/schemas/LibraryItem"
+              }
+            },
+            "required": [
+              "ok",
+              "data"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "ok": {
+                "const": false
+              },
+              "error": {
+                "$ref": "api.openapi.json#/components/schemas/ToolBusinessError"
+              }
+            },
+            "required": [
+              "ok",
+              "error"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "x-api": {
+        "method": "get",
+        "path": "/v1/library/items/{itemId}",
+        "operationId": "library_item_read"
+      },
+      "x-required-scopes": [
+        "calovibe:read"
+      ]
+    },
+    {
+      "name": "library_item_create",
+      "description": "create aliment ou plat. L2/L4 proposé. Deux modes plats : ingrédients/rendement explicites ou valeurs directes. Les anciens instantanés journalisés restent inchangés. operationId obligatoire ; ne pas changer la clé lors de nouvelles tentatives.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "body": {
+            "$ref": "api.openapi.json#/components/schemas/LibraryCreateBody"
+          }
+        },
+        "required": [
+          "body"
+        ],
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "ok": {
+                "const": true
+              },
+              "data": {
+                "$ref": "api.openapi.json#/components/schemas/Mutation_library_item_create"
+              }
+            },
+            "required": [
+              "ok",
+              "data"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "ok": {
+                "const": false
+              },
+              "error": {
+                "$ref": "api.openapi.json#/components/schemas/ToolBusinessError"
+              }
+            },
+            "required": [
+              "ok",
+              "error"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "x-api": {
+        "method": "post",
+        "path": "/v1/library/items",
+        "operationId": "library_item_create"
+      },
+      "x-required-scopes": [
+        "calovibe:write"
+      ]
+    },
+    {
+      "name": "library_item_update",
+      "description": "update aliment ou plat. L2/L4 proposé. Deux modes plats : ingrédients/rendement explicites ou valeurs directes. Les anciens instantanés journalisés restent inchangés. operationId obligatoire ; ne pas changer la clé lors de nouvelles tentatives.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "object",
+            "properties": {
+              "itemId": {
+                "$ref": "data.schema.json#/$defs/uuid"
+              }
+            },
+            "required": [
+              "itemId"
+            ],
+            "additionalProperties": false
+          },
+          "body": {
+            "$ref": "api.openapi.json#/components/schemas/LibraryUpdateBody"
+          }
+        },
+        "required": [
+          "path",
+          "body"
+        ],
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "ok": {
+                "const": true
+              },
+              "data": {
+                "$ref": "api.openapi.json#/components/schemas/Mutation_library_item_update"
+              }
+            },
+            "required": [
+              "ok",
+              "data"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "ok": {
+                "const": false
+              },
+              "error": {
+                "$ref": "api.openapi.json#/components/schemas/ToolBusinessError"
+              }
+            },
+            "required": [
+              "ok",
+              "error"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "x-api": {
+        "method": "put",
+        "path": "/v1/library/items/{itemId}",
+        "operationId": "library_item_update"
+      },
+      "x-required-scopes": [
+        "calovibe:write"
+      ]
+    },
+    {
+      "name": "library_item_delete",
+      "description": "delete aliment ou plat. L2/L4 proposé. Deux modes plats : ingrédients/rendement explicites ou valeurs directes. Les anciens instantanés journalisés restent inchangés. operationId obligatoire ; ne pas changer la clé lors de nouvelles tentatives.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "object",
+            "properties": {
+              "itemId": {
+                "$ref": "data.schema.json#/$defs/uuid"
+              }
+            },
+            "required": [
+              "itemId"
+            ],
+            "additionalProperties": false
+          },
+          "body": {
+            "$ref": "api.openapi.json#/components/schemas/DeleteBody"
+          }
+        },
+        "required": [
+          "path",
+          "body"
+        ],
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "ok": {
+                "const": true
+              },
+              "data": {
+                "$ref": "api.openapi.json#/components/schemas/Mutation_library_item_delete"
+              }
+            },
+            "required": [
+              "ok",
+              "data"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "ok": {
+                "const": false
+              },
+              "error": {
+                "$ref": "api.openapi.json#/components/schemas/ToolBusinessError"
+              }
+            },
+            "required": [
+              "ok",
+              "error"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "x-api": {
+        "method": "delete",
+        "path": "/v1/library/items/{itemId}",
+        "operationId": "library_item_delete"
+      },
+      "x-required-scopes": [
+        "calovibe:write"
+      ]
+    },
+    {
+      "name": "portion_preview",
+      "description": "Prévisualiser une portion sans enregistrer. L2/L4 proposé. Lecture calculée ; ne pas convertir g/ml sans équivalence ; displayNutrition arrondie après calcul exact. Lecture sans effet de journalisation.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "body": {
+            "$ref": "api.openapi.json#/components/schemas/PortionInput"
+          }
+        },
+        "required": [
+          "body"
+        ],
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "ok": {
+                "const": true
+              },
+              "data": {
+                "$ref": "api.openapi.json#/components/schemas/PortionPreview"
+              }
+            },
+            "required": [
+              "ok",
+              "data"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "ok": {
+                "const": false
+              },
+              "error": {
+                "$ref": "api.openapi.json#/components/schemas/ToolBusinessError"
+              }
+            },
+            "required": [
+              "ok",
+              "error"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "x-api": {
+        "method": "post",
+        "path": "/v1/portions/preview",
+        "operationId": "portion_preview"
+      },
+      "x-required-scopes": [
+        "calovibe:read"
+      ]
+    },
+    {
+      "name": "water_day_read",
+      "description": "Lire eau et objectif du jour. L3 proposé.  Lecture sans effet de journalisation.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "object",
+            "properties": {
+              "localDate": {
+                "$ref": "data.schema.json#/$defs/localDate"
+              }
+            },
+            "required": [
+              "localDate"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "path"
+        ],
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "ok": {
+                "const": true
+              },
+              "data": {
+                "$ref": "api.openapi.json#/components/schemas/WaterDay"
+              }
+            },
+            "required": [
+              "ok",
+              "data"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "ok": {
+                "const": false
+              },
+              "error": {
+                "$ref": "api.openapi.json#/components/schemas/ToolBusinessError"
+              }
+            },
+            "required": [
+              "ok",
+              "error"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "x-api": {
+        "method": "get",
+        "path": "/v1/water/days/{localDate}",
+        "operationId": "water_day_read"
+      },
+      "x-required-scopes": [
+        "calovibe:read"
+      ]
+    },
+    {
+      "name": "water_entry_create",
+      "description": "create ajout d'eau. L3 proposé. ml explicites ; 250, 500 et 1000 sont des quantités ordinaires. operationId obligatoire ; ne pas changer la clé lors de nouvelles tentatives.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "body": {
+            "$ref": "api.openapi.json#/components/schemas/WaterCreateBody"
+          }
+        },
+        "required": [
+          "body"
+        ],
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "ok": {
+                "const": true
+              },
+              "data": {
+                "$ref": "api.openapi.json#/components/schemas/Mutation_water_entry_create"
+              }
+            },
+            "required": [
+              "ok",
+              "data"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "ok": {
+                "const": false
+              },
+              "error": {
+                "$ref": "api.openapi.json#/components/schemas/ToolBusinessError"
+              }
+            },
+            "required": [
+              "ok",
+              "error"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "x-api": {
+        "method": "post",
+        "path": "/v1/water/entries",
+        "operationId": "water_entry_create"
+      },
+      "x-required-scopes": [
+        "calovibe:write"
+      ]
+    },
+    {
+      "name": "water_entry_update",
+      "description": "update ajout d'eau. L3 proposé. ml explicites ; 250, 500 et 1000 sont des quantités ordinaires. operationId obligatoire ; ne pas changer la clé lors de nouvelles tentatives.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "object",
+            "properties": {
+              "waterId": {
+                "$ref": "data.schema.json#/$defs/uuid"
+              }
+            },
+            "required": [
+              "waterId"
+            ],
+            "additionalProperties": false
+          },
+          "body": {
+            "$ref": "api.openapi.json#/components/schemas/WaterUpdateBody"
+          }
+        },
+        "required": [
+          "path",
+          "body"
+        ],
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "ok": {
+                "const": true
+              },
+              "data": {
+                "$ref": "api.openapi.json#/components/schemas/Mutation_water_entry_update"
+              }
+            },
+            "required": [
+              "ok",
+              "data"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "ok": {
+                "const": false
+              },
+              "error": {
+                "$ref": "api.openapi.json#/components/schemas/ToolBusinessError"
+              }
+            },
+            "required": [
+              "ok",
+              "error"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "x-api": {
+        "method": "put",
+        "path": "/v1/water/entries/{waterId}",
+        "operationId": "water_entry_update"
+      },
+      "x-required-scopes": [
+        "calovibe:write"
+      ]
+    },
+    {
+      "name": "water_entry_delete",
+      "description": "delete ajout d'eau. L3 proposé. ml explicites ; 250, 500 et 1000 sont des quantités ordinaires. operationId obligatoire ; ne pas changer la clé lors de nouvelles tentatives.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "object",
+            "properties": {
+              "waterId": {
+                "$ref": "data.schema.json#/$defs/uuid"
+              }
+            },
+            "required": [
+              "waterId"
+            ],
+            "additionalProperties": false
+          },
+          "body": {
+            "$ref": "api.openapi.json#/components/schemas/DeleteBody"
+          }
+        },
+        "required": [
+          "path",
+          "body"
+        ],
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "ok": {
+                "const": true
+              },
+              "data": {
+                "$ref": "api.openapi.json#/components/schemas/Mutation_water_entry_delete"
+              }
+            },
+            "required": [
+              "ok",
+              "data"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "ok": {
+                "const": false
+              },
+              "error": {
+                "$ref": "api.openapi.json#/components/schemas/ToolBusinessError"
+              }
+            },
+            "required": [
+              "ok",
+              "error"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "x-api": {
+        "method": "delete",
+        "path": "/v1/water/entries/{waterId}",
+        "operationId": "water_entry_delete"
+      },
+      "x-required-scopes": [
+        "calovibe:write"
+      ]
+    },
+    {
+      "name": "weights_list",
+      "description": "Lire les pesées datées. L7 proposé. Bornes inclusives, from <= to, tri measuredAt puis ID et curseur stable. Lecture sans effet de journalisation.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "object",
+            "properties": {
+              "from": {
+                "$ref": "data.schema.json#/$defs/localDate"
+              },
+              "to": {
+                "$ref": "data.schema.json#/$defs/localDate"
+              },
+              "limit": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 100,
+                "default": 50
+              },
+              "cursor": {
+                "$ref": "api.openapi.json#/components/schemas/Cursor"
+              }
+            },
+            "required": [
+              "from",
+              "to"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "query"
+        ],
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "ok": {
+                "const": true
+              },
+              "data": {
+                "$ref": "api.openapi.json#/components/schemas/WeightPage"
+              }
+            },
+            "required": [
+              "ok",
+              "data"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "ok": {
+                "const": false
+              },
+              "error": {
+                "$ref": "api.openapi.json#/components/schemas/ToolBusinessError"
+              }
+            },
+            "required": [
+              "ok",
+              "error"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "x-api": {
+        "method": "get",
+        "path": "/v1/weights",
+        "operationId": "weights_list"
+      },
+      "x-required-scopes": [
+        "calovibe:read"
+      ]
+    },
+    {
+      "name": "weight_create",
+      "description": "create pesée. L7 proposé. kg explicites ; localDate cohérente avec measuredAt dans le fuseau du profil. Aucun objectif automatiquement modifié. operationId obligatoire ; ne pas changer la clé lors de nouvelles tentatives.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "body": {
+            "$ref": "api.openapi.json#/components/schemas/WeightCreateBody"
+          }
+        },
+        "required": [
+          "body"
+        ],
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "ok": {
+                "const": true
+              },
+              "data": {
+                "$ref": "api.openapi.json#/components/schemas/Mutation_weight_create"
+              }
+            },
+            "required": [
+              "ok",
+              "data"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "ok": {
+                "const": false
+              },
+              "error": {
+                "$ref": "api.openapi.json#/components/schemas/ToolBusinessError"
+              }
+            },
+            "required": [
+              "ok",
+              "error"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "x-api": {
+        "method": "post",
+        "path": "/v1/weights",
+        "operationId": "weight_create"
+      },
+      "x-required-scopes": [
+        "calovibe:write"
+      ]
+    },
+    {
+      "name": "weight_update",
+      "description": "update pesée. L7 proposé. kg explicites ; localDate cohérente avec measuredAt dans le fuseau du profil. Aucun objectif automatiquement modifié. operationId obligatoire ; ne pas changer la clé lors de nouvelles tentatives.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "object",
+            "properties": {
+              "weightId": {
+                "$ref": "data.schema.json#/$defs/uuid"
+              }
+            },
+            "required": [
+              "weightId"
+            ],
+            "additionalProperties": false
+          },
+          "body": {
+            "$ref": "api.openapi.json#/components/schemas/WeightUpdateBody"
+          }
+        },
+        "required": [
+          "path",
+          "body"
+        ],
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "ok": {
+                "const": true
+              },
+              "data": {
+                "$ref": "api.openapi.json#/components/schemas/Mutation_weight_update"
+              }
+            },
+            "required": [
+              "ok",
+              "data"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "ok": {
+                "const": false
+              },
+              "error": {
+                "$ref": "api.openapi.json#/components/schemas/ToolBusinessError"
+              }
+            },
+            "required": [
+              "ok",
+              "error"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "x-api": {
+        "method": "put",
+        "path": "/v1/weights/{weightId}",
+        "operationId": "weight_update"
+      },
+      "x-required-scopes": [
+        "calovibe:write"
+      ]
+    },
+    {
+      "name": "weight_delete",
+      "description": "delete pesée. L7 proposé. kg explicites ; localDate cohérente avec measuredAt dans le fuseau du profil. Aucun objectif automatiquement modifié. operationId obligatoire ; ne pas changer la clé lors de nouvelles tentatives.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "object",
+            "properties": {
+              "weightId": {
+                "$ref": "data.schema.json#/$defs/uuid"
+              }
+            },
+            "required": [
+              "weightId"
+            ],
+            "additionalProperties": false
+          },
+          "body": {
+            "$ref": "api.openapi.json#/components/schemas/DeleteBody"
+          }
+        },
+        "required": [
+          "path",
+          "body"
+        ],
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "ok": {
+                "const": true
+              },
+              "data": {
+                "$ref": "api.openapi.json#/components/schemas/Mutation_weight_delete"
+              }
+            },
+            "required": [
+              "ok",
+              "data"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "ok": {
+                "const": false
+              },
+              "error": {
+                "$ref": "api.openapi.json#/components/schemas/ToolBusinessError"
+              }
+            },
+            "required": [
+              "ok",
+              "error"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "x-api": {
+        "method": "delete",
+        "path": "/v1/weights/{weightId}",
+        "operationId": "weight_delete"
+      },
+      "x-required-scopes": [
+        "calovibe:write"
+      ]
+    },
+    {
+      "name": "goals_effective_read",
+      "description": "Lire les objectifs applicables à une date. L3 proposé. Date d’effet la plus récente <= localDate ; null si aucun objectif. Lecture sans effet de journalisation.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "object",
+            "properties": {
+              "localDate": {
+                "$ref": "data.schema.json#/$defs/localDate"
+              }
+            },
+            "required": [
+              "localDate"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "path"
+        ],
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "ok": {
+                "const": true
+              },
+              "data": {
+                "$ref": "api.openapi.json#/components/schemas/EffectiveGoals"
+              }
+            },
+            "required": [
+              "ok",
+              "data"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "ok": {
+                "const": false
+              },
+              "error": {
+                "$ref": "api.openapi.json#/components/schemas/ToolBusinessError"
+              }
+            },
+            "required": [
+              "ok",
+              "error"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "x-api": {
+        "method": "get",
+        "path": "/v1/goals/effective/{localDate}",
+        "operationId": "goals_effective_read"
+      },
+      "x-required-scopes": [
+        "calovibe:read"
+      ]
+    },
+    {
+      "name": "goals_history",
+      "description": "Lire l’historique des objectifs. L3 proposé. Bornes de date d’effet inclusives, from <= to, tri effectiveDate puis ID. Lecture sans effet de journalisation.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "object",
+            "properties": {
+              "from": {
+                "$ref": "data.schema.json#/$defs/localDate"
+              },
+              "to": {
+                "$ref": "data.schema.json#/$defs/localDate"
+              },
+              "limit": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 100,
+                "default": 50
+              },
+              "cursor": {
+                "$ref": "api.openapi.json#/components/schemas/Cursor"
+              }
+            },
+            "required": [
+              "from",
+              "to"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "query"
+        ],
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "ok": {
+                "const": true
+              },
+              "data": {
+                "$ref": "api.openapi.json#/components/schemas/GoalPage"
+              }
+            },
+            "required": [
+              "ok",
+              "data"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "ok": {
+                "const": false
+              },
+              "error": {
+                "$ref": "api.openapi.json#/components/schemas/ToolBusinessError"
+              }
+            },
+            "required": [
+              "ok",
+              "error"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "x-api": {
+        "method": "get",
+        "path": "/v1/goals",
+        "operationId": "goals_history"
+      },
+      "x-required-scopes": [
+        "calovibe:read"
+      ]
+    },
+    {
+      "name": "goals_create",
+      "description": "create objectifs manuels. L3 proposé. Origine manual et formulaVersion null fixées par serveur. Une révision par date d’effet ; doublon concurrent = VERSION_CONFLICT. Calculateur différé ADR-06. operationId obligatoire ; ne pas changer la clé lors de nouvelles tentatives.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "body": {
+            "$ref": "api.openapi.json#/components/schemas/GoalCreateBody"
+          }
+        },
+        "required": [
+          "body"
+        ],
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "ok": {
+                "const": true
+              },
+              "data": {
+                "$ref": "api.openapi.json#/components/schemas/Mutation_goals_create"
+              }
+            },
+            "required": [
+              "ok",
+              "data"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "ok": {
+                "const": false
+              },
+              "error": {
+                "$ref": "api.openapi.json#/components/schemas/ToolBusinessError"
+              }
+            },
+            "required": [
+              "ok",
+              "error"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "x-api": {
+        "method": "post",
+        "path": "/v1/goals",
+        "operationId": "goals_create"
+      },
+      "x-required-scopes": [
+        "calovibe:write"
+      ]
+    },
+    {
+      "name": "goals_update",
+      "description": "update objectifs manuels. L3 proposé. Origine manual et formulaVersion null fixées par serveur. Une révision par date d’effet ; doublon concurrent = VERSION_CONFLICT. Calculateur différé ADR-06. operationId obligatoire ; ne pas changer la clé lors de nouvelles tentatives.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "object",
+            "properties": {
+              "goalId": {
+                "$ref": "data.schema.json#/$defs/uuid"
+              }
+            },
+            "required": [
+              "goalId"
+            ],
+            "additionalProperties": false
+          },
+          "body": {
+            "$ref": "api.openapi.json#/components/schemas/GoalUpdateBody"
+          }
+        },
+        "required": [
+          "path",
+          "body"
+        ],
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "ok": {
+                "const": true
+              },
+              "data": {
+                "$ref": "api.openapi.json#/components/schemas/Mutation_goals_update"
+              }
+            },
+            "required": [
+              "ok",
+              "data"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "ok": {
+                "const": false
+              },
+              "error": {
+                "$ref": "api.openapi.json#/components/schemas/ToolBusinessError"
+              }
+            },
+            "required": [
+              "ok",
+              "error"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "x-api": {
+        "method": "put",
+        "path": "/v1/goals/{goalId}",
+        "operationId": "goals_update"
+      },
+      "x-required-scopes": [
+        "calovibe:write"
+      ]
+    },
+    {
+      "name": "goals_delete",
+      "description": "delete objectifs manuels. L3 proposé. Origine manual et formulaVersion null fixées par serveur. Une révision par date d’effet ; doublon concurrent = VERSION_CONFLICT. Calculateur différé ADR-06. operationId obligatoire ; ne pas changer la clé lors de nouvelles tentatives.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "object",
+            "properties": {
+              "goalId": {
+                "$ref": "data.schema.json#/$defs/uuid"
+              }
+            },
+            "required": [
+              "goalId"
+            ],
+            "additionalProperties": false
+          },
+          "body": {
+            "$ref": "api.openapi.json#/components/schemas/DeleteBody"
+          }
+        },
+        "required": [
+          "path",
+          "body"
+        ],
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "ok": {
+                "const": true
+              },
+              "data": {
+                "$ref": "api.openapi.json#/components/schemas/Mutation_goals_delete"
+              }
+            },
+            "required": [
+              "ok",
+              "data"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "ok": {
+                "const": false
+              },
+              "error": {
+                "$ref": "api.openapi.json#/components/schemas/ToolBusinessError"
+              }
+            },
+            "required": [
+              "ok",
+              "error"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "x-api": {
+        "method": "delete",
+        "path": "/v1/goals/{goalId}",
+        "operationId": "goals_delete"
+      },
+      "x-required-scopes": [
+        "calovibe:write"
+      ]
+    },
+    {
+      "name": "photo_submit",
+      "description": "Soumettre une photo en brouillon. L6 proposé. PROVISOIRE ADR-05 : image JSON bornée ; aucune entrée journalisée, aucun fournisseur ou stockage retenu. operationId obligatoire ; ne pas changer la clé lors de nouvelles tentatives.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "body": {
+            "$ref": "api.openapi.json#/components/schemas/PhotoSubmitBody"
+          }
+        },
+        "required": [
+          "body"
+        ],
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "ok": {
+                "const": true
+              },
+              "data": {
+                "$ref": "api.openapi.json#/components/schemas/Mutation_photo_submit"
+              }
+            },
+            "required": [
+              "ok",
+              "data"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "ok": {
+                "const": false
+              },
+              "error": {
+                "$ref": "api.openapi.json#/components/schemas/ToolBusinessError"
+              }
+            },
+            "required": [
+              "ok",
+              "error"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      },
+      "x-api": {
+        "method": "post",
+        "path": "/v1/photo-proposals",
+        "operationId": "photo_submit"
+      },
+      "x-required-scopes": [
+        "calovibe:write"
+      ]
+    },
+    {
+      "name": "photo_read",
+      "description": "Lire statut et proposition photo. L6 proposé. Brouillon reprenable à sa date et son repas ; états queued/processing/ready/failed/confirmed. Lecture sans effet de journalisation.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "object",
+            "properties": {
+              "proposalId": {
+                "$ref": "data.schema.json#/$defs/uuid"
+              }
+            },
+            "required": [
+              "proposalId"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "path"
+        ],
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "ok": {
+                "const": true
+              },
+              "data": {
+                "$ref": "api.openapi.json#/components/schemas/PhotoProposal"
+              }
+            },
+            "required": [
+              "ok",
+              "data"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "ok": {
+                "const": false
+              },
+              "error": {
+                "$ref": "api.openapi.json#/components/schemas/ToolBusinessError"
+              }
+            },
+            "required": [
+              "ok",
+              "error"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "x-api": {
+        "method": "get",
+        "path": "/v1/photo-proposals/{proposalId}",
+        "operationId": "photo_read"
+      },
+      "x-required-scopes": [
+        "calovibe:read"
+      ]
+    },
+    {
+      "name": "photo_correct",
+      "description": "Corriger le brouillon photo. L6 proposé. Remplace items versionnés, retrait et oubli possibles. Identité changée : nouvelle correspondance vérifiée ou verificationAction:verify explicite ; renommer seul ne vérifie rien. operationId obligatoire ; ne pas changer la clé lors de nouvelles tentatives.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "object",
+            "properties": {
+              "proposalId": {
+                "$ref": "data.schema.json#/$defs/uuid"
+              }
+            },
+            "required": [
+              "proposalId"
+            ],
+            "additionalProperties": false
+          },
+          "body": {
+            "$ref": "api.openapi.json#/components/schemas/PhotoCorrectBody"
+          }
+        },
+        "required": [
+          "path",
+          "body"
+        ],
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "ok": {
+                "const": true
+              },
+              "data": {
+                "$ref": "api.openapi.json#/components/schemas/Mutation_photo_correct"
+              }
+            },
+            "required": [
+              "ok",
+              "data"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "ok": {
+                "const": false
+              },
+              "error": {
+                "$ref": "api.openapi.json#/components/schemas/ToolBusinessError"
+              }
+            },
+            "required": [
+              "ok",
+              "error"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "x-api": {
+        "method": "put",
+        "path": "/v1/photo-proposals/{proposalId}",
+        "operationId": "photo_correct"
+      },
+      "x-required-scopes": [
+        "calovibe:write"
+      ]
+    },
+    {
+      "name": "photo_delete",
+      "description": "Supprimer le brouillon photo. L6 proposé. Pas de suppression d’un lot déjà confirmé via cette route ; annuler son opération cible. operationId obligatoire ; ne pas changer la clé lors de nouvelles tentatives.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "object",
+            "properties": {
+              "proposalId": {
+                "$ref": "data.schema.json#/$defs/uuid"
+              }
+            },
+            "required": [
+              "proposalId"
+            ],
+            "additionalProperties": false
+          },
+          "body": {
+            "$ref": "api.openapi.json#/components/schemas/DeleteBody"
+          }
+        },
+        "required": [
+          "path",
+          "body"
+        ],
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "ok": {
+                "const": true
+              },
+              "data": {
+                "$ref": "api.openapi.json#/components/schemas/Mutation_photo_delete"
+              }
+            },
+            "required": [
+              "ok",
+              "data"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "ok": {
+                "const": false
+              },
+              "error": {
+                "$ref": "api.openapi.json#/components/schemas/ToolBusinessError"
+              }
+            },
+            "required": [
+              "ok",
+              "error"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "x-api": {
+        "method": "delete",
+        "path": "/v1/photo-proposals/{proposalId}",
+        "operationId": "photo_delete"
+      },
+      "x-required-scopes": [
+        "calovibe:write"
+      ]
+    },
+    {
+      "name": "photo_confirm",
+      "description": "Confirmer tout le lot photo. L6 proposé. Version et date/repas d’origine requis, tous les items en transaction. Même proposition déjà confirmée : lot d’origine sans duplication, même avec nouvelle clé. operationId obligatoire ; ne pas changer la clé lors de nouvelles tentatives.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "object",
+            "properties": {
+              "proposalId": {
+                "$ref": "data.schema.json#/$defs/uuid"
+              }
+            },
+            "required": [
+              "proposalId"
+            ],
+            "additionalProperties": false
+          },
+          "body": {
+            "$ref": "api.openapi.json#/components/schemas/PhotoConfirmBody"
+          }
+        },
+        "required": [
+          "path",
+          "body"
+        ],
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "ok": {
+                "const": true
+              },
+              "data": {
+                "$ref": "api.openapi.json#/components/schemas/Mutation_photo_confirm"
+              }
+            },
+            "required": [
+              "ok",
+              "data"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "ok": {
+                "const": false
+              },
+              "error": {
+                "$ref": "api.openapi.json#/components/schemas/ToolBusinessError"
+              }
+            },
+            "required": [
+              "ok",
+              "error"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "x-api": {
+        "method": "post",
+        "path": "/v1/photo-proposals/{proposalId}/confirmation",
+        "operationId": "photo_confirm"
+      },
+      "x-required-scopes": [
+        "calovibe:write"
+      ]
+    },
+    {
+      "name": "operation_read",
+      "description": "Lire le résultat d’une écriture. L2 proposé. Vérifier appartenance et droit read ; opération pending, succeeded ou failed. Lecture sans effet de journalisation.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "object",
+            "properties": {
+              "operationId": {
+                "$ref": "data.schema.json#/$defs/uuid"
+              }
+            },
+            "required": [
+              "operationId"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "path"
+        ],
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "ok": {
+                "const": true
+              },
+              "data": {
+                "$ref": "api.openapi.json#/components/schemas/Operation"
+              }
+            },
+            "required": [
+              "ok",
+              "data"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "ok": {
+                "const": false
+              },
+              "error": {
+                "$ref": "api.openapi.json#/components/schemas/ToolBusinessError"
+              }
+            },
+            "required": [
+              "ok",
+              "error"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "x-api": {
+        "method": "get",
+        "path": "/v1/operations/{operationId}",
+        "operationId": "operation_read"
+      },
+      "x-required-scopes": [
+        "calovibe:read"
+      ]
+    },
+    {
+      "name": "operation_undo",
+      "description": "Annuler une opération ciblée. L2–L7 proposé. Nouvelle clé ; targetOperationId corps égale route ; toutes les versions requises, inversion atomique ou UNDO_CONFLICT, jamais les dernières lignes. operationId obligatoire ; ne pas changer la clé lors de nouvelles tentatives.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "object",
+            "properties": {
+              "targetOperationId": {
+                "$ref": "data.schema.json#/$defs/uuid"
+              }
+            },
+            "required": [
+              "targetOperationId"
+            ],
+            "additionalProperties": false
+          },
+          "body": {
+            "$ref": "data.schema.json#/$defs/undo"
+          }
+        },
+        "required": [
+          "path",
+          "body"
+        ],
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "ok": {
+                "const": true
+              },
+              "data": {
+                "$ref": "api.openapi.json#/components/schemas/Mutation_operation_undo"
+              }
+            },
+            "required": [
+              "ok",
+              "data"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "ok": {
+                "const": false
+              },
+              "error": {
+                "$ref": "api.openapi.json#/components/schemas/ToolBusinessError"
+              }
+            },
+            "required": [
+              "ok",
+              "error"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "x-api": {
+        "method": "post",
+        "path": "/v1/operations/{targetOperationId}/undo",
+        "operationId": "operation_undo"
+      },
+      "x-required-scopes": [
+        "calovibe:write"
+      ]
+    }
+  ]
+}

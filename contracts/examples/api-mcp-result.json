@@ -1,0 +1,53 @@
+{
+  "tool": "journal_entry_read",
+  "result": {
+    "resultType": "complete",
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"ok\":true,\"data\":{\"entry\":{\"schemaVersion\":\"0.1.0\",\"id\":\"00000001-1111-4111-8111-111111111111\",\"version\":1,\"localDate\":\"2026-10-22\",\"meal\":\"dinner\",\"quantity\":\"150\",\"unit\":\"g\",\"snapshot\":{\"name\":\"Aliment fictif\",\"reference\":{\"quantity\":\"100\",\"unit\":\"g\",\"nutrition\":{\"kcal\":\"200\",\"proteinG\":\"0\",\"fatG\":null,\"carbohydrateG\":\"30\"}}},\"provenance\":{\"method\":\"manual\",\"sourceId\":null,\"estimated\":false},\"operationId\":\"00000099-1111-4111-8111-111111111111\"},\"displayNutrition\":{\"kcal\":\"300\",\"proteinG\":\"0\",\"fatG\":null,\"carbohydrateG\":\"45\"}}}"
+      }
+    ],
+    "structuredContent": {
+      "ok": true,
+      "data": {
+        "entry": {
+          "schemaVersion": "0.1.0",
+          "id": "00000001-1111-4111-8111-111111111111",
+          "version": 1,
+          "localDate": "2026-10-22",
+          "meal": "dinner",
+          "quantity": "150",
+          "unit": "g",
+          "snapshot": {
+            "name": "Aliment fictif",
+            "reference": {
+              "quantity": "100",
+              "unit": "g",
+              "nutrition": {
+                "kcal": "200",
+                "proteinG": "0",
+                "fatG": null,
+                "carbohydrateG": "30"
+              }
+            }
+          },
+          "provenance": {
+            "method": "manual",
+            "sourceId": null,
+            "estimated": false
+          },
+          "operationId": "00000099-1111-4111-8111-111111111111"
+        },
+        "displayNutrition": {
+          "kcal": "300",
+          "proteinG": "0",
+          "fatG": null,
+          "carbohydrateG": "45"
+        }
+      }
+    },
+    "isError": false
+  },
+  "note": "Exemple de résultat final seulement ; pas une négociation, requête _meta ni preuve d’interopérabilité."
+}

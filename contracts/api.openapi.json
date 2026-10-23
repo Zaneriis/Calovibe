@@ -1,0 +1,5189 @@
+{
+  "openapi": "3.1.2",
+  "jsonSchemaDialect": "https://json-schema.org/draft/2020-12/schema",
+  "info": {
+    "title": "Calovibe — proposition API",
+    "version": "0.1.0",
+    "description": "PROPOSITION L0 : aucun service livré. Photo provisoire ADR-05, objectifs calculés différés ADR-06. Voir docs/contracts/API-MCP.md."
+  },
+  "servers": [
+    {
+      "url": "/api",
+      "description": "Préfixe public proposé ADR-01 ; chemins versionnés /v1, proxy vers API interne."
+    }
+  ],
+  "paths": {
+    "/v1/journal/days/{localDate}": {
+      "get": {
+        "operationId": "journal_day_read",
+        "summary": "Lire une journée et ses quatre repas",
+        "description": "Date explicitement fournie ; jour vide isolé. displayTotals déjà arrondis, ne pas les sommer. Proposition L2/L3 ; aucune implémentation.",
+        "parameters": [
+          {
+            "name": "localDate",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "data.schema.json#/$defs/localDate"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Résultat ; mutation terminale réussie ou consultation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JournalDay"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "422": {
+            "$ref": "#/components/responses/Error422"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "x-required-scopes": [
+          "calovibe:read"
+        ],
+        "x-backlog-phase": "L2/L3"
+      }
+    },
+    "/v1/journal/entries/{entryId}": {
+      "get": {
+        "operationId": "journal_entry_read",
+        "summary": "Consulter une entrée",
+        "description": " Proposition L2 ; aucune implémentation.",
+        "parameters": [
+          {
+            "name": "entryId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "data.schema.json#/$defs/uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Résultat ; mutation terminale réussie ou consultation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EntryView"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "422": {
+            "$ref": "#/components/responses/Error422"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "x-required-scopes": [
+          "calovibe:read"
+        ],
+        "x-backlog-phase": "L2"
+      },
+      "put": {
+        "operationId": "journal_entry_update",
+        "summary": "Corriger la quantité ou déplacer une entrée",
+        "description": "Conserver snapshot ; data remplace le contexte et la quantité. Une cible dont ID égale entryId. Proposition L2 ; aucune implémentation.",
+        "parameters": [
+          {
+            "name": "entryId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "data.schema.json#/$defs/uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Résultat ; mutation terminale réussie ou consultation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Mutation_journal_entry_update"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "const": "succeeded"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "Opération réservée, encore pending ; consulter operationId et garder la même clé.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Mutation_journal_entry_update"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "const": "pending"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "413": {
+            "$ref": "#/components/responses/Error413"
+          },
+          "422": {
+            "$ref": "#/components/responses/Error422"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "x-required-scopes": [
+          "calovibe:write"
+        ],
+        "x-backlog-phase": "L2",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EntryUpdateBody"
+              }
+            }
+          }
+        },
+        "x-max-request-body-bytes": 65536,
+        "security": [
+          {
+            "ApiBearer": []
+          },
+          {
+            "WebSession": [],
+            "WebCsrf": []
+          }
+        ],
+        "x-web-session-requires-origin": true
+      },
+      "delete": {
+        "operationId": "journal_entry_delete",
+        "summary": "Supprimer une entrée",
+        "description": " Proposition L2 ; aucune implémentation.",
+        "parameters": [
+          {
+            "name": "entryId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "data.schema.json#/$defs/uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Résultat ; mutation terminale réussie ou consultation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Mutation_journal_entry_delete"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "const": "succeeded"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "Opération réservée, encore pending ; consulter operationId et garder la même clé.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Mutation_journal_entry_delete"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "const": "pending"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "413": {
+            "$ref": "#/components/responses/Error413"
+          },
+          "422": {
+            "$ref": "#/components/responses/Error422"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "x-required-scopes": [
+          "calovibe:write"
+        ],
+        "x-backlog-phase": "L2",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteBody"
+              }
+            }
+          }
+        },
+        "x-max-request-body-bytes": 65536,
+        "security": [
+          {
+            "ApiBearer": []
+          },
+          {
+            "WebSession": [],
+            "WebCsrf": []
+          }
+        ],
+        "x-web-session-requires-origin": true
+      }
+    },
+    "/v1/journal/entries": {
+      "post": {
+        "operationId": "journal_entry_create",
+        "summary": "Ajouter une entrée",
+        "description": "Date, repas, quantité, unité et source explicites ; instantané serveur. Proposition L2 ; aucune implémentation.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Résultat ; mutation terminale réussie ou consultation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Mutation_journal_entry_create"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "const": "succeeded"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "Opération réservée, encore pending ; consulter operationId et garder la même clé.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Mutation_journal_entry_create"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "const": "pending"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "413": {
+            "$ref": "#/components/responses/Error413"
+          },
+          "422": {
+            "$ref": "#/components/responses/Error422"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "x-required-scopes": [
+          "calovibe:write"
+        ],
+        "x-backlog-phase": "L2",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EntryCreateBody"
+              }
+            }
+          }
+        },
+        "x-max-request-body-bytes": 65536,
+        "security": [
+          {
+            "ApiBearer": []
+          },
+          {
+            "WebSession": [],
+            "WebCsrf": []
+          }
+        ],
+        "x-web-session-requires-origin": true
+      }
+    },
+    "/v1/library/items": {
+      "get": {
+        "operationId": "library_search",
+        "summary": "Rechercher aliments et plats personnels",
+        "description": "Recherche locale seulement ; fournisseurs et code-barres ADR-04 différés. Proposition L2/L4 ; aucune implémentation.",
+        "parameters": [
+          {
+            "name": "query",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 200
+            }
+          },
+          {
+            "name": "kind",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "food",
+                "dish_direct",
+                "dish_ingredients"
+              ]
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 50
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/Cursor"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Résultat ; mutation terminale réussie ou consultation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LibraryPage"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "422": {
+            "$ref": "#/components/responses/Error422"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "x-required-scopes": [
+          "calovibe:read"
+        ],
+        "x-backlog-phase": "L2/L4"
+      },
+      "post": {
+        "operationId": "library_item_create",
+        "summary": "create aliment ou plat",
+        "description": "Deux modes plats : ingrédients/rendement explicites ou valeurs directes. Les anciens instantanés journalisés restent inchangés. Proposition L2/L4 ; aucune implémentation.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Résultat ; mutation terminale réussie ou consultation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Mutation_library_item_create"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "const": "succeeded"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "Opération réservée, encore pending ; consulter operationId et garder la même clé.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Mutation_library_item_create"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "const": "pending"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "413": {
+            "$ref": "#/components/responses/Error413"
+          },
+          "422": {
+            "$ref": "#/components/responses/Error422"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "x-required-scopes": [
+          "calovibe:write"
+        ],
+        "x-backlog-phase": "L2/L4",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LibraryCreateBody"
+              }
+            }
+          }
+        },
+        "x-max-request-body-bytes": 65536,
+        "security": [
+          {
+            "ApiBearer": []
+          },
+          {
+            "WebSession": [],
+            "WebCsrf": []
+          }
+        ],
+        "x-web-session-requires-origin": true
+      }
+    },
+    "/v1/library/items/{itemId}": {
+      "get": {
+        "operationId": "library_item_read",
+        "summary": "Consulter un aliment ou plat",
+        "description": " Proposition L2/L4 ; aucune implémentation.",
+        "parameters": [
+          {
+            "name": "itemId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "data.schema.json#/$defs/uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Résultat ; mutation terminale réussie ou consultation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LibraryItem"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "422": {
+            "$ref": "#/components/responses/Error422"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "x-required-scopes": [
+          "calovibe:read"
+        ],
+        "x-backlog-phase": "L2/L4"
+      },
+      "put": {
+        "operationId": "library_item_update",
+        "summary": "update aliment ou plat",
+        "description": "Deux modes plats : ingrédients/rendement explicites ou valeurs directes. Les anciens instantanés journalisés restent inchangés. Proposition L2/L4 ; aucune implémentation.",
+        "parameters": [
+          {
+            "name": "itemId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "data.schema.json#/$defs/uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Résultat ; mutation terminale réussie ou consultation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Mutation_library_item_update"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "const": "succeeded"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "Opération réservée, encore pending ; consulter operationId et garder la même clé.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Mutation_library_item_update"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "const": "pending"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "413": {
+            "$ref": "#/components/responses/Error413"
+          },
+          "422": {
+            "$ref": "#/components/responses/Error422"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "x-required-scopes": [
+          "calovibe:write"
+        ],
+        "x-backlog-phase": "L2/L4",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LibraryUpdateBody"
+              }
+            }
+          }
+        },
+        "x-max-request-body-bytes": 65536,
+        "security": [
+          {
+            "ApiBearer": []
+          },
+          {
+            "WebSession": [],
+            "WebCsrf": []
+          }
+        ],
+        "x-web-session-requires-origin": true
+      },
+      "delete": {
+        "operationId": "library_item_delete",
+        "summary": "delete aliment ou plat",
+        "description": "Deux modes plats : ingrédients/rendement explicites ou valeurs directes. Les anciens instantanés journalisés restent inchangés. Proposition L2/L4 ; aucune implémentation.",
+        "parameters": [
+          {
+            "name": "itemId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "data.schema.json#/$defs/uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Résultat ; mutation terminale réussie ou consultation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Mutation_library_item_delete"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "const": "succeeded"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "Opération réservée, encore pending ; consulter operationId et garder la même clé.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Mutation_library_item_delete"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "const": "pending"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "413": {
+            "$ref": "#/components/responses/Error413"
+          },
+          "422": {
+            "$ref": "#/components/responses/Error422"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "x-required-scopes": [
+          "calovibe:write"
+        ],
+        "x-backlog-phase": "L2/L4",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteBody"
+              }
+            }
+          }
+        },
+        "x-max-request-body-bytes": 65536,
+        "security": [
+          {
+            "ApiBearer": []
+          },
+          {
+            "WebSession": [],
+            "WebCsrf": []
+          }
+        ],
+        "x-web-session-requires-origin": true
+      }
+    },
+    "/v1/portions/preview": {
+      "post": {
+        "operationId": "portion_preview",
+        "summary": "Prévisualiser une portion sans enregistrer",
+        "description": "Lecture calculée ; ne pas convertir g/ml sans équivalence ; displayNutrition arrondie après calcul exact. Proposition L2/L4 ; aucune implémentation.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Résultat ; mutation terminale réussie ou consultation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PortionPreview"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "422": {
+            "$ref": "#/components/responses/Error422"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "x-required-scopes": [
+          "calovibe:read"
+        ],
+        "x-backlog-phase": "L2/L4",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PortionInput"
+              }
+            }
+          }
+        },
+        "x-max-request-body-bytes": 65536
+      }
+    },
+    "/v1/water/days/{localDate}": {
+      "get": {
+        "operationId": "water_day_read",
+        "summary": "Lire eau et objectif du jour",
+        "description": " Proposition L3 ; aucune implémentation.",
+        "parameters": [
+          {
+            "name": "localDate",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "data.schema.json#/$defs/localDate"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Résultat ; mutation terminale réussie ou consultation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WaterDay"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "422": {
+            "$ref": "#/components/responses/Error422"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "x-required-scopes": [
+          "calovibe:read"
+        ],
+        "x-backlog-phase": "L3"
+      }
+    },
+    "/v1/water/entries": {
+      "post": {
+        "operationId": "water_entry_create",
+        "summary": "create ajout d'eau",
+        "description": "ml explicites ; 250, 500 et 1000 sont des quantités ordinaires. Proposition L3 ; aucune implémentation.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Résultat ; mutation terminale réussie ou consultation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Mutation_water_entry_create"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "const": "succeeded"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "Opération réservée, encore pending ; consulter operationId et garder la même clé.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Mutation_water_entry_create"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "const": "pending"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "413": {
+            "$ref": "#/components/responses/Error413"
+          },
+          "422": {
+            "$ref": "#/components/responses/Error422"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "x-required-scopes": [
+          "calovibe:write"
+        ],
+        "x-backlog-phase": "L3",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WaterCreateBody"
+              }
+            }
+          }
+        },
+        "x-max-request-body-bytes": 65536,
+        "security": [
+          {
+            "ApiBearer": []
+          },
+          {
+            "WebSession": [],
+            "WebCsrf": []
+          }
+        ],
+        "x-web-session-requires-origin": true
+      }
+    },
+    "/v1/water/entries/{waterId}": {
+      "put": {
+        "operationId": "water_entry_update",
+        "summary": "update ajout d'eau",
+        "description": "ml explicites ; 250, 500 et 1000 sont des quantités ordinaires. Proposition L3 ; aucune implémentation.",
+        "parameters": [
+          {
+            "name": "waterId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "data.schema.json#/$defs/uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Résultat ; mutation terminale réussie ou consultation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Mutation_water_entry_update"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "const": "succeeded"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "Opération réservée, encore pending ; consulter operationId et garder la même clé.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Mutation_water_entry_update"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "const": "pending"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "413": {
+            "$ref": "#/components/responses/Error413"
+          },
+          "422": {
+            "$ref": "#/components/responses/Error422"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "x-required-scopes": [
+          "calovibe:write"
+        ],
+        "x-backlog-phase": "L3",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WaterUpdateBody"
+              }
+            }
+          }
+        },
+        "x-max-request-body-bytes": 65536,
+        "security": [
+          {
+            "ApiBearer": []
+          },
+          {
+            "WebSession": [],
+            "WebCsrf": []
+          }
+        ],
+        "x-web-session-requires-origin": true
+      },
+      "delete": {
+        "operationId": "water_entry_delete",
+        "summary": "delete ajout d'eau",
+        "description": "ml explicites ; 250, 500 et 1000 sont des quantités ordinaires. Proposition L3 ; aucune implémentation.",
+        "parameters": [
+          {
+            "name": "waterId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "data.schema.json#/$defs/uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Résultat ; mutation terminale réussie ou consultation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Mutation_water_entry_delete"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "const": "succeeded"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "Opération réservée, encore pending ; consulter operationId et garder la même clé.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Mutation_water_entry_delete"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "const": "pending"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "413": {
+            "$ref": "#/components/responses/Error413"
+          },
+          "422": {
+            "$ref": "#/components/responses/Error422"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "x-required-scopes": [
+          "calovibe:write"
+        ],
+        "x-backlog-phase": "L3",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteBody"
+              }
+            }
+          }
+        },
+        "x-max-request-body-bytes": 65536,
+        "security": [
+          {
+            "ApiBearer": []
+          },
+          {
+            "WebSession": [],
+            "WebCsrf": []
+          }
+        ],
+        "x-web-session-requires-origin": true
+      }
+    },
+    "/v1/weights": {
+      "get": {
+        "operationId": "weights_list",
+        "summary": "Lire les pesées datées",
+        "description": "Bornes inclusives, from <= to, tri measuredAt puis ID et curseur stable. Proposition L7 ; aucune implémentation.",
+        "parameters": [
+          {
+            "name": "from",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "data.schema.json#/$defs/localDate"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "data.schema.json#/$defs/localDate"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 50
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/Cursor"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Résultat ; mutation terminale réussie ou consultation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WeightPage"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "422": {
+            "$ref": "#/components/responses/Error422"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "x-required-scopes": [
+          "calovibe:read"
+        ],
+        "x-backlog-phase": "L7"
+      },
+      "post": {
+        "operationId": "weight_create",
+        "summary": "create pesée",
+        "description": "kg explicites ; localDate cohérente avec measuredAt dans le fuseau du profil. Aucun objectif automatiquement modifié. Proposition L7 ; aucune implémentation.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Résultat ; mutation terminale réussie ou consultation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Mutation_weight_create"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "const": "succeeded"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "Opération réservée, encore pending ; consulter operationId et garder la même clé.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Mutation_weight_create"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "const": "pending"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "413": {
+            "$ref": "#/components/responses/Error413"
+          },
+          "422": {
+            "$ref": "#/components/responses/Error422"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "x-required-scopes": [
+          "calovibe:write"
+        ],
+        "x-backlog-phase": "L7",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WeightCreateBody"
+              }
+            }
+          }
+        },
+        "x-max-request-body-bytes": 65536,
+        "security": [
+          {
+            "ApiBearer": []
+          },
+          {
+            "WebSession": [],
+            "WebCsrf": []
+          }
+        ],
+        "x-web-session-requires-origin": true
+      }
+    },
+    "/v1/weights/{weightId}": {
+      "put": {
+        "operationId": "weight_update",
+        "summary": "update pesée",
+        "description": "kg explicites ; localDate cohérente avec measuredAt dans le fuseau du profil. Aucun objectif automatiquement modifié. Proposition L7 ; aucune implémentation.",
+        "parameters": [
+          {
+            "name": "weightId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "data.schema.json#/$defs/uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Résultat ; mutation terminale réussie ou consultation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Mutation_weight_update"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "const": "succeeded"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "Opération réservée, encore pending ; consulter operationId et garder la même clé.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Mutation_weight_update"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "const": "pending"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "413": {
+            "$ref": "#/components/responses/Error413"
+          },
+          "422": {
+            "$ref": "#/components/responses/Error422"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "x-required-scopes": [
+          "calovibe:write"
+        ],
+        "x-backlog-phase": "L7",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WeightUpdateBody"
+              }
+            }
+          }
+        },
+        "x-max-request-body-bytes": 65536,
+        "security": [
+          {
+            "ApiBearer": []
+          },
+          {
+            "WebSession": [],
+            "WebCsrf": []
+          }
+        ],
+        "x-web-session-requires-origin": true
+      },
+      "delete": {
+        "operationId": "weight_delete",
+        "summary": "delete pesée",
+        "description": "kg explicites ; localDate cohérente avec measuredAt dans le fuseau du profil. Aucun objectif automatiquement modifié. Proposition L7 ; aucune implémentation.",
+        "parameters": [
+          {
+            "name": "weightId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "data.schema.json#/$defs/uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Résultat ; mutation terminale réussie ou consultation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Mutation_weight_delete"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "const": "succeeded"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "Opération réservée, encore pending ; consulter operationId et garder la même clé.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Mutation_weight_delete"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "const": "pending"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "413": {
+            "$ref": "#/components/responses/Error413"
+          },
+          "422": {
+            "$ref": "#/components/responses/Error422"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "x-required-scopes": [
+          "calovibe:write"
+        ],
+        "x-backlog-phase": "L7",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteBody"
+              }
+            }
+          }
+        },
+        "x-max-request-body-bytes": 65536,
+        "security": [
+          {
+            "ApiBearer": []
+          },
+          {
+            "WebSession": [],
+            "WebCsrf": []
+          }
+        ],
+        "x-web-session-requires-origin": true
+      }
+    },
+    "/v1/goals/effective/{localDate}": {
+      "get": {
+        "operationId": "goals_effective_read",
+        "summary": "Lire les objectifs applicables à une date",
+        "description": "Date d’effet la plus récente <= localDate ; null si aucun objectif. Proposition L3 ; aucune implémentation.",
+        "parameters": [
+          {
+            "name": "localDate",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "data.schema.json#/$defs/localDate"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Résultat ; mutation terminale réussie ou consultation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EffectiveGoals"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "422": {
+            "$ref": "#/components/responses/Error422"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "x-required-scopes": [
+          "calovibe:read"
+        ],
+        "x-backlog-phase": "L3"
+      }
+    },
+    "/v1/goals": {
+      "get": {
+        "operationId": "goals_history",
+        "summary": "Lire l’historique des objectifs",
+        "description": "Bornes de date d’effet inclusives, from <= to, tri effectiveDate puis ID. Proposition L3 ; aucune implémentation.",
+        "parameters": [
+          {
+            "name": "from",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "data.schema.json#/$defs/localDate"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "data.schema.json#/$defs/localDate"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 50
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/Cursor"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Résultat ; mutation terminale réussie ou consultation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GoalPage"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "422": {
+            "$ref": "#/components/responses/Error422"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "x-required-scopes": [
+          "calovibe:read"
+        ],
+        "x-backlog-phase": "L3"
+      },
+      "post": {
+        "operationId": "goals_create",
+        "summary": "create objectifs manuels",
+        "description": "Origine manual et formulaVersion null fixées par serveur. Une révision par date d’effet ; doublon concurrent = VERSION_CONFLICT. Calculateur différé ADR-06. Proposition L3 ; aucune implémentation.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Résultat ; mutation terminale réussie ou consultation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Mutation_goals_create"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "const": "succeeded"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "Opération réservée, encore pending ; consulter operationId et garder la même clé.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Mutation_goals_create"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "const": "pending"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "413": {
+            "$ref": "#/components/responses/Error413"
+          },
+          "422": {
+            "$ref": "#/components/responses/Error422"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "x-required-scopes": [
+          "calovibe:write"
+        ],
+        "x-backlog-phase": "L3",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GoalCreateBody"
+              }
+            }
+          }
+        },
+        "x-max-request-body-bytes": 65536,
+        "security": [
+          {
+            "ApiBearer": []
+          },
+          {
+            "WebSession": [],
+            "WebCsrf": []
+          }
+        ],
+        "x-web-session-requires-origin": true
+      }
+    },
+    "/v1/goals/{goalId}": {
+      "put": {
+        "operationId": "goals_update",
+        "summary": "update objectifs manuels",
+        "description": "Origine manual et formulaVersion null fixées par serveur. Une révision par date d’effet ; doublon concurrent = VERSION_CONFLICT. Calculateur différé ADR-06. Proposition L3 ; aucune implémentation.",
+        "parameters": [
+          {
+            "name": "goalId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "data.schema.json#/$defs/uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Résultat ; mutation terminale réussie ou consultation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Mutation_goals_update"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "const": "succeeded"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "Opération réservée, encore pending ; consulter operationId et garder la même clé.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Mutation_goals_update"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "const": "pending"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "413": {
+            "$ref": "#/components/responses/Error413"
+          },
+          "422": {
+            "$ref": "#/components/responses/Error422"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "x-required-scopes": [
+          "calovibe:write"
+        ],
+        "x-backlog-phase": "L3",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GoalUpdateBody"
+              }
+            }
+          }
+        },
+        "x-max-request-body-bytes": 65536,
+        "security": [
+          {
+            "ApiBearer": []
+          },
+          {
+            "WebSession": [],
+            "WebCsrf": []
+          }
+        ],
+        "x-web-session-requires-origin": true
+      },
+      "delete": {
+        "operationId": "goals_delete",
+        "summary": "delete objectifs manuels",
+        "description": "Origine manual et formulaVersion null fixées par serveur. Une révision par date d’effet ; doublon concurrent = VERSION_CONFLICT. Calculateur différé ADR-06. Proposition L3 ; aucune implémentation.",
+        "parameters": [
+          {
+            "name": "goalId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "data.schema.json#/$defs/uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Résultat ; mutation terminale réussie ou consultation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Mutation_goals_delete"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "const": "succeeded"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "Opération réservée, encore pending ; consulter operationId et garder la même clé.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Mutation_goals_delete"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "const": "pending"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "413": {
+            "$ref": "#/components/responses/Error413"
+          },
+          "422": {
+            "$ref": "#/components/responses/Error422"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "x-required-scopes": [
+          "calovibe:write"
+        ],
+        "x-backlog-phase": "L3",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteBody"
+              }
+            }
+          }
+        },
+        "x-max-request-body-bytes": 65536,
+        "security": [
+          {
+            "ApiBearer": []
+          },
+          {
+            "WebSession": [],
+            "WebCsrf": []
+          }
+        ],
+        "x-web-session-requires-origin": true
+      }
+    },
+    "/v1/photo-proposals": {
+      "post": {
+        "operationId": "photo_submit",
+        "summary": "Soumettre une photo en brouillon",
+        "description": "PROVISOIRE ADR-05 : image JSON bornée ; aucune entrée journalisée, aucun fournisseur ou stockage retenu. Proposition L6 ; aucune implémentation.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Résultat ; mutation terminale réussie ou consultation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Mutation_photo_submit"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "const": "succeeded"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "Opération réservée, encore pending ; consulter operationId et garder la même clé.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Mutation_photo_submit"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "const": "pending"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "413": {
+            "$ref": "#/components/responses/Error413"
+          },
+          "422": {
+            "$ref": "#/components/responses/Error422"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "x-required-scopes": [
+          "calovibe:write"
+        ],
+        "x-backlog-phase": "L6",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PhotoSubmitBody"
+              }
+            }
+          }
+        },
+        "x-max-request-body-bytes": 15728640,
+        "security": [
+          {
+            "ApiBearer": []
+          },
+          {
+            "WebSession": [],
+            "WebCsrf": []
+          }
+        ],
+        "x-web-session-requires-origin": true
+      }
+    },
+    "/v1/photo-proposals/{proposalId}": {
+      "get": {
+        "operationId": "photo_read",
+        "summary": "Lire statut et proposition photo",
+        "description": "Brouillon reprenable à sa date et son repas ; états queued/processing/ready/failed/confirmed. Proposition L6 ; aucune implémentation.",
+        "parameters": [
+          {
+            "name": "proposalId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "data.schema.json#/$defs/uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Résultat ; mutation terminale réussie ou consultation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PhotoProposal"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "422": {
+            "$ref": "#/components/responses/Error422"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "x-required-scopes": [
+          "calovibe:read"
+        ],
+        "x-backlog-phase": "L6"
+      },
+      "put": {
+        "operationId": "photo_correct",
+        "summary": "Corriger le brouillon photo",
+        "description": "Remplace items versionnés, retrait et oubli possibles. Identité changée : nouvelle correspondance vérifiée ou verificationAction:verify explicite ; renommer seul ne vérifie rien. Proposition L6 ; aucune implémentation.",
+        "parameters": [
+          {
+            "name": "proposalId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "data.schema.json#/$defs/uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Résultat ; mutation terminale réussie ou consultation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Mutation_photo_correct"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "const": "succeeded"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "Opération réservée, encore pending ; consulter operationId et garder la même clé.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Mutation_photo_correct"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "const": "pending"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "413": {
+            "$ref": "#/components/responses/Error413"
+          },
+          "422": {
+            "$ref": "#/components/responses/Error422"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "x-required-scopes": [
+          "calovibe:write"
+        ],
+        "x-backlog-phase": "L6",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PhotoCorrectBody"
+              }
+            }
+          }
+        },
+        "x-max-request-body-bytes": 65536,
+        "security": [
+          {
+            "ApiBearer": []
+          },
+          {
+            "WebSession": [],
+            "WebCsrf": []
+          }
+        ],
+        "x-web-session-requires-origin": true
+      },
+      "delete": {
+        "operationId": "photo_delete",
+        "summary": "Supprimer le brouillon photo",
+        "description": "Pas de suppression d’un lot déjà confirmé via cette route ; annuler son opération cible. Proposition L6 ; aucune implémentation.",
+        "parameters": [
+          {
+            "name": "proposalId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "data.schema.json#/$defs/uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Résultat ; mutation terminale réussie ou consultation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Mutation_photo_delete"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "const": "succeeded"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "Opération réservée, encore pending ; consulter operationId et garder la même clé.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Mutation_photo_delete"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "const": "pending"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "413": {
+            "$ref": "#/components/responses/Error413"
+          },
+          "422": {
+            "$ref": "#/components/responses/Error422"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "x-required-scopes": [
+          "calovibe:write"
+        ],
+        "x-backlog-phase": "L6",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteBody"
+              }
+            }
+          }
+        },
+        "x-max-request-body-bytes": 65536,
+        "security": [
+          {
+            "ApiBearer": []
+          },
+          {
+            "WebSession": [],
+            "WebCsrf": []
+          }
+        ],
+        "x-web-session-requires-origin": true
+      }
+    },
+    "/v1/photo-proposals/{proposalId}/confirmation": {
+      "post": {
+        "operationId": "photo_confirm",
+        "summary": "Confirmer tout le lot photo",
+        "description": "Version et date/repas d’origine requis, tous les items en transaction. Même proposition déjà confirmée : lot d’origine sans duplication, même avec nouvelle clé. Proposition L6 ; aucune implémentation.",
+        "parameters": [
+          {
+            "name": "proposalId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "data.schema.json#/$defs/uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Résultat ; mutation terminale réussie ou consultation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Mutation_photo_confirm"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "const": "succeeded"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "Opération réservée, encore pending ; consulter operationId et garder la même clé.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Mutation_photo_confirm"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "const": "pending"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "413": {
+            "$ref": "#/components/responses/Error413"
+          },
+          "422": {
+            "$ref": "#/components/responses/Error422"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "x-required-scopes": [
+          "calovibe:write"
+        ],
+        "x-backlog-phase": "L6",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PhotoConfirmBody"
+              }
+            }
+          }
+        },
+        "x-max-request-body-bytes": 65536,
+        "security": [
+          {
+            "ApiBearer": []
+          },
+          {
+            "WebSession": [],
+            "WebCsrf": []
+          }
+        ],
+        "x-web-session-requires-origin": true
+      }
+    },
+    "/v1/operations/{operationId}": {
+      "get": {
+        "operationId": "operation_read",
+        "summary": "Lire le résultat d’une écriture",
+        "description": "Vérifier appartenance et droit read ; opération pending, succeeded ou failed. Proposition L2 ; aucune implémentation.",
+        "parameters": [
+          {
+            "name": "operationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "data.schema.json#/$defs/uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Résultat ; mutation terminale réussie ou consultation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Operation"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "422": {
+            "$ref": "#/components/responses/Error422"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "x-required-scopes": [
+          "calovibe:read"
+        ],
+        "x-backlog-phase": "L2"
+      }
+    },
+    "/v1/operations/{targetOperationId}/undo": {
+      "post": {
+        "operationId": "operation_undo",
+        "summary": "Annuler une opération ciblée",
+        "description": "Nouvelle clé ; targetOperationId corps égale route ; toutes les versions requises, inversion atomique ou UNDO_CONFLICT, jamais les dernières lignes. Proposition L2–L7 ; aucune implémentation.",
+        "parameters": [
+          {
+            "name": "targetOperationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "data.schema.json#/$defs/uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Résultat ; mutation terminale réussie ou consultation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Mutation_operation_undo"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "const": "succeeded"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "Opération réservée, encore pending ; consulter operationId et garder la même clé.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Mutation_operation_undo"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "const": "pending"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "413": {
+            "$ref": "#/components/responses/Error413"
+          },
+          "422": {
+            "$ref": "#/components/responses/Error422"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "x-required-scopes": [
+          "calovibe:write"
+        ],
+        "x-backlog-phase": "L2–L7",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "data.schema.json#/$defs/undo"
+              }
+            }
+          }
+        },
+        "x-max-request-body-bytes": 65536,
+        "security": [
+          {
+            "ApiBearer": []
+          },
+          {
+            "WebSession": [],
+            "WebCsrf": []
+          }
+        ],
+        "x-web-session-requires-origin": true
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "ApiBearer": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Proposition ADR-02 : audience API, scopes indépendants calovibe:read/write ; autorité et délégation à qualifier. Aucune authentification implémentée."
+      },
+      "WebSession": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "__Host-calovibe-session",
+        "description": "Session opaque proposée ADR-02, cookie Secure/HttpOnly/SameSite=Lax. Pas un jeton MCP ; authentification et droits à qualifier."
+      },
+      "WebCsrf": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-CSRF-Token",
+        "description": "Pour mutation par session cookie : jeton lié à la session et origine exacte vérifiée. Aucun secret statique ; middleware réel à qualifier."
+      }
+    },
+    "schemas": {
+      "Name": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 200,
+        "pattern": "\\S"
+      },
+      "SnapshotInput": {
+        "allOf": [
+          {
+            "$ref": "data.schema.json#/$defs/snapshot"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "name": {
+                "$ref": "#/components/schemas/Name"
+              }
+            }
+          }
+        ]
+      },
+      "Create": {
+        "$ref": "data.schema.json#/$defs/createMutation"
+      },
+      "Update": {
+        "allOf": [
+          {
+            "$ref": "data.schema.json#/$defs/changeMutation"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "action": {
+                "const": "update"
+              },
+              "targets": {
+                "type": "array",
+                "maxItems": 1
+              }
+            }
+          }
+        ]
+      },
+      "Delete": {
+        "allOf": [
+          {
+            "$ref": "data.schema.json#/$defs/changeMutation"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "action": {
+                "const": "delete"
+              },
+              "targets": {
+                "type": "array",
+                "maxItems": 1
+              }
+            }
+          }
+        ]
+      },
+      "DeleteBody": {
+        "type": "object",
+        "properties": {
+          "mutation": {
+            "$ref": "#/components/schemas/Delete"
+          }
+        },
+        "required": [
+          "mutation"
+        ],
+        "additionalProperties": false
+      },
+      "LibraryDefinition": {
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "const": "food"
+              },
+              "name": {
+                "$ref": "#/components/schemas/Name"
+              },
+              "reference": {
+                "$ref": "data.schema.json#/$defs/reference"
+              }
+            },
+            "required": [
+              "kind",
+              "name",
+              "reference"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "const": "dish_direct"
+              },
+              "name": {
+                "$ref": "#/components/schemas/Name"
+              },
+              "reference": {
+                "$ref": "data.schema.json#/$defs/reference"
+              }
+            },
+            "required": [
+              "kind",
+              "name",
+              "reference"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "const": "dish_ingredients"
+              },
+              "name": {
+                "$ref": "#/components/schemas/Name"
+              },
+              "ingredients": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "itemId": {
+                      "$ref": "data.schema.json#/$defs/uuid"
+                    },
+                    "itemVersion": {
+                      "$ref": "data.schema.json#/$defs/version"
+                    },
+                    "quantity": {
+                      "$ref": "data.schema.json#/$defs/quantity"
+                    },
+                    "unit": {
+                      "$ref": "data.schema.json#/$defs/unit"
+                    },
+                    "snapshot": {
+                      "$ref": "#/components/schemas/SnapshotInput"
+                    }
+                  },
+                  "required": [
+                    "itemId",
+                    "itemVersion",
+                    "quantity",
+                    "unit",
+                    "snapshot"
+                  ],
+                  "additionalProperties": false
+                },
+                "minItems": 1,
+                "maxItems": 100
+              },
+              "yield": {
+                "type": "object",
+                "properties": {
+                  "quantity": {
+                    "$ref": "data.schema.json#/$defs/quantity"
+                  },
+                  "unit": {
+                    "enum": [
+                      "g",
+                      "portion"
+                    ]
+                  }
+                },
+                "required": [
+                  "quantity",
+                  "unit"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "kind",
+              "name",
+              "ingredients",
+              "yield"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      },
+      "LibraryItem": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "data.schema.json#/$defs/uuid"
+          },
+          "version": {
+            "$ref": "data.schema.json#/$defs/version"
+          },
+          "definition": {
+            "$ref": "#/components/schemas/LibraryDefinition"
+          },
+          "reference": {
+            "$ref": "data.schema.json#/$defs/reference"
+          },
+          "operationId": {
+            "$ref": "data.schema.json#/$defs/uuid"
+          }
+        },
+        "required": [
+          "id",
+          "version",
+          "definition",
+          "reference",
+          "operationId"
+        ],
+        "additionalProperties": false
+      },
+      "EntrySource": {
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "const": "library"
+              },
+              "itemId": {
+                "$ref": "data.schema.json#/$defs/uuid"
+              },
+              "itemVersion": {
+                "$ref": "data.schema.json#/$defs/version"
+              }
+            },
+            "required": [
+              "kind",
+              "itemId",
+              "itemVersion"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "const": "inline"
+              },
+              "snapshot": {
+                "$ref": "#/components/schemas/SnapshotInput"
+              }
+            },
+            "required": [
+              "kind",
+              "snapshot"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      },
+      "EntryData": {
+        "type": "object",
+        "properties": {
+          "localDate": {
+            "$ref": "data.schema.json#/$defs/localDate"
+          },
+          "meal": {
+            "$ref": "data.schema.json#/$defs/meal"
+          },
+          "quantity": {
+            "$ref": "data.schema.json#/$defs/quantity"
+          },
+          "unit": {
+            "$ref": "data.schema.json#/$defs/unit"
+          },
+          "source": {
+            "$ref": "#/components/schemas/EntrySource"
+          }
+        },
+        "required": [
+          "localDate",
+          "meal",
+          "quantity",
+          "unit",
+          "source"
+        ],
+        "additionalProperties": false
+      },
+      "EntryChange": {
+        "type": "object",
+        "properties": {
+          "localDate": {
+            "$ref": "data.schema.json#/$defs/localDate"
+          },
+          "meal": {
+            "$ref": "data.schema.json#/$defs/meal"
+          },
+          "quantity": {
+            "$ref": "data.schema.json#/$defs/quantity"
+          },
+          "unit": {
+            "$ref": "data.schema.json#/$defs/unit"
+          }
+        },
+        "required": [
+          "localDate",
+          "meal",
+          "quantity",
+          "unit"
+        ],
+        "additionalProperties": false
+      },
+      "EntryView": {
+        "type": "object",
+        "properties": {
+          "entry": {
+            "$ref": "data.schema.json#/$defs/journalEntry"
+          },
+          "displayNutrition": {
+            "$ref": "data.schema.json#/$defs/nutrition"
+          }
+        },
+        "required": [
+          "entry",
+          "displayNutrition"
+        ],
+        "additionalProperties": false
+      },
+      "PortionInput": {
+        "type": "object",
+        "properties": {
+          "source": {
+            "$ref": "#/components/schemas/EntrySource"
+          },
+          "quantity": {
+            "$ref": "data.schema.json#/$defs/quantity"
+          },
+          "unit": {
+            "$ref": "data.schema.json#/$defs/unit"
+          }
+        },
+        "required": [
+          "source",
+          "quantity",
+          "unit"
+        ],
+        "additionalProperties": false
+      },
+      "PortionPreview": {
+        "type": "object",
+        "properties": {
+          "quantity": {
+            "$ref": "data.schema.json#/$defs/quantity"
+          },
+          "unit": {
+            "$ref": "data.schema.json#/$defs/unit"
+          },
+          "displayNutrition": {
+            "$ref": "data.schema.json#/$defs/nutrition"
+          }
+        },
+        "required": [
+          "quantity",
+          "unit",
+          "displayNutrition"
+        ],
+        "additionalProperties": false
+      },
+      "WaterData": {
+        "type": "object",
+        "properties": {
+          "localDate": {
+            "$ref": "data.schema.json#/$defs/localDate"
+          },
+          "quantity": {
+            "$ref": "data.schema.json#/$defs/quantity"
+          },
+          "unit": {
+            "const": "ml"
+          }
+        },
+        "required": [
+          "localDate",
+          "quantity",
+          "unit"
+        ],
+        "additionalProperties": false
+      },
+      "WaterEntry": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "data.schema.json#/$defs/uuid"
+          },
+          "version": {
+            "$ref": "data.schema.json#/$defs/version"
+          },
+          "localDate": {
+            "$ref": "data.schema.json#/$defs/localDate"
+          },
+          "quantity": {
+            "$ref": "data.schema.json#/$defs/quantity"
+          },
+          "unit": {
+            "const": "ml"
+          },
+          "operationId": {
+            "$ref": "data.schema.json#/$defs/uuid"
+          }
+        },
+        "required": [
+          "id",
+          "version",
+          "localDate",
+          "quantity",
+          "unit",
+          "operationId"
+        ],
+        "additionalProperties": false
+      },
+      "WaterDay": {
+        "type": "object",
+        "properties": {
+          "localDate": {
+            "$ref": "data.schema.json#/$defs/localDate"
+          },
+          "entries": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WaterEntry"
+            }
+          },
+          "totalMl": {
+            "$ref": "data.schema.json#/$defs/decimal"
+          },
+          "goalMl": {
+            "anyOf": [
+              {
+                "$ref": "data.schema.json#/$defs/quantity"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "localDate",
+          "entries",
+          "totalMl",
+          "goalMl"
+        ],
+        "additionalProperties": false
+      },
+      "WeightData": {
+        "type": "object",
+        "properties": {
+          "localDate": {
+            "$ref": "data.schema.json#/$defs/localDate"
+          },
+          "measuredAt": {
+            "$ref": "data.schema.json#/$defs/utcTimestamp"
+          },
+          "quantity": {
+            "$ref": "data.schema.json#/$defs/quantity"
+          },
+          "unit": {
+            "const": "kg"
+          }
+        },
+        "required": [
+          "localDate",
+          "measuredAt",
+          "quantity",
+          "unit"
+        ],
+        "additionalProperties": false
+      },
+      "WeightEntry": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "data.schema.json#/$defs/uuid"
+          },
+          "version": {
+            "$ref": "data.schema.json#/$defs/version"
+          },
+          "localDate": {
+            "$ref": "data.schema.json#/$defs/localDate"
+          },
+          "measuredAt": {
+            "$ref": "data.schema.json#/$defs/utcTimestamp"
+          },
+          "quantity": {
+            "$ref": "data.schema.json#/$defs/quantity"
+          },
+          "unit": {
+            "const": "kg"
+          },
+          "operationId": {
+            "$ref": "data.schema.json#/$defs/uuid"
+          }
+        },
+        "required": [
+          "id",
+          "version",
+          "localDate",
+          "measuredAt",
+          "quantity",
+          "unit",
+          "operationId"
+        ],
+        "additionalProperties": false
+      },
+      "GoalData": {
+        "type": "object",
+        "properties": {
+          "effectiveDate": {
+            "$ref": "data.schema.json#/$defs/localDate"
+          },
+          "values": {
+            "$ref": "data.schema.json#/$defs/goalValues"
+          }
+        },
+        "required": [
+          "effectiveDate",
+          "values"
+        ],
+        "additionalProperties": false
+      },
+      "Cursor": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 512
+      },
+      "LibraryPage": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LibraryItem"
+            },
+            "maxItems": 100
+          },
+          "nextCursor": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Cursor"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "items",
+          "nextCursor"
+        ],
+        "additionalProperties": false
+      },
+      "WeightPage": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WeightEntry"
+            },
+            "maxItems": 100
+          },
+          "nextCursor": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Cursor"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "items",
+          "nextCursor"
+        ],
+        "additionalProperties": false
+      },
+      "GoalPage": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "data.schema.json#/$defs/goals"
+            },
+            "maxItems": 100
+          },
+          "nextCursor": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Cursor"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "items",
+          "nextCursor"
+        ],
+        "additionalProperties": false
+      },
+      "EffectiveGoals": {
+        "type": "object",
+        "properties": {
+          "localDate": {
+            "$ref": "data.schema.json#/$defs/localDate"
+          },
+          "goals": {
+            "anyOf": [
+              {
+                "$ref": "data.schema.json#/$defs/goals"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "localDate",
+          "goals"
+        ],
+        "additionalProperties": false
+      },
+      "MealSummary": {
+        "type": "object",
+        "properties": {
+          "meal": {
+            "$ref": "data.schema.json#/$defs/meal"
+          },
+          "entries": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EntryView"
+            }
+          },
+          "displayTotals": {
+            "$ref": "data.schema.json#/$defs/nutrition"
+          }
+        },
+        "required": [
+          "meal",
+          "entries",
+          "displayTotals"
+        ],
+        "additionalProperties": false
+      },
+      "JournalDay": {
+        "type": "object",
+        "properties": {
+          "localDate": {
+            "$ref": "data.schema.json#/$defs/localDate"
+          },
+          "timeZone": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "meals": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MealSummary"
+            },
+            "minItems": 4,
+            "maxItems": 4
+          },
+          "displayTotals": {
+            "$ref": "data.schema.json#/$defs/nutrition"
+          },
+          "goals": {
+            "anyOf": [
+              {
+                "$ref": "data.schema.json#/$defs/goals"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "water": {
+            "$ref": "#/components/schemas/WaterDay"
+          }
+        },
+        "required": [
+          "localDate",
+          "timeZone",
+          "meals",
+          "displayTotals",
+          "goals",
+          "water"
+        ],
+        "additionalProperties": false
+      },
+      "PhotoImage": {
+        "type": "object",
+        "properties": {
+          "mediaType": {
+            "enum": [
+              "image/jpeg",
+              "image/png",
+              "image/webp"
+            ]
+          },
+          "base64": {
+            "type": "string",
+            "minLength": 4,
+            "maxLength": 13981016,
+            "pattern": "^[A-Za-z0-9+/]*={0,2}$",
+            "format": "calovibe-base64",
+            "contentEncoding": "base64"
+          }
+        },
+        "required": [
+          "mediaType",
+          "base64"
+        ],
+        "additionalProperties": false,
+        "description": "PROVISOIRE ADR-05 avant L6 : 10 MiB décodés, corps transport au plus 15 MiB avant analyse/décodage. Assertion format calovibe-base64 obligatoire : borner chaîne avant Buffer.from(base64), vérifier octets <=10 MiB et réencodage canonique identique. Regex alphabet/padding seule et MIME déclaré ne valident pas un fichier image. Aucun stockage choisi."
+      },
+      "PhotoItem": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "data.schema.json#/$defs/uuid"
+          },
+          "snapshot": {
+            "$ref": "#/components/schemas/SnapshotInput"
+          },
+          "quantity": {
+            "$ref": "data.schema.json#/$defs/quantity"
+          },
+          "unit": {
+            "$ref": "data.schema.json#/$defs/unit"
+          },
+          "identity": {
+            "$ref": "#/components/schemas/PhotoIdentity"
+          },
+          "nutritionVerified": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "snapshot",
+          "quantity",
+          "unit",
+          "identity",
+          "nutritionVerified"
+        ],
+        "additionalProperties": false
+      },
+      "PhotoSubmitData": {
+        "type": "object",
+        "properties": {
+          "localDate": {
+            "$ref": "data.schema.json#/$defs/localDate"
+          },
+          "meal": {
+            "$ref": "data.schema.json#/$defs/meal"
+          },
+          "image": {
+            "$ref": "#/components/schemas/PhotoImage"
+          }
+        },
+        "required": [
+          "localDate",
+          "meal",
+          "image"
+        ],
+        "additionalProperties": false
+      },
+      "PhotoCorrection": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PhotoItemEdit"
+            },
+            "maxItems": 100
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "additionalProperties": false
+      },
+      "PhotoConfirmation": {
+        "type": "object",
+        "properties": {
+          "localDate": {
+            "$ref": "data.schema.json#/$defs/localDate"
+          },
+          "meal": {
+            "$ref": "data.schema.json#/$defs/meal"
+          }
+        },
+        "required": [
+          "localDate",
+          "meal"
+        ],
+        "additionalProperties": false
+      },
+      "PhotoProposal": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "data.schema.json#/$defs/uuid"
+          },
+          "version": {
+            "$ref": "data.schema.json#/$defs/version"
+          },
+          "localDate": {
+            "$ref": "data.schema.json#/$defs/localDate"
+          },
+          "meal": {
+            "$ref": "data.schema.json#/$defs/meal"
+          },
+          "status": {
+            "enum": [
+              "queued",
+              "processing",
+              "ready",
+              "failed",
+              "confirmed"
+            ]
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PhotoItem"
+            },
+            "maxItems": 100
+          },
+          "error": {
+            "anyOf": [
+              {
+                "$ref": "data.schema.json#/$defs/error"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "confirmationOperationId": {
+            "anyOf": [
+              {
+                "$ref": "data.schema.json#/$defs/uuid"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "version",
+          "localDate",
+          "meal",
+          "status",
+          "items",
+          "error",
+          "confirmationOperationId"
+        ],
+        "additionalProperties": false,
+        "allOf": [
+          {
+            "if": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "const": "failed"
+                }
+              }
+            },
+            "then": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "$ref": "data.schema.json#/$defs/error"
+                }
+              }
+            },
+            "else": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "null"
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "const": "confirmed"
+                }
+              }
+            },
+            "then": {
+              "type": "object",
+              "properties": {
+                "confirmationOperationId": {
+                  "$ref": "data.schema.json#/$defs/uuid"
+                },
+                "items": {
+                  "type": "array",
+                  "minItems": 1
+                }
+              }
+            },
+            "else": {
+              "type": "object",
+              "properties": {
+                "confirmationOperationId": {
+                  "type": "null"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "PhotoBatch": {
+        "type": "object",
+        "properties": {
+          "photoProposalId": {
+            "$ref": "data.schema.json#/$defs/uuid"
+          },
+          "localDate": {
+            "$ref": "data.schema.json#/$defs/localDate"
+          },
+          "meal": {
+            "$ref": "data.schema.json#/$defs/meal"
+          },
+          "entries": {
+            "type": "array",
+            "items": {
+              "$ref": "data.schema.json#/$defs/journalEntry"
+            },
+            "minItems": 1,
+            "maxItems": 100
+          }
+        },
+        "required": [
+          "photoProposalId",
+          "localDate",
+          "meal",
+          "entries"
+        ],
+        "additionalProperties": false
+      },
+      "ResourceVersion": {
+        "type": "object",
+        "properties": {
+          "resource": {
+            "enum": [
+              "journal_entry",
+              "library_item",
+              "water_entry",
+              "weight_entry",
+              "goals",
+              "photo_proposal"
+            ]
+          },
+          "id": {
+            "$ref": "data.schema.json#/$defs/uuid"
+          },
+          "version": {
+            "$ref": "data.schema.json#/$defs/version"
+          },
+          "deleted": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "resource",
+          "id",
+          "version",
+          "deleted"
+        ],
+        "additionalProperties": false
+      },
+      "AffectedTargets": {
+        "type": "object",
+        "properties": {
+          "targets": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ResourceVersion"
+            },
+            "minItems": 1
+          }
+        },
+        "required": [
+          "targets"
+        ],
+        "additionalProperties": false
+      },
+      "OperationValue": {
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "const": "journal_entry"
+              },
+              "value": {
+                "$ref": "#/components/schemas/EntryView"
+              }
+            },
+            "required": [
+              "kind",
+              "value"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "const": "library_item"
+              },
+              "value": {
+                "$ref": "#/components/schemas/LibraryItem"
+              }
+            },
+            "required": [
+              "kind",
+              "value"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "const": "water_entry"
+              },
+              "value": {
+                "$ref": "#/components/schemas/WaterEntry"
+              }
+            },
+            "required": [
+              "kind",
+              "value"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "const": "weight_entry"
+              },
+              "value": {
+                "$ref": "#/components/schemas/WeightEntry"
+              }
+            },
+            "required": [
+              "kind",
+              "value"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "const": "goals"
+              },
+              "value": {
+                "$ref": "data.schema.json#/$defs/goals"
+              }
+            },
+            "required": [
+              "kind",
+              "value"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "const": "photo_proposal"
+              },
+              "value": {
+                "$ref": "#/components/schemas/PhotoProposal"
+              }
+            },
+            "required": [
+              "kind",
+              "value"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "const": "photo_batch"
+              },
+              "value": {
+                "$ref": "#/components/schemas/PhotoBatch"
+              }
+            },
+            "required": [
+              "kind",
+              "value"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "const": "deleted"
+              },
+              "value": {
+                "$ref": "#/components/schemas/AffectedTargets"
+              }
+            },
+            "required": [
+              "kind",
+              "value"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "const": "undone"
+              },
+              "value": {
+                "$ref": "#/components/schemas/AffectedTargets"
+              }
+            },
+            "required": [
+              "kind",
+              "value"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      },
+      "Operation": {
+        "type": "object",
+        "properties": {
+          "schemaVersion": {
+            "const": "0.1.0"
+          },
+          "operationId": {
+            "$ref": "data.schema.json#/$defs/uuid"
+          },
+          "createdAt": {
+            "$ref": "data.schema.json#/$defs/utcTimestamp"
+          },
+          "status": {
+            "enum": [
+              "pending",
+              "succeeded",
+              "failed"
+            ]
+          },
+          "targets": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ResourceVersion"
+            }
+          },
+          "undoState": {
+            "enum": [
+              "eligible",
+              "not_supported",
+              "undone"
+            ]
+          },
+          "result": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/OperationValue"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "error": {
+            "anyOf": [
+              {
+                "$ref": "data.schema.json#/$defs/error"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "schemaVersion",
+          "operationId",
+          "createdAt",
+          "status",
+          "targets",
+          "undoState",
+          "result",
+          "error"
+        ],
+        "additionalProperties": false,
+        "allOf": [
+          {
+            "if": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "const": "succeeded"
+                }
+              }
+            },
+            "then": {
+              "type": "object",
+              "properties": {
+                "result": {
+                  "$ref": "#/components/schemas/OperationValue"
+                },
+                "error": {
+                  "type": "null"
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "const": "failed"
+                }
+              }
+            },
+            "then": {
+              "type": "object",
+              "properties": {
+                "result": {
+                  "type": "null"
+                },
+                "error": {
+                  "$ref": "data.schema.json#/$defs/error"
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "const": "pending"
+                }
+              }
+            },
+            "then": {
+              "type": "object",
+              "properties": {
+                "result": {
+                  "type": "null"
+                },
+                "error": {
+                  "type": "null"
+                },
+                "undoState": {
+                  "const": "not_supported"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "AcceptedMutation": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Operation"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "status": {
+                "enum": [
+                  "pending",
+                  "succeeded"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "ToolBusinessError": {
+        "allOf": [
+          {
+            "$ref": "data.schema.json#/$defs/error"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "code": {
+                "not": {
+                  "enum": [
+                    "UNAUTHENTICATED",
+                    "FORBIDDEN"
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      },
+      "EntryCreateBody": {
+        "type": "object",
+        "properties": {
+          "mutation": {
+            "$ref": "#/components/schemas/Create"
+          },
+          "data": {
+            "$ref": "#/components/schemas/EntryData"
+          }
+        },
+        "required": [
+          "mutation",
+          "data"
+        ],
+        "additionalProperties": false
+      },
+      "EntryUpdateBody": {
+        "type": "object",
+        "properties": {
+          "mutation": {
+            "$ref": "#/components/schemas/Update"
+          },
+          "data": {
+            "$ref": "#/components/schemas/EntryChange"
+          }
+        },
+        "required": [
+          "mutation",
+          "data"
+        ],
+        "additionalProperties": false
+      },
+      "LibraryCreateBody": {
+        "type": "object",
+        "properties": {
+          "mutation": {
+            "$ref": "#/components/schemas/Create"
+          },
+          "data": {
+            "$ref": "#/components/schemas/LibraryDefinition"
+          }
+        },
+        "required": [
+          "mutation",
+          "data"
+        ],
+        "additionalProperties": false
+      },
+      "LibraryUpdateBody": {
+        "type": "object",
+        "properties": {
+          "mutation": {
+            "$ref": "#/components/schemas/Update"
+          },
+          "data": {
+            "$ref": "#/components/schemas/LibraryDefinition"
+          }
+        },
+        "required": [
+          "mutation",
+          "data"
+        ],
+        "additionalProperties": false
+      },
+      "WaterCreateBody": {
+        "type": "object",
+        "properties": {
+          "mutation": {
+            "$ref": "#/components/schemas/Create"
+          },
+          "data": {
+            "$ref": "#/components/schemas/WaterData"
+          }
+        },
+        "required": [
+          "mutation",
+          "data"
+        ],
+        "additionalProperties": false
+      },
+      "WaterUpdateBody": {
+        "type": "object",
+        "properties": {
+          "mutation": {
+            "$ref": "#/components/schemas/Update"
+          },
+          "data": {
+            "$ref": "#/components/schemas/WaterData"
+          }
+        },
+        "required": [
+          "mutation",
+          "data"
+        ],
+        "additionalProperties": false
+      },
+      "WeightCreateBody": {
+        "type": "object",
+        "properties": {
+          "mutation": {
+            "$ref": "#/components/schemas/Create"
+          },
+          "data": {
+            "$ref": "#/components/schemas/WeightData"
+          }
+        },
+        "required": [
+          "mutation",
+          "data"
+        ],
+        "additionalProperties": false
+      },
+      "WeightUpdateBody": {
+        "type": "object",
+        "properties": {
+          "mutation": {
+            "$ref": "#/components/schemas/Update"
+          },
+          "data": {
+            "$ref": "#/components/schemas/WeightData"
+          }
+        },
+        "required": [
+          "mutation",
+          "data"
+        ],
+        "additionalProperties": false
+      },
+      "GoalCreateBody": {
+        "type": "object",
+        "properties": {
+          "mutation": {
+            "$ref": "#/components/schemas/Create"
+          },
+          "data": {
+            "$ref": "#/components/schemas/GoalData"
+          }
+        },
+        "required": [
+          "mutation",
+          "data"
+        ],
+        "additionalProperties": false
+      },
+      "GoalUpdateBody": {
+        "type": "object",
+        "properties": {
+          "mutation": {
+            "$ref": "#/components/schemas/Update"
+          },
+          "data": {
+            "$ref": "#/components/schemas/GoalData"
+          }
+        },
+        "required": [
+          "mutation",
+          "data"
+        ],
+        "additionalProperties": false
+      },
+      "PhotoSubmitBody": {
+        "type": "object",
+        "properties": {
+          "mutation": {
+            "$ref": "#/components/schemas/Create"
+          },
+          "data": {
+            "$ref": "#/components/schemas/PhotoSubmitData"
+          }
+        },
+        "required": [
+          "mutation",
+          "data"
+        ],
+        "additionalProperties": false
+      },
+      "PhotoCorrectBody": {
+        "type": "object",
+        "properties": {
+          "mutation": {
+            "$ref": "#/components/schemas/Update"
+          },
+          "data": {
+            "$ref": "#/components/schemas/PhotoCorrection"
+          }
+        },
+        "required": [
+          "mutation",
+          "data"
+        ],
+        "additionalProperties": false
+      },
+      "PhotoConfirmBody": {
+        "type": "object",
+        "properties": {
+          "mutation": {
+            "$ref": "#/components/schemas/Update"
+          },
+          "data": {
+            "$ref": "#/components/schemas/PhotoConfirmation"
+          }
+        },
+        "required": [
+          "mutation",
+          "data"
+        ],
+        "additionalProperties": false
+      },
+      "Mutation_journal_entry_create": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/AcceptedMutation"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "result": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "kind": {
+                        "const": "journal_entry"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "Mutation_journal_entry_update": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/AcceptedMutation"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "result": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "kind": {
+                        "const": "journal_entry"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "Mutation_journal_entry_delete": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/AcceptedMutation"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "result": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "kind": {
+                        "const": "deleted"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "Mutation_library_item_create": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/AcceptedMutation"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "result": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "kind": {
+                        "const": "library_item"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "Mutation_library_item_update": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/AcceptedMutation"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "result": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "kind": {
+                        "const": "library_item"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "Mutation_library_item_delete": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/AcceptedMutation"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "result": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "kind": {
+                        "const": "deleted"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "Mutation_water_entry_create": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/AcceptedMutation"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "result": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "kind": {
+                        "const": "water_entry"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "Mutation_water_entry_update": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/AcceptedMutation"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "result": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "kind": {
+                        "const": "water_entry"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "Mutation_water_entry_delete": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/AcceptedMutation"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "result": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "kind": {
+                        "const": "deleted"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "Mutation_weight_create": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/AcceptedMutation"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "result": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "kind": {
+                        "const": "weight_entry"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "Mutation_weight_update": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/AcceptedMutation"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "result": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "kind": {
+                        "const": "weight_entry"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "Mutation_weight_delete": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/AcceptedMutation"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "result": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "kind": {
+                        "const": "deleted"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "Mutation_goals_create": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/AcceptedMutation"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "result": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "kind": {
+                        "const": "goals"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "Mutation_goals_update": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/AcceptedMutation"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "result": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "kind": {
+                        "const": "goals"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "Mutation_goals_delete": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/AcceptedMutation"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "result": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "kind": {
+                        "const": "deleted"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "Mutation_photo_submit": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/AcceptedMutation"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "result": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "kind": {
+                        "const": "photo_proposal"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "Mutation_photo_correct": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/AcceptedMutation"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "result": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "kind": {
+                        "const": "photo_proposal"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "Mutation_photo_delete": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/AcceptedMutation"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "result": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "kind": {
+                        "const": "deleted"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "Mutation_photo_confirm": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/AcceptedMutation"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "result": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "kind": {
+                        "const": "photo_batch"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "Mutation_operation_undo": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/AcceptedMutation"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "result": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "kind": {
+                        "const": "undone"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "PhotoIdentity": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "enum": [
+              "unresolved",
+              "manual",
+              "library"
+            ]
+          },
+          "itemId": {
+            "anyOf": [
+              {
+                "$ref": "data.schema.json#/$defs/uuid"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "itemVersion": {
+            "anyOf": [
+              {
+                "$ref": "data.schema.json#/$defs/version"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "kind",
+          "itemId",
+          "itemVersion"
+        ],
+        "additionalProperties": false,
+        "allOf": [
+          {
+            "if": {
+              "type": "object",
+              "properties": {
+                "kind": {
+                  "const": "library"
+                }
+              }
+            },
+            "then": {
+              "type": "object",
+              "properties": {
+                "itemId": {
+                  "$ref": "data.schema.json#/$defs/uuid"
+                },
+                "itemVersion": {
+                  "$ref": "data.schema.json#/$defs/version"
+                }
+              }
+            },
+            "else": {
+              "type": "object",
+              "properties": {
+                "itemId": {
+                  "type": "null"
+                },
+                "itemVersion": {
+                  "type": "null"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "PhotoItemEdit": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "data.schema.json#/$defs/uuid"
+          },
+          "snapshot": {
+            "$ref": "#/components/schemas/SnapshotInput"
+          },
+          "quantity": {
+            "$ref": "data.schema.json#/$defs/quantity"
+          },
+          "unit": {
+            "$ref": "data.schema.json#/$defs/unit"
+          },
+          "identity": {
+            "$ref": "#/components/schemas/PhotoIdentity"
+          },
+          "verificationAction": {
+            "enum": [
+              "preserve",
+              "verify",
+              "reassociate"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "snapshot",
+          "quantity",
+          "unit",
+          "identity",
+          "verificationAction"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "responses": {
+      "Error401": {
+        "description": "Erreur structurée HTTP 401 : UNAUTHENTICATED.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "data.schema.json#/$defs/error"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "enum": [
+                        "UNAUTHENTICATED"
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "headers": {
+          "WWW-Authenticate": {
+            "description": "Challenge Bearer avec ressource/métadonnées selon ADR-02.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "Error403": {
+        "description": "Erreur structurée HTTP 403 : FORBIDDEN.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "data.schema.json#/$defs/error"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "enum": [
+                        "FORBIDDEN"
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      "Error404": {
+        "description": "Erreur structurée HTTP 404 : NOT_FOUND.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "data.schema.json#/$defs/error"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "enum": [
+                        "NOT_FOUND"
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      "Error409": {
+        "description": "Erreur structurée HTTP 409 : VERSION_CONFLICT, IDEMPOTENCY_CONFLICT, UNDO_CONFLICT.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "data.schema.json#/$defs/error"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "enum": [
+                        "VERSION_CONFLICT",
+                        "IDEMPOTENCY_CONFLICT",
+                        "UNDO_CONFLICT"
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      "Error422": {
+        "description": "Erreur structurée HTTP 422 : VALIDATION, INCOMPLETE_DATA, MISSING_INFORMATION.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "data.schema.json#/$defs/error"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "enum": [
+                        "VALIDATION",
+                        "INCOMPLETE_DATA",
+                        "MISSING_INFORMATION"
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      "Error503": {
+        "description": "Erreur structurée HTTP 503 : DEPENDENCY_UNAVAILABLE.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "data.schema.json#/$defs/error"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "enum": [
+                        "DEPENDENCY_UNAVAILABLE"
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "headers": {
+          "Retry-After": {
+            "description": "Délai indicatif en secondes si connu ; conserver la clé d’opération.",
+            "schema": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        }
+      },
+      "Error413": {
+        "description": "Erreur structurée HTTP 413 : VALIDATION.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "data.schema.json#/$defs/error"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "enum": [
+                        "VALIDATION"
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  "security": [
+    {
+      "ApiBearer": []
+    },
+    {
+      "WebSession": []
+    }
+  ],
+  "x-error-http-status": {
+    "UNAUTHENTICATED": 401,
+    "FORBIDDEN": 403,
+    "VALIDATION": 422,
+    "NOT_FOUND": 404,
+    "VERSION_CONFLICT": 409,
+    "INCOMPLETE_DATA": 422,
+    "DEPENDENCY_UNAVAILABLE": 503,
+    "IDEMPOTENCY_CONFLICT": 409,
+    "UNDO_CONFLICT": 409,
+    "MISSING_INFORMATION": 422
+  }
+}

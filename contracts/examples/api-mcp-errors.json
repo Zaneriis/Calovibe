@@ -1,0 +1,322 @@
+[
+  {
+    "code": "UNAUTHENTICATED",
+    "httpStatus": 401,
+    "error": {
+      "schemaVersion": "0.1.0",
+      "code": "UNAUTHENTICATED",
+      "message": "Requête non exécutée.",
+      "fields": [],
+      "operationId": "00000099-1111-4111-8111-111111111111"
+    },
+    "mcpTransport": {
+      "status": 401
+    }
+  },
+  {
+    "code": "FORBIDDEN",
+    "httpStatus": 403,
+    "error": {
+      "schemaVersion": "0.1.0",
+      "code": "FORBIDDEN",
+      "message": "Requête non exécutée.",
+      "fields": [],
+      "operationId": "00000099-1111-4111-8111-111111111111"
+    },
+    "mcpTransport": {
+      "status": 403
+    }
+  },
+  {
+    "code": "VALIDATION",
+    "httpStatus": 422,
+    "error": {
+      "schemaVersion": "0.1.0",
+      "code": "VALIDATION",
+      "message": "Requête non exécutée.",
+      "fields": [
+        {
+          "path": "/body/unit",
+          "reason": "incompatible_unit"
+        }
+      ],
+      "operationId": "00000099-1111-4111-8111-111111111111"
+    },
+    "mcpResult": {
+      "resultType": "complete",
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"ok\":false,\"error\":{\"schemaVersion\":\"0.1.0\",\"code\":\"VALIDATION\",\"message\":\"Requête non exécutée.\",\"fields\":[{\"path\":\"/body/unit\",\"reason\":\"incompatible_unit\"}],\"operationId\":\"00000099-1111-4111-8111-111111111111\"}}"
+        }
+      ],
+      "structuredContent": {
+        "ok": false,
+        "error": {
+          "schemaVersion": "0.1.0",
+          "code": "VALIDATION",
+          "message": "Requête non exécutée.",
+          "fields": [
+            {
+              "path": "/body/unit",
+              "reason": "incompatible_unit"
+            }
+          ],
+          "operationId": "00000099-1111-4111-8111-111111111111"
+        }
+      },
+      "isError": true
+    },
+    "tool": "portion_preview",
+    "input": {
+      "body": {
+        "source": {
+          "kind": "inline",
+          "snapshot": {
+            "name": "Aliment fictif",
+            "reference": {
+              "quantity": "100",
+              "unit": "g",
+              "nutrition": {
+                "kcal": "200",
+                "proteinG": "0",
+                "fatG": null,
+                "carbohydrateG": "30"
+              }
+            }
+          }
+        },
+        "quantity": "150",
+        "unit": "ml"
+      }
+    },
+    "note": "Forme valide mais unités g/ml incompatibles sans équivalence : futur contrôle métier, pas validation JSON Schema."
+  },
+  {
+    "code": "NOT_FOUND",
+    "httpStatus": 404,
+    "error": {
+      "schemaVersion": "0.1.0",
+      "code": "NOT_FOUND",
+      "message": "Requête non exécutée.",
+      "fields": [],
+      "operationId": "00000099-1111-4111-8111-111111111111"
+    },
+    "mcpResult": {
+      "resultType": "complete",
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"ok\":false,\"error\":{\"schemaVersion\":\"0.1.0\",\"code\":\"NOT_FOUND\",\"message\":\"Requête non exécutée.\",\"fields\":[],\"operationId\":\"00000099-1111-4111-8111-111111111111\"}}"
+        }
+      ],
+      "structuredContent": {
+        "ok": false,
+        "error": {
+          "schemaVersion": "0.1.0",
+          "code": "NOT_FOUND",
+          "message": "Requête non exécutée.",
+          "fields": [],
+          "operationId": "00000099-1111-4111-8111-111111111111"
+        }
+      },
+      "isError": true
+    }
+  },
+  {
+    "code": "VERSION_CONFLICT",
+    "httpStatus": 409,
+    "error": {
+      "schemaVersion": "0.1.0",
+      "code": "VERSION_CONFLICT",
+      "message": "Requête non exécutée.",
+      "fields": [],
+      "operationId": "00000099-1111-4111-8111-111111111111"
+    },
+    "mcpResult": {
+      "resultType": "complete",
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"ok\":false,\"error\":{\"schemaVersion\":\"0.1.0\",\"code\":\"VERSION_CONFLICT\",\"message\":\"Requête non exécutée.\",\"fields\":[],\"operationId\":\"00000099-1111-4111-8111-111111111111\"}}"
+        }
+      ],
+      "structuredContent": {
+        "ok": false,
+        "error": {
+          "schemaVersion": "0.1.0",
+          "code": "VERSION_CONFLICT",
+          "message": "Requête non exécutée.",
+          "fields": [],
+          "operationId": "00000099-1111-4111-8111-111111111111"
+        }
+      },
+      "isError": true
+    }
+  },
+  {
+    "code": "INCOMPLETE_DATA",
+    "httpStatus": 422,
+    "error": {
+      "schemaVersion": "0.1.0",
+      "code": "INCOMPLETE_DATA",
+      "message": "Requête non exécutée.",
+      "fields": [],
+      "operationId": "00000099-1111-4111-8111-111111111111"
+    },
+    "mcpResult": {
+      "resultType": "complete",
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"ok\":false,\"error\":{\"schemaVersion\":\"0.1.0\",\"code\":\"INCOMPLETE_DATA\",\"message\":\"Requête non exécutée.\",\"fields\":[],\"operationId\":\"00000099-1111-4111-8111-111111111111\"}}"
+        }
+      ],
+      "structuredContent": {
+        "ok": false,
+        "error": {
+          "schemaVersion": "0.1.0",
+          "code": "INCOMPLETE_DATA",
+          "message": "Requête non exécutée.",
+          "fields": [],
+          "operationId": "00000099-1111-4111-8111-111111111111"
+        }
+      },
+      "isError": true
+    }
+  },
+  {
+    "code": "DEPENDENCY_UNAVAILABLE",
+    "httpStatus": 503,
+    "error": {
+      "schemaVersion": "0.1.0",
+      "code": "DEPENDENCY_UNAVAILABLE",
+      "message": "Requête non exécutée.",
+      "fields": [],
+      "operationId": "00000099-1111-4111-8111-111111111111"
+    },
+    "mcpResult": {
+      "resultType": "complete",
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"ok\":false,\"error\":{\"schemaVersion\":\"0.1.0\",\"code\":\"DEPENDENCY_UNAVAILABLE\",\"message\":\"Requête non exécutée.\",\"fields\":[],\"operationId\":\"00000099-1111-4111-8111-111111111111\"}}"
+        }
+      ],
+      "structuredContent": {
+        "ok": false,
+        "error": {
+          "schemaVersion": "0.1.0",
+          "code": "DEPENDENCY_UNAVAILABLE",
+          "message": "Requête non exécutée.",
+          "fields": [],
+          "operationId": "00000099-1111-4111-8111-111111111111"
+        }
+      },
+      "isError": true
+    }
+  },
+  {
+    "code": "IDEMPOTENCY_CONFLICT",
+    "httpStatus": 409,
+    "error": {
+      "schemaVersion": "0.1.0",
+      "code": "IDEMPOTENCY_CONFLICT",
+      "message": "Requête non exécutée.",
+      "fields": [],
+      "operationId": "00000099-1111-4111-8111-111111111111"
+    },
+    "mcpResult": {
+      "resultType": "complete",
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"ok\":false,\"error\":{\"schemaVersion\":\"0.1.0\",\"code\":\"IDEMPOTENCY_CONFLICT\",\"message\":\"Requête non exécutée.\",\"fields\":[],\"operationId\":\"00000099-1111-4111-8111-111111111111\"}}"
+        }
+      ],
+      "structuredContent": {
+        "ok": false,
+        "error": {
+          "schemaVersion": "0.1.0",
+          "code": "IDEMPOTENCY_CONFLICT",
+          "message": "Requête non exécutée.",
+          "fields": [],
+          "operationId": "00000099-1111-4111-8111-111111111111"
+        }
+      },
+      "isError": true
+    }
+  },
+  {
+    "code": "UNDO_CONFLICT",
+    "httpStatus": 409,
+    "error": {
+      "schemaVersion": "0.1.0",
+      "code": "UNDO_CONFLICT",
+      "message": "Requête non exécutée.",
+      "fields": [],
+      "operationId": "00000099-1111-4111-8111-111111111111"
+    },
+    "mcpResult": {
+      "resultType": "complete",
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"ok\":false,\"error\":{\"schemaVersion\":\"0.1.0\",\"code\":\"UNDO_CONFLICT\",\"message\":\"Requête non exécutée.\",\"fields\":[],\"operationId\":\"00000099-1111-4111-8111-111111111111\"}}"
+        }
+      ],
+      "structuredContent": {
+        "ok": false,
+        "error": {
+          "schemaVersion": "0.1.0",
+          "code": "UNDO_CONFLICT",
+          "message": "Requête non exécutée.",
+          "fields": [],
+          "operationId": "00000099-1111-4111-8111-111111111111"
+        }
+      },
+      "isError": true
+    }
+  },
+  {
+    "code": "MISSING_INFORMATION",
+    "httpStatus": 422,
+    "error": {
+      "schemaVersion": "0.1.0",
+      "code": "MISSING_INFORMATION",
+      "message": "Requête non exécutée.",
+      "fields": [
+        {
+          "path": "/body/data/meal",
+          "reason": "required"
+        }
+      ],
+      "operationId": "00000099-1111-4111-8111-111111111111"
+    },
+    "mcpResult": {
+      "resultType": "complete",
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"ok\":false,\"error\":{\"schemaVersion\":\"0.1.0\",\"code\":\"MISSING_INFORMATION\",\"message\":\"Requête non exécutée.\",\"fields\":[{\"path\":\"/body/data/meal\",\"reason\":\"required\"}],\"operationId\":\"00000099-1111-4111-8111-111111111111\"}}"
+        }
+      ],
+      "structuredContent": {
+        "ok": false,
+        "error": {
+          "schemaVersion": "0.1.0",
+          "code": "MISSING_INFORMATION",
+          "message": "Requête non exécutée.",
+          "fields": [
+            {
+              "path": "/body/data/meal",
+              "reason": "required"
+            }
+          ],
+          "operationId": "00000099-1111-4111-8111-111111111111"
+        }
+      },
+      "isError": true
+    }
+  }
+]

@@ -19,7 +19,7 @@ exigent CI verte et revues indépendantes sur le commit exact. Le dépôt reste 
 sans protection GitHub payante : cette discipline est formalisée dans [AGENTS.md](AGENTS.md).
 
 Spécification version 1.1 et prototypes interactifs. Le cadre de travail et la CI sont en place ;
-les décisions et contrats applicatifs L0, le socle L1 et les fonctionnalités restent à réaliser.
+des propositions de [données](docs/contracts/DATA.md) et de [contrats API/MCP](docs/contracts/API-MCP.md) sont vérifiables localement. L0 reste à qualifier, puis le socle L1 et les fonctionnalités restent à réaliser.
 Le backend, le serveur MCP, la base et le déploiement de production ne sont pas implémentés.
 Les choix encore ouverts sont identifiés dans les ADR du cahier des charges.
 
@@ -31,7 +31,8 @@ Le [cadre de développement autonome](docs/DEVELOPPEMENT-AUTONOME.md) définit l
 preuves et barrières locales. Le [registre L0](docs/DECISIONS-L0.md) sépare les décisions
 validées, propositions techniques et accès manquants. Avec Node 26.2.0, installer d'abord
 les dépendances verrouillées par `npm ci --ignore-scripts`, puis lancer `npm run check`.
-Le contrôle utilise Ajv et ajv-formats pour vérifier la proposition de schémas L0 ;
+Le contrôle utilise les versions exactes verrouillées de Swagger Parser pour OpenAPI 3.1.2,
+Ajv et ajv-formats pour les schémas DATA et DTO API/MCP (strict, formats complets) ;
 il vérifie aussi la syntaxe des scripts et les suites du cadre, des prototypes et
 du correctif de miroir CI.
 
@@ -45,8 +46,12 @@ npm run test:browser
 GitHub Actions exécute ces contrôles à chaque push et pull request sur Ubuntu, avec
 `npx playwright install --with-deps chromium`. Les captures sont générées dans
 `artifacts/browser/` et conservées trois jours par run. Voir la [tâche CI](docs/tasks/L1-CI.md).
-Ces tests portent sur le cadre, les maquettes, la proposition de schémas L0 et le miroir CI ;
-ils ne prouvent pas une fonctionnalité de production. Les tests des futurs services restent à ajouter.
+Ces tests portent sur le cadre, les maquettes, les propositions de schémas DATA/API/MCP et le miroir CI ;
+ils ne prouvent pas une fonctionnalité de production. Le catalogue MCP à références locales
+n’est pas une réponse wire : la négociation et les appels avec un client de référence restent
+à vérifier séparément. Les tests des futurs services restent à ajouter. Le format base64
+photo proposé exige une assertion canonique bornée, documentée dans le contrat API/MCP ;
+la détection du média et la conservation attendent ADR-05.
 
 Hermès est un client externe du contrat MCP ; aucun accès à sa configuration n'est requis.
 Le socle peut être développé sous Docker sur ce PC. Ubuntu intervient pour le déploiement réel.
