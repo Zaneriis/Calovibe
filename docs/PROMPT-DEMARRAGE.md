@@ -10,7 +10,7 @@ celui où ce prompt est exécuté.
 Le dépôt est https://github.com/Zaneriis/Calovibe, privé. Le dossier du projet sur ce PC
 est C:\Users\Leo14\Documents\ChatGPT\Calovibe. Avant toute modification, lis dans cet ordre
 AGENTS.md, docs/CAHIER-DES-CHARGES.md, docs/BACKLOG.md, docs/DECISIONS-L0.md,
-docs/DEVELOPPEMENT-AUTONOME.md et docs/ORCHESTRATION.md. Vérifie l'état réel des branches,
+docs/DEVELOPPEMENT-AUTONOME.md, docs/ORCHESTRATION.md et docs/MODELES-AGENTS.md. Vérifie l'état réel des branches,
 worktrees, PR, CI et tâches : ne suppose pas que l'historique de l'autre conversation est disponible.
 
 Le cadre et la CI existent ; les décisions techniques et contrats applicatifs L0 restent
@@ -29,6 +29,15 @@ Organise le travail ainsi :
 - Réviseurs distincts de l'auteur : fonctionnel et qualité des tests, plus UI/UX lorsque
   pertinent. Applique les matrices du dépôt, preuves reproductibles et verdicts sur SHA exact.
   Toute non-applicabilité doit être motivée ; aucune auto-approbation ni rôle simulé.
+
+Applique le profil de modèles Équilibré que j'ai choisi : GPT-6.1 Sol pour coordination,
+développement courant et revues ; GPT-6 Luna pour les seules tâches simples et bornées ;
+GPT-6 Astra pour un blocage difficile justifié. Utilise les niveaux recommandés et règles
+d'escalade de docs/MODELES-AGENTS.md. Vérifie la disponibilité et les paramètres effectifs,
+ne prétends pas changer le modèle du coordinateur par simple instruction. Pas d'achat de
+crédits, dépassement payant, API payante ajoutée ni changement de fournisseur.
+Si un modèle est indisponible, conserve le modèle déjà sélectionné seulement s'il convient,
+consigne l'écart et poursuis ce qui reste faisable ; ne dégrade pas silencieusement une revue critique.
 
 Avant chaque tâche, écris ses critères d'acceptation, cas nominal/erreur/limites et stratégie
 de vérification. Vérifie l'indépendance des fichiers ET des contrats/données. Coordonne toute

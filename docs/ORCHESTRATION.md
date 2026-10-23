@@ -4,6 +4,9 @@ Décision du propriétaire du 23 octobre 2026 : un coordinateur, autant de déve
 de tâches réellement indépendantes, et des réviseurs indépendants. Aucun plafond métier
 fixé à deux développeurs. Les capacités des outils et de la machine bornent la concurrence.
 AGENTS.md, CAHIER-DES-CHARGES.md et BACKLOG.md restent les sources de vérité.
+Le profil de modèles Équilibré est validé par le propriétaire et décrit dans
+[MODELES-AGENTS.md](MODELES-AGENTS.md). Il s'applique aux agents de développement,
+pas au futur fournisseur d'analyse photo.
 
 ## État de départ à revérifier
 

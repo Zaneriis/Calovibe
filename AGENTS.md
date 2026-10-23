@@ -26,6 +26,7 @@ Lire `docs/CAHIER-DES-CHARGES.md` et `docs/BACKLOG.md` avant toute implémentati
 - Le coordinateur découpe, attribue les périmètres et contrats, suit les preuves et intègre. Le propriétaire autorise explicitement la délégation à plusieurs agents développeurs et à des réviseurs indépendants selon [ORCHESTRATION.md](docs/ORCHESTRATION.md).
 - Lancer un développeur par tâche prête et réellement indépendante, dans la limite des capacités d’agents et ressources disponibles ; aucun plafond fixé à deux développeurs. Chaque développeur possède sa branche, son worktree et sa pull request vers `develop`.
 - Réserver ou libérer de la capacité pour les revues ; plusieurs PR avancent en parallèle, les intégrations restent séquentielles sous la responsabilité du coordinateur. Aucun développeur n’intègre lui-même sa PR.
+- Modèles : profil Équilibré choisi par le propriétaire, selon [MODELES-AGENTS.md](docs/MODELES-AGENTS.md) : Sol pour coordination/développement/revues, Luna pour les tâches simples, Astra pour un blocage difficile. Vérifier les capacités réelles, consigner le choix effectif, ne pas acheter de crédits ni activer un dépassement payant.
 
 - Les revues fonctionnelle, UI/UX et qualité des tests sont distinctes ; le développeur n’auto-approuve pas son travail.
 - Chaque retour bloquant doit citer une exigence, un risque concret ou une référence, avec preuve et résultat attendu.

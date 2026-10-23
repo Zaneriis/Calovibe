@@ -9,6 +9,7 @@ Projet personnel de suivi alimentaire, hydratation, poids et objectifs, accessib
 3. Suivre le [backlog et les critères d’acceptation](docs/BACKLOG.md).
 4. Pour coordonner le développement parallèle, suivre [ORCHESTRATION.md](docs/ORCHESTRATION.md).
    Le [prompt de démarrage](docs/PROMPT-DEMARRAGE.md) est prêt à copier dans un nouveau contexte.
+   Le [profil de modèles Équilibré](docs/MODELES-AGENTS.md) est validé pour cette organisation.
 
 ## État actuel
 
