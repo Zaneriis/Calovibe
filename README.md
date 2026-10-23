@@ -25,12 +25,14 @@ Les choix encore ouverts sont identifiés dans les ADR du cahier des charges.
 
 Références : [accueil](mockups/calovibe-accueil.html), [ajout manuel](mockups/calovibe-ajout.html), [photo](mockups/calovibe-photo.html). Les fragments sont destinés à l’aperçu conversationnel ; ils ne constituent pas des pages de production autonomes.
 
-## Contrôles existants des prototypes
+## Contrôles existants
 
 Le [cadre de développement autonome](docs/DEVELOPPEMENT-AUTONOME.md) définit les rôles,
 preuves et barrières locales. Le [registre L0](docs/DECISIONS-L0.md) sépare les décisions
-validées, propositions techniques et accès manquants. Démarrer par `npm run check`
-avec Node 26.2.0 ; aucun paquet n'est nécessaire pour ce contrôle local.
+validées, propositions techniques et accès manquants. Avec Node 26.2.0, installer d'abord
+les dépendances verrouillées par `npm ci --ignore-scripts`, puis lancer `npm run check`.
+Le contrôle utilise Ajv et ajv-formats pour vérifier la proposition de schémas L0 ;
+il exécute 67 tests, dont 38 tests de contrat, ainsi que la syntaxe de six scripts.
 
 ```sh
 npm ci --ignore-scripts
@@ -42,7 +44,8 @@ npm run test:browser
 GitHub Actions exécute ces contrôles à chaque push et pull request sur Ubuntu, avec
 `npx playwright install --with-deps chromium`. Les captures sont générées dans
 `artifacts/browser/` et conservées trois jours par run. Voir la [tâche CI](docs/tasks/L1-CI.md).
-Ces tests portent sur le cadre et les maquettes ; les tests des futurs services restent à ajouter.
+Ces tests portent sur le cadre, les maquettes et la proposition de schémas L0 ;
+ils ne prouvent pas une fonctionnalité de production. Les tests des futurs services restent à ajouter.
 
 Hermès est un client externe du contrat MCP ; aucun accès à sa configuration n'est requis.
 Le socle peut être développé sous Docker sur ce PC. Ubuntu intervient pour le déploiement réel.

@@ -47,3 +47,20 @@ Limites : proposition non ratifiée ; aucun stockage, calcul métier, transport,
 La PR doit viser develop. Les preuves de commit/CI/revues sont conservées dans la PR au SHA exact après commit afin de ne pas invalider les approbations par un ajout documentaire.
 
 Contrôle intermédiaire effectivement en échec : ajout de minItems au cas MISSING_INFORMATION sans type array dans la sous-branche ; le mode strict Ajv a bloqué npm test/check. Correction : type array explicite, mode strict conservé ; le test de compilation et le cas fields vide protègent cette régression. Suite complète relancée avant candidature.
+
+## Actualisation après intégration de la coordination
+
+Extension attribuée par le coordinateur : README.md et docs/DEVELOPPEMENT-AUTONOME.md,
+uniquement pour les instructions appelantes de check et le périmètre des tests.
+Critères avant modification : documenter npm ci --ignore-scripts avant check, Ajv et
+ajv-formats verrouillés, six scripts contrôlés et 67 tests dont 38 contrats ; ne pas
+présenter les contrôles du cadre/maquettes/proposition comme une preuve de production.
+Nominal : installation verrouillée puis suite complète ; erreur : aucune dépendance
+implicite ou ancien nombre de scripts annoncé ; limite : aucun canal métier nouveau.
+Vérification : lecture croisée des scripts/package et des deux documents, puis npm test,
+npm run check, npm run test:browser et npm audit sur la candidate committée ; résultats
+et nouveau SHA dans la PR, nouvelles revues indépendantes requises.
+
+origin/develop db7c222f87db4321eeb1fb24e6de8ac4acac49bf fusionnée dans la branche de tâche
+sans rebase, sans conflit et sans modification du registre de coordination. Les preuves
+ci-dessus concernent la candidate initiale ; elles ne valent pas approbation du nouveau SHA.

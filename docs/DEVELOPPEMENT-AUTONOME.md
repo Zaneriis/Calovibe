@@ -59,17 +59,21 @@ les agents ne peuvent résoudre. Les écarts ordinaires restent entre développe
 
 ## Exécution locale
 
-Node 26.2.0 est le runtime **observé et fixé pour cet outillage**, sans dépendance npm.
-Cela ne choisit pas le runtime de production (ADR-01).
+Node 26.2.0 est le runtime **observé et fixé pour cet outillage**. Installer les
+dépendances npm verrouillées avant les contrôles : Ajv et ajv-formats valident la
+proposition de schémas L0. Cela ne choisit pas le runtime de production (ADR-01).
 
 ```
+npm ci --ignore-scripts
 npm run check
 npm run test:browser
 npm run gate -- artifacts/candidate.json
 ```
 
-`check` vérifie le runtime, la syntaxe des cinq scripts et les tests unitaires du cadre
-et des prototypes. Ce n'est ni un linter sémantique ni une vérification TypeScript.
+`check` vérifie le runtime, la syntaxe de six scripts (dont tests/contracts-data.test.cjs)
+et 67 tests : 29 du cadre/prototypes et 38 de la proposition de schémas L0.
+Ces contrôles ne prouvent pas une fonctionnalité de production. Ce n'est ni un linter
+sémantique ni une vérification TypeScript.
 Il n'existe pas encore de build/types applicatifs : non applicables au cadre, à définir
 avec ADR-01 avant L1. Aucun contrôle applicatif fictif n'est déclaré réussi.
 Le test navigateur utilise Playwright et Lucide verrouillés dans package-lock.json et
@@ -91,8 +95,9 @@ vérification des preuves et du respect des règles Git d'AGENTS.md par le coord
 
 ## Organisation des contrôles L1
 
-Le workflow `.github/workflows/ci.yml` exécute actuellement syntaxe, tests du cadre et
-des prototypes, puis navigateur, à chaque push et pull request, sans filtre de chemins.
+Le workflow `.github/workflows/ci.yml` exécute actuellement syntaxe, tests du cadre,
+des prototypes et de la proposition de schémas L0 via check, puis navigateur,
+à chaque push et pull request, sans filtre de chemins.
 Il fonctionne sur Ubuntu avec jeton en lecture, sans secret applicatif ni déploiement.
 Les actions sont épinglées à leur SHA et les captures conservées trois jours.
 Les contrôles applicatifs ci-dessous s'ajouteront à mesure de leur implémentation.
