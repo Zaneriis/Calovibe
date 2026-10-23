@@ -1,6 +1,6 @@
 # ADR-02 — Accès personnel web/API et autorisation MCP HTTP
 
-Date : 23 octobre 2026. **Statut : proposition technique, décision propriétaire et qualification d'interopérabilité en attente.** L'étude L0-ADR02 ne clôt ni ADR-02, ni L0, ni L1. Aucun service d'authentification n'est implémenté. [Fiche et critères](../tasks/L0-ADR02.md).
+Date : 23 octobre 2026. **Statut : proposition technique, qualification d'interopérabilité en attente.** L'étude L0-ADR02 ne clôt ni ADR-02, ni L0, ni L1. Aucun service d'authentification n'est implémenté. [Fiche et critères](../tasks/L0-ADR02.md).
 
 ## Contexte et recommandation
 
@@ -13,7 +13,7 @@ Pour Keycloak, cette alternative est **conditionnelle aux essais**, pas une déc
 | Option | Bénéfice | Charge / limite | Avis |
 |---|---|---|---|
 | Logto OSS 1.45.0 dédié sur Ubuntu | Produit Node/PostgreSQL, parcours utilisateur existant, documentation MCP v2 et délégation aval | Qualification des fonctionnalités dans la distribution OSS exacte et des restrictions de scopes encore nécessaire ; limites commerciales à vérifier | Candidat prioritaire de qualification, pas autorité validée |
-| Keycloak 26.8.1 dédié sur Ubuntu | Login, gestion du compte, récupération et échange de jetons dans une autorité existante | Conteneur, base/rôle SQL dédiés, mises à jour et sauvegarde ; support MCP expérimental à qualifier | Alternative sous réserve des essais et du choix humain |
+| Keycloak 26.8.1 dédié sur Ubuntu | Login, gestion du compte, récupération et échange de jetons dans une autorité existante | Conteneur, base/rôle SQL dédiés, mises à jour et sauvegarde ; support MCP expérimental à qualifier | Alternative technique sous réserve des essais |
 | `oidc-provider` 9.13.0 intégré au processus Node retenu si ADR-01 le confirme | Pas de service d'identité supplémentaire ; bibliothèque MIT, découverte, PKCE, RFC 8707 | Écrans de login/consentement, compte, récupération, adaptateur de persistance et délégation API restent à assembler ; ce n'est pas un produit d'identité prêt à exploiter | Alternative techniquement possible, pas le défaut pour réduire le seul nombre de conteneurs |
 | Autorité OAuth/OIDC déjà exploitée par le propriétaire | Peut éviter un service local supplémentaire | Aucune autorité fournie ; vérifier RFC 8707, délégation vers API, clients publics et coût ; une offre distante implique un choix explicite de fournisseur et de données d'identité transmises | À comparer uniquement si une autorité réelle est identifiée |
 
@@ -25,11 +25,13 @@ Pour Logto, proposer un conteneur, une base/rôle PostgreSQL isolés et une enve
 
 Pour l'essai Keycloak : proposer un conteneur unique, limite initiale **2 Gio de RAM et 1 vCPU**, sans cluster, et une base/rôle isolés dans le PostgreSQL prévu. C'est une enveloppe de qualification à mesurer, pas un dimensionnement Ubuntu validé. Le [guide officiel de dimensionnement](https://www.keycloak.org/high-availability/multi-cluster/concepts-memory-and-cpu-sizing) donne notamment 1 250 MB de base dans son contexte HA/cache et demande des mesures ; ces chiffres ne sont pas un minimum garanti pour un compte personnel. ADR-03 doit confirmer la capacité réelle avant production. Pas de port d'administration supplémentaire exposé sur Internet.
 
-## Décision indispensable et autonomie
+## Choix technique et autonomie
 
-Le coordinateur doit présenter au propriétaire deux options concrètes avant L1 authentifié : **autorité locale proposée (qualification Logto OSS prioritaire, Keycloak en alternative)**, ou **autorité existante à identifier**. Le choix de l'autorité n'a pas été fourni et est explicitement ouvert dans DECISIONS-L0. Pour une autorité distante, identifier d'abord fournisseur, données d'identité et coût ; aucun consentement à ce transfert ni aucune dépense ne se déduisent de cet ADR.
+La qualification locale de Logto OSS, puis de Keycloak si nécessaire, est autorisée par le mandat technique autonome, sans dépense ni nouvelle exposition administrative. Après preuves et revues, le coordinateur peut retenir la solution technique dans ce cadre ; aucune validation humaine de l'autorité locale n'est inventée ni exigée comme préalable routinier. Le caractère ouvert du choix dans DECISIONS-L0 exige une proposition et sa vérification, pas un veto humain ajouté par cet ADR.
 
-Les détails techniques suivants peuvent être préparés et testés sous mandat : versions, configuration de clients de test, audiences, scopes, sessions, tests automatisés et conteneurs locaux isolés. Ils ne nécessitent pas une validation humaine routinière. Aucun accès à Hermès n'est nécessaire. L'activation d'une console administrative publique, un achat ou une opération destructive restent des décisions séparées. Les domaines réels, secrets et moyens de récupération seront configurés lors du raccordement ; les URL `example.test` ci-dessous sont des illustrations.
+Savoir si le propriétaire exploite déjà une autorité peut éviter un service supplémentaire : cette information est utile mais ne bloque pas la qualification locale. En revanche, choisir un fournisseur distant et lui transmettre des données d'identité, engager une dépense ou rendre une console administrative publique exige une décision humaine explicite. Aucun consentement à ces changements ne se déduit de cet ADR.
+
+Les détails techniques suivants peuvent être préparés et testés sous mandat : versions, configuration de clients de test, audiences, scopes, sessions, tests automatisés et conteneurs locaux isolés. Aucun accès à Hermès n'est nécessaire. Les opérations destructives restent traitées séparément. Les domaines réels, secrets et moyens de récupération seront configurés lors du raccordement ; les URL `example.test` ci-dessous sont des illustrations.
 
 ## Web et API : session proposée
 
@@ -73,21 +75,24 @@ Client proposé : **MCP Inspector 2.12.0**, Node `>=22.19.0`, confirmé par npm 
 
 La commande de préparation réellement exécutée avec succès (code 0), `npm exec --yes --package=@modelcontextprotocol/inspector@2.12.0 -- inspector --cli --help` a affiché l'aide CLI ; elle vérifie seulement son démarrage. Aucun faux serveur OAuth Node n'est livré dans cette étude : il pourrait tester le client et le transport dans une tâche dédiée, mais ne qualifierait ni Logto ni Keycloak. Pour l'implémentation, verrouiller aussi les dépendances transitives du client de test ; une commande npm à version racine seule n'établit pas une chaîne d'essai reproductible complète. Ensuite lancer contre la vraie URL de test : `inspector --cli https://example.test/mcp --transport http --client-id <client-public-de-test> --method tools/list`. Cette dernière commande est un exemple à adapter, **pas un test exécuté**.
 
-| ID | Scénario à automatiser avant clôture de L0/L1 concerné | Résultat requis |
-|---|---|---|
-| AUTH-01 | Connexion web, lecture, déconnexion, expiration | Session rotatée, lecture autorisée puis 401 ; brouillon/date/repas conservés sans écriture implicite |
-| AUTH-02 | Mutation cookie sans CSRF, origine étrangère, session fixée, compte inconnu | Refus et zéro écriture ; aucune fuite du journal |
-| AUTH-03 | Inspector sans jeton → découverte → PKCE → lecture | Challenge/metadonnées et issuer cohérents ; accès seulement au propriétaire |
-| AUTH-04 | Consentement lecture puis écriture explicite, date passée et repas précis | Jeton aval distinct, seule cible modifiée ; API et web voient le résultat |
-| AUTH-05 | Appel écriture avec jeton lecture, consentement refusé | 403/challenge adéquat ; aucune mutation et aucun élargissement silencieux |
-| AUTH-06 | Jeton API au MCP, jeton MCP à API, issuer/signature/audience expirés ou erronés | 401 aux deux frontières, aucun contournement par transport/session |
-| AUTH-07 | Échange indisponible/refusé ou tentative d'augmentation des scopes | Refus explicite, aucune écriture, aucun compte technique de repli |
-| AUTH-08 | PKCE absent/incorrect, state/iss/redirect URI incorrects, réutilisation du code | Flux arrêté avant session/jeton utilisable |
-| AUTH-09 | Nouvelle tentative d'écriture après réponse perdue et reconnexion ; conflit de version | Une opération, pas de doublon ; conflit sans écrasement, annulation ciblée |
-| AUTH-10 | Rotation de clés/refresh, révocation, redémarrage et restauration isolée de l'autorité | Refus conforme après invalidation, récupération documentée, aucune donnée personnelle exposée |
+Les échéances suivent le backlog : L0 qualifie le contrat et le client de référence sur des fixtures sans métier ; L1 vérifie les services et leur authentification réels ; L2 vérifie les données et parcours métier. Une fixture synthétique ne qualifie pas l'autorité retenue. La clôture de L0 ne dépend pas d'un journal L2 implémenté. Aucun scénario ci-dessous n'a été exécuté dans cette étude.
+
+| ID | Lot exigible | Scénario à automatiser | Résultat requis |
+|---|---|---|---|
+| AUTH-REF | L0 | Contrat MCP et client de référence : lecture, écriture et refus sur fixture technique sans journal | Messages et résultats validables, refus observé sans effet dans la fixture ; nature synthétique et limites explicites |
+| AUTH-01 | L1 | Connexion web, lecture d'une ressource privée technique, déconnexion, expiration | Session rotatée, lecture autorisée puis 401 ; aucune mutation implicite |
+| AUTH-02 | L1 | Mutation technique cookie sans CSRF, origine étrangère, session fixée, compte inconnu | Refus et zéro effet ; aucune réponse privée exposée |
+| AUTH-03 | L1 | Inspector sans jeton → découverte → PKCE → lecture sur services et autorité réels | Challenge/métadonnées et issuer cohérents ; accès seulement au propriétaire |
+| AUTH-04 | L2 | Consentement lecture puis écriture explicite du journal, date passée et repas précis | Jeton aval distinct, seule cible modifiée ; API et web voient le résultat |
+| AUTH-05 | L1 | Mutation technique avec jeton lecture, consentement refusé | 403/challenge adéquat ; aucun effet et aucun élargissement silencieux |
+| AUTH-06 | L1 | Jeton API au MCP, jeton MCP à API, issuer/signature/audience expirés ou erronés | 401 aux deux frontières réelles, aucun contournement par transport/session |
+| AUTH-07 | L1 | Échange indisponible/refusé ou tentative d'augmentation des scopes sur mutation technique | Refus explicite, aucun effet, aucun compte technique de repli |
+| AUTH-08 | L1 | PKCE absent/incorrect, state/iss/redirect URI incorrects, réutilisation du code | Flux arrêté avant session/jeton utilisable |
+| AUTH-09 | L2 | Expiration/reconnexion avec brouillon et date/repas d'origine ; nouvelle tentative après réponse d'écriture perdue ; conflit de version | Brouillon et contexte conservés sans écriture implicite ; une opération, pas de doublon ; conflit sans écrasement et annulation ciblée |
+| AUTH-10 | L1 | Rotation de clés/refresh, révocation, redémarrage et restauration isolée de l'autorité | Refus conforme après invalidation, récupération documentée, aucune donnée personnelle exposée |
 
 Les erreurs métier de l'API gardent leurs codes structurés distincts (validation, conflit, introuvable, données incomplètes, dépendance). Les tests de contrats MCP du lot L0 fixeront leur enveloppe typée. Les annotations MCP de lecture/écriture ne remplacent jamais l'autorisation.
 
 **Preuves réelles de cette étude :** sources officielles consultées ; métadonnées npm ; `npm ci --ignore-scripts` réussi (3 paquets, audit 0 vulnérabilité signalée), `npm run check` réussi (29/29), `npm run test:browser` réussi (parcours prototypes 320–1024 px). Ces contrôles protègent le cadre existant : ils ne testent aucune authentification applicative.
 
-**Limites :** aucune autorité, route privée, API métier ou serveur MCP Calovibe exécutable à ce stade ; aucune interopérabilité lecture/écriture/refus réellement exécutée. Aucun compte Hermès, fournisseur distant, accès Ubuntu, domaine, ressource Docker ou mesure mémoire qualifiés. Les scénarios AUTH-01 à AUTH-10 restent des conditions de livraison, pas des tests verts. Aucun écran modifié ; non-applicabilité UI à faire confirmer indépendamment. Revues fonctionnelle et qualité des preuves requises sur le commit exact ; aucun auto-avis d'approbation.
+**Limites :** aucune autorité, route privée, API métier ou serveur MCP Calovibe exécutable à ce stade ; aucune interopérabilité lecture/écriture/refus réellement exécutée. Aucun compte Hermès, fournisseur distant, accès Ubuntu, domaine, ressource Docker ou mesure mémoire qualifiés. Les scénarios AUTH-REF et AUTH-01 à AUTH-10 restent des conditions de livraison aux lots indiqués, pas des tests verts. Aucun écran modifié ; non-applicabilité UI à faire confirmer indépendamment. Revues fonctionnelle et qualité des preuves requises sur le commit exact ; aucun auto-avis d'approbation.
