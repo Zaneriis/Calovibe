@@ -1,0 +1,12 @@
+{
+  "name": "calovibe-development",
+  "private": true,
+  "version": "0.0.0",
+  "engines": { "node": "26.2.0" },
+  "scripts": {
+    "check": "node scripts/check.cjs",
+    "test": "node --test tests/review-gate.test.cjs mockups/tests/navigation.test.cjs",
+    "test:browser": "node mockups/tests/browser-check.cjs",
+    "gate": "node scripts/review-gate.cjs"
+  }
+}
