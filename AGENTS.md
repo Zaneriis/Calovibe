@@ -23,6 +23,10 @@ Lire `docs/CAHIER-DES-CHARGES.md` et `docs/BACKLOG.md` avant toute implémentati
 
 ## Revues et autonomie
 
+- Le coordinateur découpe, attribue les périmètres et contrats, suit les preuves et intègre. Le propriétaire autorise explicitement la délégation à plusieurs agents développeurs et à des réviseurs indépendants selon [ORCHESTRATION.md](docs/ORCHESTRATION.md).
+- Lancer un développeur par tâche prête et réellement indépendante, dans la limite des capacités d’agents et ressources disponibles ; aucun plafond fixé à deux développeurs. Chaque développeur possède sa branche, son worktree et sa pull request vers `develop`.
+- Réserver ou libérer de la capacité pour les revues ; plusieurs PR avancent en parallèle, les intégrations restent séquentielles sous la responsabilité du coordinateur. Aucun développeur n’intègre lui-même sa PR.
+
 - Les revues fonctionnelle, UI/UX et qualité des tests sont distinctes ; le développeur n’auto-approuve pas son travail.
 - Chaque retour bloquant doit citer une exigence, un risque concret ou une référence, avec preuve et résultat attendu.
 - Les suggestions restent non bloquantes. Aucun score global ne compense un échec requis.

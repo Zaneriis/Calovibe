@@ -7,6 +7,8 @@ Projet personnel de suivi alimentaire, hydratation, poids et objectifs, accessib
 1. Lire [AGENTS.md](AGENTS.md).
 2. Lire le [cahier des charges](docs/CAHIER-DES-CHARGES.md).
 3. Suivre le [backlog et les critères d’acceptation](docs/BACKLOG.md).
+4. Pour coordonner le développement parallèle, suivre [ORCHESTRATION.md](docs/ORCHESTRATION.md).
+   Le [prompt de démarrage](docs/PROMPT-DEMARRAGE.md) est prêt à copier dans un nouveau contexte.
 
 ## État actuel
 
@@ -15,7 +17,10 @@ Règle Git : `master` est figée, **jamais de fusion ni de push vers `master`**.
 exigent CI verte et revues indépendantes sur le commit exact. Le dépôt reste privé,
 sans protection GitHub payante : cette discipline est formalisée dans [AGENTS.md](AGENTS.md).
 
-Spécification version 1.0 et prototypes interactifs. Le backend, le serveur MCP, la base et le déploiement de production restent à implémenter. Les choix encore ouverts sont identifiés dans les ADR du cahier des charges.
+Spécification version 1.1 et prototypes interactifs. Le cadre de travail et la CI sont en place ;
+les décisions et contrats applicatifs L0, le socle L1 et les fonctionnalités restent à réaliser.
+Le backend, le serveur MCP, la base et le déploiement de production ne sont pas implémentés.
+Les choix encore ouverts sont identifiés dans les ADR du cahier des charges.
 
 Références : [accueil](mockups/calovibe-accueil.html), [ajout manuel](mockups/calovibe-ajout.html), [photo](mockups/calovibe-photo.html). Les fragments sont destinés à l’aperçu conversationnel ; ils ne constituent pas des pages de production autonomes.
 

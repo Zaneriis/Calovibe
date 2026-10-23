@@ -23,6 +23,10 @@ Les maquettes et données existantes sont conservées.
 
 ## Circuit et responsabilités
 
+L'[ordonnancement multi-agents](ORCHESTRATION.md) complète ce circuit : capacité variable,
+worktrees isolés, propriété des fichiers/contrats, reprise et intégration séquentielle.
+Le [prompt de reprise](PROMPT-DEMARRAGE.md) permet de démarrer dans un autre contexte.
+
 Le coordinateur choisit une petite tâche du backlog dont les dépendances sont satisfaites,
 prépare critères/scénarios/commandes, puis confie le code à un développeur. Il maintient le
 journal des blocages par identifiant stable et le nombre de corrections infructueuses.
