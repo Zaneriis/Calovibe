@@ -68,12 +68,18 @@ npm run test:browser
 npm run gate -- artifacts/candidate.json
 ```
 
-`check` vérifie le runtime, la syntaxe des cinq scripts et les tests unitaires du cadre
-et des prototypes. Ce n'est ni un linter sémantique ni une vérification TypeScript.
+`check` vérifie le runtime, la syntaxe des scripts du cadre, du correctif de miroir CI
+et des tests, puis les suites de revue, navigation et miroir CI.
+Ce n'est ni un linter sémantique ni une vérification TypeScript.
 Il n'existe pas encore de build/types applicatifs : non applicables au cadre, à définir
 avec ADR-01 avant L1. Aucun contrôle applicatif fictif n'est déclaré réussi.
 Le test navigateur utilise Playwright et Lucide verrouillés dans package-lock.json et
-Chromium installé par Playwright. Exécuter `npm ci --ignore-scripts`, puis
+Chromium installé par Playwright. Le runner GitHub Ubuntu 24.04 utilise sa liste de miroirs
+`/etc/apt/apt-mirrors.txt` : avant Playwright, la CI remplace la seule entrée Azure de
+priorité 1 par le dépôt Ubuntu principal en HTTPS. Les priorités, autres miroirs et
+sources deb822/signatures sont conservés ; un format inattendu échoue explicitement.
+Ce correctif est propre au runner éphémère ; aucun APT du PC local n'est configuré.
+Exécuter `npm ci --ignore-scripts`, puis
 `npx playwright install chromium` (Linux CI : `--with-deps`). Il reste requis pour
 les changements des prototypes ; ses captures sont dans `artifacts/browser/`.
 
