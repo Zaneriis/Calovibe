@@ -2,6 +2,7 @@ const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const { validate } = require('../scripts/review-gate.cjs');
 const commit = 'a'.repeat(40);
+test('L1-CI : échec volontaire de démonstration', () => assert.fail('L1-CI-PROBE'));
 function candidate() {
   return { task: 'L0-PILOT', commit, developer: 'developer', uiAffected: false, failedCycles: 0,
     checks: [{ commit, command: 'npm run check', status: 'passed', evidence: 'test-output' }],
