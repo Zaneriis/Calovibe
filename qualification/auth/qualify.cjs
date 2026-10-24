@@ -35,12 +35,14 @@ function realmSeed({ mcp, api, redirect, password, exchangeSecret, otherSecret }
   const audience = target => ({ name: 'audience-' + target, protocol: 'openid-connect',
     protocolMapper: 'oidc-audience-mapper', config: { 'included.client.audience': target,
       'access.token.claim': 'true', 'id.token.claim': 'false' } });
+  const subjectMapper = { name: 'subject', protocol: 'openid-connect',
+    protocolMapper: 'oidc-sub-mapper', config: { 'access.token.claim': 'true' } };
   const base = { protocol: 'openid-connect', enabled: true, fullScopeAllowed: false,
     defaultClientScopes: [], optionalClientScopes: [read, write], directAccessGrantsEnabled: false };
   const resource = (uri, enabled, clientSecret) => ({ ...base, clientId: uri, publicClient: false,
     secret: clientSecret, standardFlowEnabled: false,
     attributes: { resource_url: uri, 'standard.token.exchange.enabled': String(enabled) },
-    protocolMappers: [], defaultClientScopes: [write, 'hidden-marker'] });
+    protocolMappers: [subjectMapper], defaultClientScopes: [read, write, 'hidden-marker'] });
   return { realm: 'qualification', enabled: true, sslRequired: 'none', registrationAllowed: false,
     resetPasswordAllowed: false, rememberMe: false, accessTokenLifespan: 60,
     roles: { client: { [api]: [{ name: 'read' }, { name: 'write' }] } },
@@ -51,7 +53,7 @@ function realmSeed({ mcp, api, redirect, password, exchangeSecret, otherSecret }
     clients: [{ ...base, clientId: 'reference-public', publicClient: true, consentRequired: true,
       standardFlowEnabled: true, redirectUris: [redirect],
       attributes: { 'pkce.code.challenge.method': 'S256' },
-      protocolMappers: [audience(mcp)] },
+      protocolMappers: [subjectMapper, audience(mcp)] },
     resource(mcp, true, exchangeSecret), resource(api, false, secret()),
     { ...resource('unauthorized-client', false, otherSecret), defaultClientScopes: [] }],
     clientScopes: [read, write].map((name, index) => ({ name, protocol: 'openid-connect',
@@ -163,6 +165,7 @@ async function main() {
     report.phase = 'discovery';
     let metadata;
     for (let attempt = 0; attempt < 90; attempt++) {
+      controller.signal.throwIfAborted();
       try {
         const response = await boundedFetch(issuer + '/.well-known/openid-configuration');
         if (response.ok) { metadata = await response.json(); break; }
@@ -239,7 +242,9 @@ async function main() {
         subject_token: subject, subject_token_type: accessType, requested_token_type: accessType, audience });
       if (scope !== null) body.set('scope', scope);
       const response = await boundedFetch(metadata.token_endpoint, { method: 'POST', body });
-      return { status: response.status, json: await response.json() };
+      const json = await response.json();
+      report.lastExchange = { status: response.status, error: json.error };
+      return { status: response.status, json };
     }
     report.phase = 'token-exchange';
     const downstream = await exchange(incoming.access_token);
@@ -298,7 +303,7 @@ async function main() {
     const altered = incoming.access_token.slice(0, -12) + 'invalidsuffix';
     const badSubject = await exchange(altered);
     assert.ok(badSubject.status >= 400 && !badSubject.json.access_token);
-    const expiresIn = initial.exp * 1000 - Date.now() + 2000;
+    const expiresIn = Math.max(initial.exp, issued.exp) * 1000 - Date.now() + 2000;
     assert.ok(expiresIn < 65_000, 'Fixture expiry remains bounded');
     if (expiresIn > 0) await new Promise(resolve => setTimeout(resolve, expiresIn));
     const expired = await exchange(incoming.access_token);
@@ -311,7 +316,11 @@ async function main() {
     if (process.argv.includes('--failure-cleanup') && error.code === 'AQ_EXPECTED_FAILURE') {
       report.failureInjectionVerified = true;
       pass('AQ08: deliberate failure after startup reaches cleanup');
-    } else { report.failedPhase = report.phase; throw error; }
+    } else {
+      report.failedPhase = report.phase;
+      report.failure = { name: error.name, code: error.code, claim: error.claim };
+      throw error;
+    }
   } finally {
     clearTimeout(deadline);
     const localCleanup = await Promise.allSettled([
