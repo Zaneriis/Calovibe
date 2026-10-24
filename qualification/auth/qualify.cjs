@@ -193,13 +193,20 @@ async function main() {
       });
       try {
         const page = await context.newPage();
+        report.browserStep = 'login-form';
         await page.goto(pending.authorizationUrl.href);
         await page.locator('#username').fill('synthetic-user');
         await page.locator('#password').fill(password);
         await page.locator('#kc-login').click();
+        report.browserStep = 'consent-or-callback';
         await Promise.race([page.waitForURL(url => url.href.startsWith(redirect)),
-          page.locator('input[name="accept"]').waitFor({ state: 'visible' })]);
-        if (!page.url().startsWith(redirect)) await page.locator('input[name="accept"]').click();
+          page.locator('[name="accept"]').waitFor({ state: 'visible' })]);
+        if (!page.url().startsWith(redirect)) {
+          assert.ok((await page.locator('body').innerText()).includes('Synthetic read permission'));
+          report.explicitConsentShown = true;
+          await page.locator('[name="accept"]').click();
+        }
+        report.browserStep = 'callback';
         await page.waitForURL(url => url.href.startsWith(redirect));
         const callback = new URL(page.url());
         assert.equal(callback.searchParams.get('state'), state);
