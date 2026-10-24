@@ -224,7 +224,10 @@ async function main() {
     assert.ok(scopes(initial).includes(read));
     assert.ok(!scopes(initial).includes(write));
     pass('AQ04/05: real browser consent and Code/PKCE; signed MCP-only URI token');
-    await assert.rejects(exchangeAuthorization(issuer, auth));
+// A replay intentionally invalidates its client session in Keycloak; isolate it from the nominal subject.
+    const replayAuth = await authorize();
+    await exchangeAuthorization(issuer, replayAuth);
+    await assert.rejects(exchangeAuthorization(issuer, replayAuth));
     const badVerifier = await authorize();
     await assert.rejects(exchangeAuthorization(issuer, { ...badVerifier, codeVerifier: secret() }));
     const changedResource = await authorize();
