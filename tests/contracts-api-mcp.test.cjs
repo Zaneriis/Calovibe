@@ -269,3 +269,9 @@ test('REG-PHOTO-VERIFY-01 : une correction exige une intention de vérification 
   value.body.data.items[0].verificationAction = 'verify';
   accepts(resolvedTools.photo_correct_input, value);
 });
+
+test('S-FUNC-OP-EXAMPLE-01 : la consultation retourne l’opération demandée par son ID', () => {
+  const fixture = examples.capabilities.find(f => f.tool === 'operation_read');
+  assert.ok(fixture);
+  assert.equal(fixture.response.body.operationId, fixture.input.path.operationId);
+});
