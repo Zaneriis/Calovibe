@@ -1,58 +1,15 @@
 // SYNTHÉTIQUE : serveur de contrat de test, sans OAuth, SQL ni logique alimentaire.
 const http = require('node:http');
-const path = require('node:path');
 const { once } = require('node:events');
-const SwaggerParser = require('@apidevtools/swagger-parser');
-const Ajv2020 = require('ajv/dist/2020');
-const addFormats = require('ajv-formats');
 const { Client, StreamableHTTPClientTransport } = require('@modelcontextprotocol/client');
 const { Server, createMcpHandler, requireBearerAuth, OAuthError, ProtocolError,
   bearerAuthChallengeResponse } = require('@modelcontextprotocol/server');
 const { toNodeHandler, localhostHostValidation, localhostOriginValidation } = require('@modelcontextprotocol/node');
-const manifest = require('../../contracts/mcp-tools.json');
-const source = require('../../contracts/api.openapi.json');
 const fixtures = require('../../contracts/examples/api-mcp-valid.json').capabilities;
 const invalid = require('../../contracts/examples/api-mcp-invalid.json');
 const errorFixtures = require('../../contracts/examples/api-mcp-errors.json');
 const TOKENS = { read: 'SYNTHETIC_MCP_READ', write: 'SYNTHETIC_MCP_WRITE', both: 'SYNTHETIC_MCP_READ_WRITE' };
 const API_TOKENS = { 'calovibe:read': 'SYNTHETIC_API_READ', 'calovibe:write': 'SYNTHETIC_API_WRITE' };
-
-async function loadContract() {
-  const apiPath = path.resolve(__dirname, '../../contracts/api.openapi.json');
-  const options = { resolve: { http: false } };
-  const api = await SwaggerParser.validate(apiPath, options);
-  const schemas = Object.fromEntries(manifest.tools.flatMap(tool => [
-    [`${tool.name}_input`, tool.inputSchema], [`${tool.name}_output`, tool.outputSchema]
-  ]));
-  const carrier = { openapi: source.openapi, info: source.info, paths: {}, components: { schemas } };
-  const linked = (await SwaggerParser.validate(path.join(path.dirname(apiPath), 'mcp-tools.json'), carrier, options)).components.schemas;
-  const tools = manifest.tools.map(tool => ({ ...tool,
-    inputSchema: linked[`${tool.name}_input`], outputSchema: linked[`${tool.name}_output`] }));
-  const wireTools = tools.map(({ name, description, inputSchema, outputSchema, annotations }) =>
-    ({ name, description, inputSchema, outputSchema, annotations }));
-  const ajv = new Ajv2020({ strict: true, allErrors: true, validateFormats: true });
-  addFormats(ajv, { mode: 'full', formats: ['date', 'date-time', 'uuid', 'json-pointer'] });
-  ajv.addFormat('calovibe-base64', value => {
-    if (value.length > 13981016) return false;
-    const bytes = Buffer.from(value, 'base64');
-    return bytes.length <= 10485760 && bytes.toString('base64') === value;
-  });
-  const validators = new Map();
-  function validate(schema, value) {
-    if (!validators.has(schema)) validators.set(schema, ajv.compile(schema));
-    return validators.get(schema)(value);
-  }
-  for (const tool of tools) {
-    validate(tool.inputSchema, {});
-    validate(tool.outputSchema, {});
-  }
-  const jsonSchemaValidator = { getValidator(schema) {
-    return value => validate(schema, value)
-      ? { valid: true, data: value, errorMessage: undefined }
-      : { valid: false, data: undefined, errorMessage: 'Réponse synthétique hors contrat.' };
-  } };
-  return { api, tools, wireTools, validate, jsonSchemaValidator };
-}
 
 function toolError(code) {
   return { schemaVersion: '0.1.0', code, message: 'Requête synthétique non exécutée.', fields: [], operationId: null };
@@ -177,7 +134,11 @@ async function startReference(contract) {
     ref.mcpUrl = `${await listen(mcpServer)}/mcp`;
     ref.connect = async (token = TOKENS.both) => {
       const client = new Client({ name: 'calovibe-SYNTHETIC-client', version: '0.1.0' }, {
-        versionNegotiation: { mode: { pin: manifest.protocolVersion } }, jsonSchemaValidator: contract.jsonSchemaValidator });
+        versionNegotiation: { mode: { pin: contract.manifest.protocolVersion } }, jsonSchemaValidator: { getValidator(schema) {
+          return value => contract.validate(schema, value)
+            ? { valid: true, data: value, errorMessage: undefined }
+            : { valid: false, data: undefined, errorMessage: 'Réponse synthétique hors contrat.' };
+        } } });
       const transport = new StreamableHTTPClientTransport(new URL(ref.mcpUrl), {
         requestInit: { headers: token ? { authorization: `Bearer ${token}` } : {} }, onInsufficientScope: 'throw' });
       clients.push(client);
@@ -188,4 +149,4 @@ async function startReference(contract) {
   } catch (error) { await ref.close(); throw error; }
 }
 
-module.exports = { loadContract, startReference, fixtures, invalid, errorFixtures, TOKENS };
+module.exports = { startReference, fixtures, invalid, errorFixtures, TOKENS };

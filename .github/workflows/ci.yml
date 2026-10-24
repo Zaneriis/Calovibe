@@ -13,7 +13,7 @@ concurrency:
 
 jobs:
   checks:
-    name: Syntaxe, tests et navigateur
+    name: Syntaxe, lint, types, contrats et navigateur
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
@@ -24,7 +24,11 @@ jobs:
         with:
           node-version-file: .node-version
           cache: npm
+      - name: Fixer npm sur le runner éphémère
+        run: npm install --global npm@11.13.0 --ignore-scripts
+      - run: node --version && npm --version
       - run: npm ci --ignore-scripts
+      - run: npm audit
       - run: npm run check
       - name: Utiliser le dépôt Ubuntu principal sur le runner éphémère
         run: sudo "$(command -v node)" scripts/configure-apt-mirror.cjs /etc/apt/apt-mirrors.txt

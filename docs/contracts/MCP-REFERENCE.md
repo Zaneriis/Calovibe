@@ -4,7 +4,7 @@ Cette suite exécute de vrais échanges HTTP entre le client officiel MCP 2.3.1,
 
 ## Lancer
 
-Sur Node 26.2.0, runtime actuel du cadre :
+Sur Node 24.22.1 et npm 11.13.0, runtime courant du cadre (Node26.2.0 pour la preuve initiale PR10) :
 
 ```text
 npm ci --ignore-scripts
@@ -14,6 +14,11 @@ npm run check
 npm run test:browser
 npm audit
 ```
+
+L’assemblage des contrats est partagé dans `contracts/loader.cjs`, hors du support de tests.
+`npm run build` en produit des artefacts autoportants ; `tests/toolchain.test.cjs` les consomme
+avec ce même client de référence sans accès aux schémas sources. TypeScript checkJs strict
+vérifie le loader et le build, pas le serveur synthétique complet.
 
 Les trois paquets sont verrouillés en dépendances de développement : `@modelcontextprotocol/client` 2.3.1, `@modelcontextprotocol/server` 2.3.1 et `@modelcontextprotocol/node` 2.1.1. Les dépendances transitives sont dans le verrou unique. Aucun processus permanent, port fixe, Docker, base SQL, accès Internet au runtime des tests ou secret utilisateur n'est requis. `test` et `check` incluent la nouvelle suite et conservent les 165 tests préexistants. Le navigateur reste celui des prototypes.
 

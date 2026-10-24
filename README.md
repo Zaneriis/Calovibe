@@ -29,27 +29,34 @@ Références : [accueil](mockups/calovibe-accueil.html), [ajout manuel](mockups/
 
 Le [cadre de développement autonome](docs/DEVELOPPEMENT-AUTONOME.md) définit les rôles,
 preuves et barrières locales. Le [registre L0](docs/DECISIONS-L0.md) sépare les décisions
-validées, propositions techniques et accès manquants. Avec Node 26.2.0, installer d'abord
+validées, propositions techniques et accès manquants. Avec Node 24.22.1 et npm 11.13.0, installer d'abord
 les dépendances verrouillées par `npm ci --ignore-scripts`, puis lancer `npm run check`.
 Le contrôle utilise les versions exactes verrouillées de Swagger Parser pour OpenAPI 3.1.2,
 Ajv et ajv-formats pour les schémas DATA et DTO API/MCP (strict, formats complets) ;
-il vérifie aussi la syntaxe des scripts et les suites du cadre, des prototypes et
-du correctif de miroir CI.
+il vérifie aussi la syntaxe, le lint Node, les types de l’assembleur partagé et du build,
+les suites du cadre/prototypes/miroir CI, puis construit les contrats autoportants.
 
 ```sh
 npm ci --ignore-scripts
+npm run lint
+npm run types
+npm run build
 npm run check
 npx playwright install chromium
 npm run test:browser
 ```
 
 GitHub Actions exécute ces contrôles à chaque push et pull request sur Ubuntu, avec
-`npx playwright install --with-deps chromium`. Les captures sont générées dans
+`npx playwright install --with-deps chromium`. Le runner éphémère fixe npm 11.13.0 ;
+aucune installation globale locale n’est effectuée par le projet. Les captures sont générées dans
 `artifacts/browser/` et conservées trois jours par run. Voir la [tâche CI](docs/tasks/L1-CI.md).
-Ces tests portent sur le cadre, les maquettes, les propositions de schémas DATA/API/MCP et le miroir CI ;
-ils ne prouvent pas une fonctionnalité de production. Le catalogue MCP à références locales
-n’est pas une réponse wire : la négociation et les appels avec un client de référence restent
-à vérifier séparément. Les tests des futurs services restent à ajouter. Le format base64
+Ces tests portent sur le cadre, les maquettes, les schémas DATA/API/MCP et le miroir CI.
+La référence HTTP utilise les vrais SDK MCP avec 31 outils et des identités/réponses
+synthétiques ; elle ne prouve pas une authentification ni une fonctionnalité de production.
+Le build produit dans `artifacts/contracts/` un OpenAPI à références internes et un
+catalogue dont chaque schéma MCP est autonome. Un test consomme ces seuls artefacts
+avec le client officiel, sans les schémas sources. Les types couvrent uniquement
+`contracts/loader.cjs` et `scripts/build-contracts.cjs` (checkJs strict), pas les futures apps. Les tests des futurs services restent à ajouter. Le format base64
 photo proposé exige une assertion canonique bornée, documentée dans le contrat API/MCP ;
 la détection du média et la conservation attendent ADR-05.
 

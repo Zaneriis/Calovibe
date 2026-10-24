@@ -2,8 +2,7 @@ const assert = require('node:assert/strict');
 const path = require('node:path');
 const { before, test } = require('node:test');
 const SwaggerParser = require('@apidevtools/swagger-parser');
-const Ajv2020 = require('ajv/dist/2020');
-const addFormats = require('ajv-formats');
+const { loadContract, createAjv } = require('../contracts/loader.cjs');
 const source = require('../contracts/api.openapi.json');
 const manifest = require('../contracts/mcp-tools.json');
 const examples = require('../contracts/examples/api-mcp-valid.json');
@@ -12,13 +11,7 @@ const errors = require('../contracts/examples/api-mcp-errors.json');
 const resultExample = require('../contracts/examples/api-mcp-result.json');
 const apiPath = path.resolve(__dirname, '../contracts/api.openapi.json');
 const options = { resolve: { http: false } };
-const ajv = new Ajv2020({ strict: true, allErrors: true, validateFormats: true });
-addFormats(ajv, { mode: 'full', formats: ['date', 'date-time', 'uuid', 'json-pointer'] });
-ajv.addFormat('calovibe-base64', value => {
-  if (value.length > 13981016) return false;
-  const bytes = Buffer.from(value, 'base64');
-  return bytes.length <= 10485760 && bytes.toString('base64') === value;
-});
+const ajv = createAjv();
 let api, resolvedTools, components;
 const validators = new Map();
 function accepts(schema, value, expected = true) {
@@ -32,14 +25,12 @@ function operation(toolName) {
   return api.paths[tool['x-api'].path][tool['x-api'].method];
 }
 before(async () => {
-  api = await SwaggerParser.validate(apiPath, options);
+  const contract = await loadContract();
+  api = contract.api;
   components = api.components.schemas;
-  const schemas = Object.fromEntries(manifest.tools.flatMap(tool => [
-    [`${tool.name}_input`, tool.inputSchema], [`${tool.name}_output`, tool.outputSchema]
+  resolvedTools = Object.fromEntries(contract.tools.flatMap(tool => [
+    [tool.name + '_input', tool.inputSchema], [tool.name + '_output', tool.outputSchema]
   ]));
-  // Swagger Parser lie les refs du catalogue dans un document OpenAPI temporaire standard.
-  const carrier = { openapi: source.openapi, info: source.info, paths: {}, components: { schemas } };
-  resolvedTools = (await SwaggerParser.validate(path.join(path.dirname(apiPath), 'mcp-tools.json'), carrier, options)).components.schemas;
 });
 
 test('OpenAPI 3.1.2 et toutes les DTO/MCP compilent en JSON Schema 2020-12 strict', () => {

@@ -59,36 +59,54 @@ les agents ne peuvent résoudre. Les écarts ordinaires restent entre développe
 
 ## Exécution locale
 
-Node 26.2.0 est le runtime **observé et fixé pour cet outillage**. Installer les
-dépendances npm verrouillées avant les contrôles : Swagger Parser valide OpenAPI 3.1.2 ;
-Ajv strict et ajv-formats full valident les schémas DATA, DTO et schémas MCP liés. Cela ne choisit pas le runtime de production (ADR-01).
+Le runtime courant de l'amorçage technique est **Node 24.22.1**, avec **npm 11.13.0**.
+La garde lit .node-version et refuse une autre version ; le manifeste et le verrou
+portent la même exigence. Node26.2.0 reste le runtime historique des premières preuves.
+Cette transition est vérifiée par L0-TOOLCHAIN ; elle ne construit pas les futurs services.
 
-```
+```text
 npm ci --ignore-scripts
+npm run lint
+npm run types
+npm run build
 npm run check
 npm run test:browser
+npm audit
 npm run gate -- artifacts/candidate.json
 ```
 
-`check` vérifie le runtime, la syntaxe des scripts du cadre, du correctif de miroir CI
-et des tests, puis les suites de revue, navigation, miroir CI, schémas DATA et contrats
-API/MCP. Les exemples valides/invalides, erreurs, références cassées, métadonnées explicites
-et bornes photo font partie de la suite permanente. L’assertion obligatoire calovibe-base64
-utilise Buffer standard borné puis réencodage canonique ; elle ne vérifie pas un média image.
-Ces contrôles ne prouvent pas une fonctionnalité de production. Ce n'est ni un linter
-sémantique ni une vérification TypeScript. Le manifest MCP proposé n’est pas un serveur :
-ni négociation/client de référence, ni auth réelle, ni transactions SQL ne sont testés ici.
-Il n'existe pas encore de build/types applicatifs : non applicables au cadre, à définir
-avec ADR-01 avant L1. Aucun contrôle applicatif fictif n'est déclaré réussi.
-Le test navigateur utilise Playwright et Lucide verrouillés dans package-lock.json et
-Chromium installé par Playwright. Le runner GitHub Ubuntu 24.04 utilise sa liste de miroirs
-`/etc/apt/apt-mirrors.txt` : avant Playwright, la CI remplace la seule entrée Azure de
-priorité 1 par le dépôt Ubuntu principal en HTTPS. Les priorités, autres miroirs et
-sources deb822/signatures sont conservés ; un format inattendu échoue explicitement.
-Ce correctif est propre au runner éphémère ; aucun APT du PC local n'est configuré.
-Exécuter `npm ci --ignore-scripts`, puis
-`npx playwright install chromium` (Linux CI : `--with-deps`). Il reste requis pour
-les changements des prototypes ; ses captures sont dans `artifacts/browser/`.
+`check` conserve la syntaxe et toutes les suites de revue, navigation, miroir CI,
+DATA, API/MCP et client MCP de référence. Il exécute aussi lint, types et build ; chaque
+échec est bloquant. Les tests négatifs permanents vérifient les refus de mauvais
+runtime, variable inconnue, type incorrect, référence absente/HTTP et format invalide.
+Aucun script vide, contrôle ignoré ou --if-present.
+
+Le lint recommandé ESLint porte sur les fichiers Node .cjs ; les globals DOM sont
+limités aux callbacks du test Playwright. TypeScript checkJs strict vérifie le loader
+partagé et le build réellement consommés, avec les types Node/OpenAPI/Ajv, sans any
+général ni skipLibCheck. Les anciens scripts/tests ne sont pas tous typés et aucun
+composant React/API de production n'est encore compilé.
+
+`build` lie les contrats avec le résolveur Swagger Parser existant, HTTP désactivé.
+Il produit `artifacts/contracts/api.openapi.json` (références internes) et
+`mcp-tools.json` (chaque input/output autonome). Tous les schémas MCP sont compilés
+avec Ajv2020 strict, formats full et assertion calovibe-base64 bornée/canonique.
+Un test reconstruit dans des répertoires temporaires, compare les sorties, supprime
+ses copies de sources puis exerce 31 outils et les arguments invalides via le client
+MCP officiel contre les seuls artefacts. Le build distribué ne dépend pas de tests/support.
+Les catalogues et fixtures sources restent inchangés ; ce build ne livre pas trois apps.
+
+La référence HTTP emploie les SDK officiels et les transports réels, avec identités,
+API et résultats synthétiques. Elle vérifie négociation2026-07-28, routage, scopes
+simulés, refus et erreurs ; OAuth/autorité réels, SQL et garanties métier restent L1
+et suivants. Voir [MCP-REFERENCE](contracts/MCP-REFERENCE.md).
+
+Le navigateur garde Playwright/Lucide verrouillés et Chromium installé par
+`npx playwright install chromium` (Linux CI : --with-deps). La CI Ubuntu24.04 conserve
+son remplacement borné du miroir Azure priorité1 par le dépôt principal HTTPS, sans
+modifier sources deb822/signatures ou autres miroirs. Ce correctif reste propre au
+runner éphémère ; aucun APT du PC local n'est configuré. Les captures existantes sont
+dans artifacts/browser/ ; elles concernent les prototypes.
 
 Le rapport JSON passé à `gate` suit le format testé dans `tests/review-gate.test.cjs`.
 Il est conservé hors des sources dans `artifacts/`, avec sorties des commandes et rapports.
@@ -104,8 +122,9 @@ vérification des preuves et du respect des règles Git d'AGENTS.md par le coord
 
 ## Organisation des contrôles L1
 
-Le workflow `.github/workflows/ci.yml` exécute actuellement syntaxe, tests du cadre,
-des prototypes, du miroir CI et des propositions de schémas DATA/API/MCP via check, puis navigateur,
+Le workflow `.github/workflows/ci.yml` fixe Node24.22.1/npm11.13.0, installe le verrou,
+audite les dépendances et exécute check (syntaxe, lint, types, build et toutes les suites
+y compris la référence MCP synthétique), puis navigateur,
 à chaque push et pull request, sans filtre de chemins.
 Il fonctionne sur Ubuntu avec jeton en lecture, sans secret applicatif ni déploiement.
 Les actions sont épinglées à leur SHA et les captures conservées trois jours.

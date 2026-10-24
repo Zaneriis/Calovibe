@@ -18,8 +18,10 @@ un calculateur, une base ou une API en production. Les [contrats API/MCP](contra
 ([PR8](https://github.com/Zaneriis/Calovibe/pull/8), commit
 `1778c6aa96d43785fcdb0ecb8b6c16bd234c38a7`) sont intégrés : OpenAPI 3.1.2,
 31 capacités MCP, exemples et validation permanente ; 165 tests et navigateur réussis,
-avec revues indépendantes sur ce commit. Le client MCP de référence et la qualification
-de la chaîne applicative restent à réaliser. **L0 et L1 ne sont pas terminés.**
+avec revues indépendantes sur ce commit. [PR10](https://github.com/Zaneriis/Calovibe/pull/10),
+commit `3b5b3134ef48a9df9669a6b3a3ab27325f0e0678`, livre la référence MCP HTTP officielle
+avec 31 outils et identités/réponses synthétiques ([preuves et limites](contracts/MCP-REFERENCE.md)).
+L’autorité/authentification réelles et la qualification de la chaîne applicative restent à réaliser. **L0 et L1 ne sont pas terminés.**
 
 Le [suivi de coordination](tasks/L0-COORDINATION.md) conserve l'état de départ ; le
 tableau courant, les candidats et les preuves postérieures aux commits sont dans la
@@ -99,7 +101,7 @@ Ne pas commencer L2 sur cette seule description.
 |---|---|---|
 | Git | dépôt privé Zaneriis/Calovibe ; develop par défaut ; PR intégrées et CI vérifiées | aucun accès supplémentaire nécessaire pour la CI existante |
 | Protections/revues | API GitHub de protection master : 403 ; propriétaire choisit explicitement de fonctionner sans protection | aucun achat ; master figée selon AGENTS.md, develop pour intégration ; CI et revues indépendantes obligatoires, risque technique résiduel accepté dans cette décision |
-| Docker local | CLI/Compose présents ; Desktop lancé et WSL docker-desktop démarre, mais pas de démon confirmé ; service Windows com.docker.service arrêté au contrôle, Start-Service refusé faute de droits | démarrage du service avec les droits adaptés au retour du propriétaire devant le PC ; études/contrats locaux indépendants continuent, aucun essai conteneur réussi déclaré |
+| Docker local | Diagnostic coordinateur hors sandbox du24octobre : WSL2 Linux configuré (WSL3.0.3/kernel6.18.54), Debian/docker-desktop Stopped ; CLI start dit déjà running, mais info/logs/restart bornés ne répondent pas ; com.docker.service Stopped | Cause non résolue, aucune suppression/reset ni conteneur lancé. Le service Windows n’est pas nécessaire au moteur WSL2 Linux sans maintien des hosts selon [Docker](https://docs.docker.com/desktop/setup/install/windows-permission-requirements/) ; ne pas présumer une intervention admin ni un essai Docker réussi. Études/contrats locaux indépendants continuent |
 | Ubuntu | aucune connexion serveur vérifiée | accès LAN/SSH pour préparer et vérifier la production uniquement ; développement et essais Docker locaux possibles sans cet accès |
 | Exposition | domaine/proxy/TLS non fournis | accès à l'existant et décision domaine si absent ; aucune ouverture administrative implicite |
 | Hermès | client utilisateur externe, décision de session | aucun accès requis ; contrat standard et client MCP de référence, sans modifier Hermès |

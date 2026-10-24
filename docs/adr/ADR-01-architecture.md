@@ -1,6 +1,6 @@
 # ADR-01 — Architecture, runtime et commandes de validation
 
-- Statut : **proposition à valider ; ouverte**.
+- Statut : **ouverte ; amorçage de contrats qualifié localement, CI/revues en attente**.
 - Date de vérification des sources et métadonnées : 23 octobre 2026.
 - Tâche : [L0-ADR01](../tasks/L0-ADR01.md).
 - Autorité : [cahier des charges](../CAHIER-DES-CHARGES.md), [backlog L0](../BACKLOG.md), décisions humaines ; cette recommandation ne vaut pas approbation du propriétaire.
@@ -74,7 +74,9 @@ Client MCP ── HTTPS /mcp ────> MCP Fastify/SDK ── HTTP interne �
 
 ## Versions exactes proposées
 
-Ces valeurs sont des **candidates verrouillables**, pas un lock applicatif livré.
+Le tableau initial ci-dessous conserve les **candidats de services L1** datés. Les outils
+réellement consommés/verrouillés par l’amorçage L0 sont distingués dans le suivi du
+24 octobre ; React/Vite/Fastify/pg ne sont pas installés et leurs services ne sont pas construits.
 Elles ont été interrogées via `npm view` sans modifier les dépendances du projet.
 Les versions transitives et images par digest restent à verrouiller et tester avant
 qualification du socle ; un tag de conteneur exact reste mutable.
@@ -110,19 +112,46 @@ proviennent des interrogations directes du registre du 23 octobre.
 échoue, sans réécriture du lock. Les mises à jour de sécurité sont des changements
 revus et testés ; verrouiller ne signifie pas garder ces versions indéfiniment.
 
-**Transition à traiter séparément :** le cadre actuel exige Node **26.2.0** dans
-`.node-version`, `package.json` et `scripts/check.cjs`. Il a été testé ainsi, pas sous
-Node 24. Le présent changement ne modifie aucun de ces fichiers. L1 devra faire
-converger ces contrôles, CI et documentation vers la version applicative retenue,
-avec revue indépendante des règles de validation et suite complète sur ce runtime.
-Il ne suffit pas de changer l'image ou une seule valeur.
+## Qualification technique L0 — 24 octobre 2026
 
-## Commandes proposées : qualification L0 et suites L1
+L0-TOOLCHAIN utilise Node **24.22.1** exact et npm **11.13.0**, sans modifier les
+installations globales du PC. .node-version, engines, garde du check et CI convergent ;
+le runtime précédent26.2.0 est refusé. Le runner Linux fixe npm sur sa propre instance
+éphémère ; la qualification Windows locale ne vaut pas à elle seule succès Linux.
 
-Les scripts suivants **n'existent pas encore**. Ils ne sont ni lancés ni annoncés verts.
-Le responsable de l'amorçage technique L0 les qualifiera, avec leurs configurations et tests,
-avant tout code métier qui dépend de cet ADR. Les noms sont proposés comme interface
-stable de la CI, sans `--if-present` qui masquerait un workspace incomplet.
+Dépendances ajoutées uniquement parce que consommées : TypeScript6.0.3,
+@types/node24.19.2, ESLint10.13.0, @eslint/js10.0.1, openapi-types12.1.3 (types utilisés,
+déjà pair du parser). Les SDK MCP officiels client/server2.3.1/node2.1.1, Swagger Parser,
+Ajv/formats et les prototypes restent verrouillés ; aucun framework de service ajouté.
+
+| Commande livrée | Portée réelle |
+|---|---|
+| npm run lint | ESLint recommended sur .cjs Node scripts/tests/loader/configs ; globals DOM uniquement pour le test Playwright |
+| npm run types | TypeScript checkJs strict sur contracts/loader.cjs et scripts/build-contracts.cjs ; types Node/OpenAPI/Ajv, pas toute la base historique ni les futures apps |
+| npm run build | OpenAPI autoportant à références internes et schémas MCP autonomes dans artifacts/contracts ; aucune compilation des trois services |
+| npm test / npm run check | Toutes les 248 vérifications antérieures conservées, plus 8 tests de qualification ; check inclut aussi lint/types/build |
+| npm run test:browser | Parcours des prototypes, deux thèmes, clavier et largeurs existantes ; aucune nouvelle UI |
+
+Le loader extrait le seul assemblage utile du banc MCP et partage l'assertion base64
+avec les tests API. Le serveur et ses identités synthétiques restent dans tests/support.
+Le build utilise le bundler standard, jamais un résolveur maison. Son test compare deux
+constructions, consomme les seuls artefacts après suppression de ses copies de sources,
+et exerce les 31 outils/arguments invalides via les SDK officiels en HTTP loopback.
+Les autres tests prouvent les refus lint/type/runtime/ref locale/HTTP/format et de sortie
+absente/corrompue. Les JSON sources et fixtures sont conservés.
+
+Décision technique **proposée au coordinateur sous mandat** : retenir cet outillage
+pour la qualification L0 après CI Linux et revues indépendantes sur le SHA exact.
+Aucune validation du propriétaire n'est inventée. Le compte rendu actuel est dans
+[L0-TOOLCHAIN](../tasks/L0-TOOLCHAIN.md) ; les preuves post-commit restent dans la PR.
+L'adoption locale de ces outils ne qualifie pas OAuth/Logto ni les futures apps.
+
+## Extensions de commandes proposées pour les services L1
+
+Les commandes livrées ci-dessus ne sont pas des contrôles de services applicatifs.
+Le tableau suivant décrit leur extension ou les futures suites en L1 : ces portées
+ne sont ni exécutées ni annoncées vertes. Elles seront ajoutées avec leurs composants
+et configurations, sans --if-present qui masquerait un workspace incomplet.
 
 | Commande racine proposée | Contenu attendu et échec utile |
 |---|---|
@@ -149,12 +178,12 @@ déploiement restent ceux d'AGENTS.md ; cet ADR ne les assouplit pas.
 
 ## Preuves de cette proposition et conditions de clôture
 
-Le [compte rendu de tâche](../tasks/L0-ADR01.md) consigne les commandes exécutées :
+Le [compte rendu de l’étude initiale](../tasks/L0-ADR01.md) conserve les preuves historiques sous Node26 :
 `npm ci --ignore-scripts`, `npm test`, `npm run check` (75/75 après fusion de develop),
 `npm run test:browser` (succès). Les 29 tests initiaux restent un constat historique ;
-les 75 actuels incluent les contrats de données et les contrôles du miroir CI intégrés.
-Ces preuves portent sur le cadre, les prototypes et les schémas L0 existants, sous Node
-26.2.0 ; elles ne prouvent pas les commandes et composants applicatifs proposés.
+les 75 de cette étape incluaient les contrats de données et les contrôles du miroir CI intégrés.
+Ces preuves historiques portaient sur le cadre, les prototypes et les schémas L0 alors existants, sous Node
+26.2.0. Le suivi ci-dessus les complète sous Node24 sans prétendre construire les services.
 Aucun build, lint sémantique, contrôle TS, test PostgreSQL ni interopérabilité MCP
 applicatifs n'a été exécuté : les composants correspondants n'existent pas encore.
 Au dernier contrôle Docker de cette étude, la CLI répondait mais le moteur Linux
@@ -162,7 +191,7 @@ n'était pas joignable ; ce constat ne prouve pas son état courant.
 
 ADR-01 reste ouverte jusqu'à : choix d'architecture/runtime arrêté et consigné par
 le coordinateur dans son mandat après qualification et revues indépendantes ;
-convergence avec ADR-02 et contrat API/MCP ; versions directes/transitives verrouillées ;
+convergence avec ADR-02 et contrat API/MCP ; versions directes/transitives verrouillées pour le périmètre consommé L0 ;
 commandes lint/types/tests/build qualifiées dans un amorçage technique L0 sans métier
 sur le runtime retenu ; revues indépendantes applicables sur le commit exact.
 Les suites de services futurs restent décrites avec leur portée, sans résultat fictif.

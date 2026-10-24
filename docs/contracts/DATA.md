@@ -134,7 +134,7 @@ n'est pas à exposer seul comme garde de sécurité publique.
 
 ## Vérification reproductible et sources
 
-Après `npm ci --ignore-scripts` sur Node 26.2.0 :
+Après `npm ci --ignore-scripts` sur Node 24.22.1 et npm 11.13.0 :
 
 ```text
 node --check tests/contracts-data.test.cjs
@@ -159,3 +159,5 @@ Références officielles consultées le 23 octobre 2026 :
 - [Ajv et Draft 2020-12](https://ajv.js.org/json-schema.html#draft-2020-12).
 - [Formats Ajv](https://ajv.js.org/guide/formats.html).
 - [Release Ajv 8.20.0](https://github.com/ajv-validator/ajv/releases/tag/v8.20.0) et [ajv-formats 3.0.1](https://github.com/ajv-validator/ajv-formats/releases/tag/v3.0.1).
+
+La qualification initiale DATA a été exécutée sous Node26.2.0 ; ce résultat historique reste daté. Les commandes ci-dessus utilisent le runtime courant de l’amorçage L0-TOOLCHAIN, sans changement des règles DATA.

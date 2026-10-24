@@ -2,7 +2,8 @@ const assert = require('node:assert/strict');
 const { test } = require('node:test');
 const http = require('node:http');
 const net = require('node:net');
-const { loadContract, startReference, fixtures, invalid, errorFixtures, TOKENS } = require('./support/mcp-reference.cjs');
+const { startReference, fixtures, invalid, errorFixtures, TOKENS } = require('./support/mcp-reference.cjs');
+const { loadContract } = require('../contracts/loader.cjs');
 const VERSION = '2026-07-28';
 
 function checkResult(contract, toolName, result, value, isError = false) {

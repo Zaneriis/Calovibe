@@ -96,3 +96,15 @@ Les erreurs métier de l'API gardent leurs codes structurés distincts (validati
 **Preuves réelles de cette étude :** sources officielles consultées ; métadonnées npm ; `npm ci --ignore-scripts` réussi (3 paquets, audit 0 vulnérabilité signalée), `npm run check` réussi (29/29), `npm run test:browser` réussi (parcours prototypes 320–1024 px). Ces contrôles protègent le cadre existant : ils ne testent aucune authentification applicative.
 
 **Limites :** aucune autorité, route privée, API métier ou serveur MCP Calovibe exécutable à ce stade ; aucune interopérabilité lecture/écriture/refus réellement exécutée. Aucun compte Hermès, fournisseur distant, accès Ubuntu, domaine, ressource Docker ou mesure mémoire qualifiés. Les scénarios AUTH-REF et AUTH-01 à AUTH-10 restent des conditions de livraison aux lots indiqués, pas des tests verts. Aucun écran modifié ; non-applicabilité UI à faire confirmer indépendamment. Revues fonctionnelle et qualité des preuves requises sur le commit exact ; aucun auto-avis d'approbation.
+
+## Suivi daté du 24 octobre 2026 — sans modification des règles d'authentification
+
+AUTH-REF est livré par [PR10](https://github.com/Zaneriis/Calovibe/pull/10), commit
+`3b5b3134ef48a9df9669a6b3a3ab27325f0e0678` : vrais SDK officiels, 31 outils et
+échanges HTTP client → MCP → API, avec identités/droits/réponses **synthétiques**.
+Voir [MCP-REFERENCE](../contracts/MCP-REFERENCE.md) pour preuves et limites. Les résultats
+historiques de l'étude ci-dessus restent datés ; cette livraison ne prouve pas OAuth,
+Logto ou une autorité réelle. AUTH-01 et suivants restent aux lots L1/L2/L8 indiqués.
+L0-TOOLCHAIN actualise le runtime de lancement et partage le seul assemblage de contrats ;
+aucune règle de session, audience, délégation ou exposition administrative n'est changée.
+ADR02 et L0 ne sont pas clos par ce suivi.

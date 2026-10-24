@@ -231,7 +231,7 @@ références bibliothèque supprimées/incompatibles sont contrôlées avant tra
 
 ## Vérification reproductible
 
-Après npm ci --ignore-scripts sur Node26.2.0 :
+Après npm ci --ignore-scripts sur Node24.22.1 et npm11.13.0 :
 
 ```text
 node --check tests/contracts-api-mcp.test.cjs
@@ -276,8 +276,9 @@ provenance arbitraire. Le serveur dérive la provenance selon le canal métier a
 ou marquer une analyse comme vérifiée sur journal_entry_create. L’intégration code-barres
 et ses références fournisseur seront spécialisées à ADR-04/L5. La suppression par ID/version
 utilise le contexte conservé de cet objet, sans deviner de date ou repas à partir de l’horloge.
-Node26.2.0 reste le runtime du cadre de vérification existant ; cela ne ratifie pas le
-runtime des futurs services de l’ADR-01 proposée.
+Node26.2.0 était le runtime de la qualification initiale du contrat. Les commandes
+courantes utilisent désormais Node24.22.1 ; cela ne qualifie pas les futurs services
+de l’ADR-01 proposée.
 
 Exemples de reprise proposés (garanties futures, aucun test transactionnel simulé) :
 
