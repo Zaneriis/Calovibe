@@ -332,8 +332,3 @@ main().catch(error => {
     error instanceof assert.AssertionError ? error.message.split('\n')[0] : 'See last named assertion; sensitive details withheld.');
   process.exitCode = 1;
 });
-
-
-
-
-

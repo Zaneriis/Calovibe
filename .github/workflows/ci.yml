@@ -69,6 +69,3 @@ jobs:
           name: auth-${{ github.sha }}
           path: artifacts/auth-qualification/report*.json
           retention-days: 3
-
-
-
