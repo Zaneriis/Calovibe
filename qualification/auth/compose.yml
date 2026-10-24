@@ -1,0 +1,41 @@
+services:
+  postgres:
+    image: postgres:18.6-bookworm@sha256:6b38fe68f2c02cafffbbce7496f76d110d8a947c039bd22c067e9a43c2250240
+    environment:
+      POSTGRES_DB: qualification
+      POSTGRES_USER: qualification
+      POSTGRES_PASSWORD: ${AQ_DB_PASSWORD:?runner required}
+    volumes:
+      - database:/var/lib/postgresql
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -U qualification -d qualification']
+      interval: 2s
+      timeout: 2s
+      retries: 30
+    cpus: 1
+    mem_limit: 512m
+    pids_limit: 128
+  keycloak:
+    user: "${AQ_UID:?runner required}:0"
+    image: quay.io/keycloak/keycloak:26.8.1@sha256:3e1ac632e743660017b1e6bb4c3ffc800fd02c82cdd0db858cd03456a98a8dfc
+    command: [start-dev, --import-realm, --features=resource-indicators, '--http-port=8080', '--hostname=${AQ_ORIGIN:?runner required}']
+    environment:
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres:5432/qualification
+      KC_DB_USERNAME: qualification
+      KC_DB_PASSWORD: ${AQ_DB_PASSWORD:?runner required}
+      JAVA_OPTS_KC_HEAP: -Xms128m -Xmx768m
+    ports:
+      - '127.0.0.1:${AQ_PORT:?runner required}:8080'
+    volumes:
+      - '${AQ_SEED_DIR:?runner required}:/opt/keycloak/data/import:ro'
+    depends_on:
+      postgres:
+        condition: service_healthy
+    cpus: 2
+    mem_limit: 1536m
+    pids_limit: 256
+volumes:
+  database:
+
+
