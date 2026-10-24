@@ -23,7 +23,7 @@ Statut : candidate à publier et revoir. Le mandat d'implémentation a été re�
 | TC-05 | Verrouiller uniquement le consommé | TypeScript6.0.3, @types/node24.19.2, ESLint10.13.0, @eslint/js10.0.1, openapi-types12.1.3 (types importés, déjà pair du parser). Pins directs et lock transitif ; aucune dépendance React/Vite/Fastify/pg anticipée |
 | TC-06 | Build effectivement consommé et refus utiles | Deux constructions identiques ; OpenAPI à refs internes, chaque schéma MCP autonome. Copie des seules sorties et suppression des copies sources du test, puis client officiel sur 31 outils et arguments invalides. Réf absente/HTTP/format inconnu : code1, aucune nouvelle sortie. Sortie absente/corrompue : refus sans repli sur sources |
 | TC-07 | Actualiser ADR02 sans fausse preuve | Suivi daté PR10/SHA3b5b313, HTTP/SDK réels mais identités/réponses synthétiques ; règles et preuves historiques conservées, AUTH01+ aux lots prévus |
-| TC-08 | Corriger diagnostic Docker borné | Rapport coordinateur du24octobre attribué, moteur non répondant et cause non résolue ; pas d'intervention admin présumée du seul service arrêté ; source Docker officielle consultée ; aucun Docker réussi revendiqué |
+| TC-08 | Corriger diagnostic Docker borné | Rapports coordinateur du24octobre attribués : diagnostic puis remise en route et smoke hello-world réussis, sans présumer une intervention admin du seul service arrêté ; aucun Compose/service Calovibe revendiqué |
 
 Les critères TC01–TC06 existaient dans la fiche d'étude avant l'extraction ; les extensions TC07/TC08 et DATA/API-MCP ont été consignées avant leurs éditions. Revues fonctionnelle/qualité des tests et non-applicabilité UI indépendantes requises sur le SHA exact. Aucun auto-verdict. Aucun blocage ni cycle infructueux de revue enregistré à ce stade.
 
@@ -52,13 +52,13 @@ Runtime local installé conservé : Node26.2.0, npm11.13.0 dans C:\Program Files
 - `node --test tests/toolchain.test.cjs` : 8/8 réussis ; tous les cas négatifs et consommation SDK inclus.
 - Deux `node scripts/check.cjs` complets sous Node24 ont réussi : 256/256 (248 conservés +8 nouveaux), aucun échec/ignoré, lint/types/build réussis. Logs pré-candidate dans artifacts/toolchain/current-check.log et ci-install.log.
 
-Après commit, exécuter sur le SHA exact npm ci/lint/types/build/test/check/browser/audit/diff--check et publier les commandes/résultats, CI Linux et verdicts dans la PR, sans réinsérer une approbation dans un nouveau commit. Les preuves exactes postérieures au commit ne sont pas présumées par cette fiche.
+Une première suite exacte sur02958622c4fda624188b4ba958eb409199803d38 a réussi npm ci/lint/types/build/test256/check256/browser/audit0 et diff--check. Le dernier constat Docker communiqué ensuite ajoute seulement un suivi documentaire ; après ce nouveau commit, réexécuter sur son SHA exact npm ci/lint/types/build/test/check/browser/audit/diff--check et publier les commandes/résultats, CI Linux et verdicts dans la PR, sans réinsérer une approbation dans un nouveau commit. Les preuves exactes postérieures au commit ne sont pas présumées par cette fiche.
 
 ## Limites, décisions et livraison
 
 Adoption technique locale proposée au coordinateur sous mandat après CI Linux et revues exactes ; aucune validation humaine inventée. ADR01 distingue cet amorçage des versions candidates de services L1. Aucun build des trois apps, image, authentification réelle, autorité Logto, SQL ou garantie métier de production qualifiés. La référence reste synthétique et n'utilise aucun compte Hermès. Aucun nouvel écran ; le navigateur protège les prototypes existants.
 
-Le diagnostic Docker est celui communiqué par le coordinateur, pas une commande relancée ici. La CLI/moteur ne répondent pas correctement ; aucun conteneur ni intervention administrative requis par hypothèse. Ce sujet n'empêche pas les contrats/outils locaux. Les données et configurations existantes sont conservées.
+Le diagnostic Docker est celui communiqué par le coordinateur, pas une commande relancée ici. Après erreur dockerInference ERROR_CANT_ACCESS_FILE, il a sauvegardé/recréé le seul répertoire run contenant deux sockets/reparse points0octet, sans effacer images/volumes ; Desktop relancé, moteur28.1.1 et Compose2.35.1-desktop.1 répondent. Son smoke hello-world Linux est réussi code0 par digest sha256:5e22040d441e5fb3aed38368acbe8486b575d7018df38dbdfbc7311fbb2ef3a9, conteneur jetable sans réseau, lecture seule, capabilities retirées et no-new-privileges. Aucun Compose ni service Calovibe n’est livré/testé par ce smoke ; aucune intervention administrative de service n’était nécessaire. Ces preuves sont attribuées au coordinateur, avec historique dans son suivi.
 
 PR attendue vers develop uniquement ; candidat SHA, CI et trois revues à recueillir. Aucun push develop/master, rebase ou intégration par cet auteur. Les résultats de qualification futurs restent ouverts tant qu'ils ne sont pas exécutés et revus.
 
