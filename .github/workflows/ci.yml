@@ -62,6 +62,10 @@ jobs:
       - run: npm run test:auth
       - run: npm run test:auth -- --failure-cleanup
         if: always()
+      - run: npm run test:auth -- --without-consent
+        if: always()
+      - run: npm run test:auth -- --without-write-consent
+        if: always()
       - name: Conserver seulement le rapport expurgé
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4

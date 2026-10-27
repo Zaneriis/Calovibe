@@ -16,8 +16,12 @@ const grant = 'urn:ietf:params:oauth:grant-type:token-exchange';
 const accessType = 'urn:ietf:params:oauth:token-type:access_token';
 const read = 'calovibe:read';
 const write = 'calovibe:write';
+const mode = process.argv[2] || 'nominal';
+const expectedConsentError = mode === '--without-consent' ? 'AQ_CONSENT_REQUIRED_READ'
+  : mode === '--without-write-consent' ? 'AQ_CONSENT_REQUIRED_WRITE' : undefined;
 const report = { candidate: 'Keycloak OSS 26.8.1', productionAuthoritySelected: false,
-  synthetic: true, qualified: false, checks: [], cleanup: false };
+  synthetic: true, mode, qualified: false, checks: [], cleanup: false,
+  consentAccepted: { read: false, write: false }, cachedSilentCallbacks: 0 };
 const reportDir = path.join(root, 'artifacts/auth-qualification');
 const pass = name => { report.checks.push(name); console.log('PASS ' + name); };
 const secret = () => randomBytes(24).toString('hex');
@@ -82,6 +86,7 @@ function realmSeed({ mcp, api, redirect, password, exchangeSecret, otherSecret }
 
 async function main() {
   assert.equal(process.version, 'v24.22.1', 'Use the repository Node version');
+  assert.ok(process.argv.length <= 3 && ['nominal', '--failure-cleanup', '--without-consent', '--without-write-consent'].includes(mode), 'One known qualification mode at a time');
   const { jwtVerify, createRemoteJWKSet } = await import('jose');
   const project = 'calovibe-authq-' + randomBytes(6).toString('hex');
   const seedDir = path.join(reportDir, project);
@@ -148,6 +153,9 @@ async function main() {
     issuer = env.AQ_ORIGIN + '/realms/qualification';
     const password = secret(), exchangeSecret = secret(), otherSecret = secret();
     const seed = realmSeed({ mcp, api, redirect, password, exchangeSecret, otherSecret });
+    // Consent fault injections change UI policy only, never roles, scopes or token claims.
+    if (mode === '--without-consent') seed.clients.find(client => client.clientId === 'reference-public').consentRequired = false;
+    if (mode === '--without-write-consent') seed.clientScopes.find(scope => scope.name === write).attributes['display.on.consent.screen'] = 'false';
     await fs.writeFile(path.join(seedDir, 'qualification-realm.json'), JSON.stringify(seed), { mode: 0o600 });
     report.resourceUris = { mcp, api };
     report.phase = 'image-pull';
@@ -172,7 +180,7 @@ async function main() {
     assert.match(report.keycloak, /Keycloak 26\.8\.1/);
     assert.match(report.postgres, /18\.6/);
     pass('AQ02: two bounded containers; PostgreSQL private; host bindings loopback');
-    if (process.argv.includes('--failure-cleanup')) {
+    if (mode === '--failure-cleanup') {
       const injected = new Error('Deliberate failure after Docker startup');
       injected.code = 'AQ_EXPECTED_FAILURE';
       throw injected;
@@ -198,7 +206,11 @@ async function main() {
     pass('AQ04: SDK discovery; exact issuer and loopback endpoints; PKCE S256');
     browser = await chromium.launch({ headless: true });
     const clientInformation = { client_id: 'reference-public', token_endpoint_auth_method: 'none' };
-    async function authorize(scope = read, resource = mcp) {
+    async function authorize(scope, resource, consentExpectation) {
+      assert.ok(['read', 'write', 'cached'].includes(consentExpectation), 'Every grant declares its consent expectation');
+      const requiredNewConsent = consentExpectation !== 'cached';
+      const missingConsent = () => Object.assign(new Error('Required ' + consentExpectation + ' consent was not displayed and accepted'),
+        { code: 'AQ_CONSENT_REQUIRED_' + consentExpectation.toUpperCase() });
       const state = secret();
       const pending = await startAuthorization(issuer, { metadata, clientInformation,
         redirectUrl: redirect, scope, state, resource: new URL(resource) });
@@ -219,12 +231,14 @@ async function main() {
         report.browserStep = 'consent-or-callback';
         await Promise.race([page.waitForURL(url => url.href.startsWith(redirect)),
           page.locator('[name="accept"]').waitFor({ state: 'visible' })]);
+        let acceptedVisibleConsent = false;
         if (!page.url().startsWith(redirect)) {
           const requestedPermission = scope.split(' ').includes(write) ? 'Synthetic write permission' : 'Synthetic read permission';
-          assert.ok((await page.locator('body').innerText()).includes(requestedPermission),
-            'Consent must display the newly requested permission');
-          report.explicitConsentShown = true;
+          const permissionVisible = (await page.locator('body').innerText()).includes(requestedPermission);
+          if (requiredNewConsent && !permissionVisible) throw missingConsent();
+          assert.ok(permissionVisible, 'Consent must display the requested permission');
           await page.locator('[name="accept"]').click();
+          acceptedVisibleConsent = true;
         }
         report.browserStep = 'callback';
         await page.waitForURL(url => url.href.startsWith(redirect));
@@ -232,29 +246,32 @@ async function main() {
         assert.equal(callback.searchParams.get('state'), state);
         assert.equal(callback.searchParams.get('iss'), issuer);
         assert.ok(callback.searchParams.get('code'));
+        if (requiredNewConsent && !acceptedVisibleConsent) throw missingConsent();
+        if (requiredNewConsent) report.consentAccepted[consentExpectation] = true;
+        if (!requiredNewConsent && !acceptedVisibleConsent) report.cachedSilentCallbacks++;
         return { authorizationCode: callback.searchParams.get('code'), iss: callback.searchParams.get('iss'),
           codeVerifier: pending.codeVerifier, redirectUri: redirect, resource: new URL(resource),
           metadata, clientInformation, fetchFn: boundedFetch };
       } finally { await context.close(); }
     }
     report.phase = 'browser-pkce';
-    const auth = await authorize();
+    const auth = await authorize(read, mcp, 'read');
     let incoming = await exchangeAuthorization(issuer, auth);
     let initial = await verify(incoming.access_token, mcp);
     assert.ok(scopes(initial).includes(read));
     assert.ok(!scopes(initial).includes(write));
     pass('AQ04/05: real browser consent and Code/PKCE; signed MCP-only URI token');
 // A replay intentionally invalidates its client session in Keycloak; isolate it from the nominal subject.
-    const replayAuth = await authorize();
+    const replayAuth = await authorize(read, mcp, 'cached');
     await exchangeAuthorization(issuer, replayAuth);
     await assert.rejects(exchangeAuthorization(issuer, replayAuth));
-    const badVerifier = await authorize();
+    const badVerifier = await authorize(read, mcp, 'cached');
     await assert.rejects(exchangeAuthorization(issuer, { ...badVerifier, codeVerifier: secret() }));
-    const changedResource = await authorize();
+    const changedResource = await authorize(read, mcp, 'cached');
     await assert.rejects(exchangeAuthorization(issuer, { ...changedResource, resource: new URL(api) }));
     pass('AQ04: reused code, incorrect PKCE verifier and changed token-request resource rejected');
     const previousSubject = initial.sub;
-    const freshGrant = await authorize();
+    const freshGrant = await authorize(read, mcp, 'cached');
     const freshIncoming = await exchangeAuthorization(issuer, freshGrant);
     assert.ok(freshIncoming.access_token !== incoming.access_token, 'New grant emits a different token');
     incoming = freshIncoming;
@@ -320,7 +337,7 @@ async function main() {
     assert.equal((await call(api, defaults.json.access_token, 'POST')).status, 403);
     assert.equal(writes, 0);
     pass('AQ06: omitted scopes and default write mapper cannot regain write');
-    const writeAuth = await authorize(read + ' ' + write);
+    const writeAuth = await authorize(read + ' ' + write, mcp, 'write');
     const writeIncoming = await exchangeAuthorization(issuer, writeAuth);
     const writeInitial = await verify(writeIncoming.access_token, mcp);
     assert.ok(scopes(writeInitial).includes(write));
@@ -341,7 +358,7 @@ async function main() {
     assert.equal((await call(mcp, ownToken.json.access_token, 'POST')).status, 401);
     assert.deepEqual({ apiRequests, exchangeRequests, writes }, ownGateCounters);
     pass('AQ07: own-client exchange characterized; API token still refused at MCP before any exchange/API call');
-    const otherAudienceGrant = await authorize(read, api);
+    const otherAudienceGrant = await authorize(read, api, 'cached');
     const otherAudienceToken = await exchangeAuthorization(issuer, otherAudienceGrant);
     const otherAudienceClaims = await verify(otherAudienceToken.access_token, api);
     assert.equal(otherAudienceClaims.azp, 'reference-public');
@@ -365,11 +382,19 @@ async function main() {
     assert.equal((await call(api, downstream.json.access_token, 'POST')).status, 401);
     assert.equal(writes, 1);
     pass('AQ07: tampered and actually expired subjects rejected; no additional API effects');
+    assert.deepEqual(report.consentAccepted, { read: true, write: true }, 'Both new grants need distinct accepted visible consent');
+    assert.ok(report.cachedSilentCallbacks > 0, 'Already-consented grants exercise a silent callback');
+    assert.equal(expectedConsentError, undefined, 'Consent fault must be detected, never qualified');
+    pass('AQ-CONSENT-REQUIRED-01: distinct read/write consent accepted; cached grant callbacks allowed');
     report.qualified = true;
   } catch (error) {
-    if (process.argv.includes('--failure-cleanup') && error.code === 'AQ_EXPECTED_FAILURE') {
+    if (mode === '--failure-cleanup' && error.code === 'AQ_EXPECTED_FAILURE') {
       report.failureInjectionVerified = true;
       pass('AQ08: deliberate failure after startup reaches cleanup');
+    } else if (expectedConsentError && error.code === expectedConsentError) {
+      assert.equal(writes, 0, 'Missing consent must stop before any write');
+      report.consentRegression = { detected: true, code: error.code };
+      pass('AQ-CONSENT-REQUIRED-01: precise missing-consent error detected: ' + error.code);
     } else {
       report.failedPhase = report.phase;
       report.failure = { name: error.name, code: error.code, claim: error.claim };
@@ -400,7 +425,7 @@ async function main() {
       report.apiWriteCounter = writes;
       report.calls = { apiRequests, exchangeRequests, mcpAcceptedCalls };
       await fs.mkdir(reportDir, { recursive: true });
-      await fs.writeFile(path.join(reportDir, process.argv.includes('--failure-cleanup') ? 'report-failure-cleanup.json' : 'report.json'), JSON.stringify(report, null, 2) + '\n');
+      await fs.writeFile(path.join(reportDir, mode === 'nominal' ? 'report.json' : 'report' + mode.replace(/^--/, '-') + '.json'), JSON.stringify(report, null, 2) + '\n');
     }
   }
 }

@@ -9,9 +9,11 @@ npm ci --ignore-scripts
 npx playwright install chromium
 npm run test:auth
 npm run test:auth -- --failure-cleanup
+npm run test:auth -- --without-consent
+npm run test:auth -- --without-write-consent
 ```
 
-Le second appel injecte un échec juste après démarrage/inspection des deux conteneurs et doit prouver le nettoyage ; il ne qualifie aucun flux OAuth. Les deux appels sont requis dans le job CI `auth`, séparé des contrôles existants. Toute incompatibilité fait échouer le premier. Ne jamais traiter un refus du flux nominal comme un résultat vert.
+Le second appel injecte un échec juste après démarrage/inspection des deux conteneurs et doit prouver le nettoyage ; il ne qualifie aucun flux OAuth. Les quatre appels sont requis dans le job CI `auth`, séparé des contrôles existants. Toute incompatibilité fait échouer le premier. Ne jamais traiter un refus du flux nominal comme un résultat vert.
 
 Le runner crée un projet aléatoire, un volume neuf et un realm officiel importé. Un utilisateur synthétique possède read+write par ses rôles API, mais le client public demande d’abord seulement read et affiche le consentement réel. Le service MCP est confidentiel pour l’échange, le client public reste public/avec consentement : aucun reclassement tiers→first-party. Aucun compte administrateur bootstrap, fournisseur externe, mail, SQL privé, donnée métier ou accès Hermès.
 
@@ -28,3 +30,7 @@ Rapports expurgés : `artifacts/auth-qualification/report.json` et `report-failu
 Une réussite prouverait seulement cette configuration/version et ces cas de qualification. Elle ne clôt ni ADR02, ni L0/L1 : authentification web/CSRF, services réels, consentement/révocation complet, récupération/sauvegardes, déploiement HTTPS, clients arbitraires et charge restent hors périmètre. La feature RFC8707 demeure expérimentale même si les essais passent.
 
 Keycloak autorise un client confidentiel à rééchanger un jeton émis pour lui-même, même hors de son audience ressource ([source exacte](https://github.com/keycloak/keycloak/blob/24ed1dadf3f246a555adb6d3d4a99e9b3003fb3b/services/src/main/java/org/keycloak/protocol/oidc/tokenexchange/StandardTokenExchangeProvider.java#L250)). Le banc caractérise cette exception avec identité/droits conservés puis refuse toujours le jeton API au gate MCP. Le négatif OAuth tiers utilise un autre vrai grant Code/PKCE, public, émis pour API avec `azp=reference-public` : le gate MCP le refuse avant tout échange/appel API et l’autorité refuse son échange par MCP hors audience. Cela ne reclasse pas le client public et n’ajoute aucun privilège.
+
+AQ-CONSENT-REQUIRED-01 : chaque appel OAuth déclare son attente. Le premier read et le nouveau write doivent montrer le texte du droit, recevoir un clic d’acceptation puis un callback state/issuer/code valide ; le rapport conserve deux preuves séparées `consentAccepted.read/write`. Le callback silencieux est permis seulement aux appels explicitement marqués déjà consentis ; un scénario réel le vérifie. Ces preuves ne servent pas de cache pour choisir l’attente.
+
+Les modes `--without-consent` (client public sans consentement requis) et `--without-write-consent` (scope write masqué dans le consentement) ne changent aucun rôle, droit ou claim. Ils ne réussissent que si le navigateur déclenche respectivement `AQ_CONSENT_REQUIRED_READ` ou `AQ_CONSENT_REQUIRED_WRITE`, sans écriture, avec nettoyage complet. Ils restent `qualified:false`, produisent `report-without-consent.json` et `report-without-write-consent.json`, et échouent sur toute autre panne ou si le défaut ne déclenche plus le garde. La sonde indépendante désactivant consentRequired en mémoire, sans mode négatif, doit au contraire sortir non-zéro avec l’erreur read précise. Aucun test ne recopie un sélecteur ni ne remplace la vraie UI.
