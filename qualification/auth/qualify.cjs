@@ -85,6 +85,8 @@ async function main() {
   const { jwtVerify, createRemoteJWKSet } = await import('jose');
   const project = 'calovibe-authq-' + randomBytes(6).toString('hex');
   const seedDir = path.join(reportDir, project);
+  assert.equal(path.dirname(seedDir), reportDir);
+  assert.match(path.basename(seedDir), /^calovibe-authq-[a-f0-9]{12}$/);
   const controller = new AbortController();
   const deadline = setTimeout(() => controller.abort(), 300_000);
   let server, browser, composeStarted = false;
@@ -222,8 +224,8 @@ async function main() {
     }
     report.phase = 'browser-pkce';
     const auth = await authorize();
-    const incoming = await exchangeAuthorization(issuer, auth);
-    const initial = await verify(incoming.access_token, mcp);
+    let incoming = await exchangeAuthorization(issuer, auth);
+    let initial = await verify(incoming.access_token, mcp);
     assert.ok(scopes(initial).includes(read));
     assert.ok(!scopes(initial).includes(write));
     pass('AQ04/05: real browser consent and Code/PKCE; signed MCP-only URI token');
@@ -236,6 +238,15 @@ async function main() {
     const changedResource = await authorize();
     await assert.rejects(exchangeAuthorization(issuer, { ...changedResource, resource: new URL(api) }));
     pass('AQ04: reused code, incorrect PKCE verifier and changed token-request resource rejected');
+    const previousSubject = initial.sub;
+    const freshGrant = await authorize();
+    const freshIncoming = await exchangeAuthorization(issuer, freshGrant);
+    assert.ok(freshIncoming.access_token !== incoming.access_token, 'New grant emits a different token');
+    incoming = freshIncoming;
+    initial = await verify(incoming.access_token, mcp);
+    assert.equal(initial.sub, previousSubject);
+    assert.ok(scopes(initial).includes(read) && !scopes(initial).includes(write));
+    pass('AQ04: fresh nominal Code/PKCE grant after replay and negative flows');
     async function exchange(subject, parameters = {}) {
       const { clientId = mcp, clientSecret = exchangeSecret, audience = api, scope = read } = parameters;
       const body = new URLSearchParams({ grant_type: grant, client_id: clientId, client_secret: clientSecret,
@@ -251,7 +262,9 @@ async function main() {
     assert.equal(downstream.status, 200, 'Nominal exchange status; details are intentionally redacted');
     const issued = await verify(downstream.json.access_token, api);
     assert.equal(issued.sub, initial.sub);
-    assert.deepEqual(scopes(issued), [read]);
+    report.nominalExchange = { incomingScopes: scopes(initial), issuedScopes: scopes(issued),
+      apiRoles: issued.api_roles || [], sameSubject: issued.sub === initial.sub };
+    assert.deepEqual(scopes(issued), [read], 'Exact downstream scopes: ' + JSON.stringify(scopes(issued)));
     assert.equal(issued.synthetic_marker, 'qualification-only');
     assert.ok(!(issued.api_roles || []).includes('write'));
     pass('AQ05/06: native exchange preserves sub; API-only URI audience; scope and role downscoped');
@@ -340,6 +353,7 @@ async function main() {
       report.cleanup = true;
       pass(composeStarted ? 'AQ08: project containers/volumes/network absent; synthetic seed removed' : 'AQ08: no Docker project started; synthetic seed removed');
     } finally {
+      report.apiWriteCounter = writes;
       await fs.mkdir(reportDir, { recursive: true });
       await fs.writeFile(path.join(reportDir, process.argv.includes('--failure-cleanup') ? 'report-failure-cleanup.json' : 'report.json'), JSON.stringify(report, null, 2) + '\n');
     }
