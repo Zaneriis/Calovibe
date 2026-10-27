@@ -90,7 +90,7 @@ async function main() {
   const controller = new AbortController();
   const deadline = setTimeout(() => controller.abort(), 300_000);
   let server, browser, composeStarted = false;
-  let writes = 0;
+  let writes = 0, apiRequests = 0, exchangeRequests = 0, mcpAcceptedCalls = 0;
   let jwks, issuer, mcp, api;
   const env = { ...process.env, AQ_DB_PASSWORD: secret(), AQ_UID: String(process.getuid?.() ?? 1000), AQ_SEED_DIR: seedDir.replaceAll('\\', '/') };
   const docker = (args, cleanup = false) => run('docker', args, { cwd: root, env,
@@ -115,11 +115,24 @@ async function main() {
       if (req.url.startsWith('/callback')) { res.end('Synthetic OAuth callback received.'); return; }
       const audience = req.url === '/mcp' ? mcp : req.url === '/api' ? api : undefined;
       if (!audience) { res.writeHead(404).end(); return; }
+      if (audience === api) apiRequests++;
       let claims;
       try { claims = await verify((req.headers.authorization || '').replace(/^Bearer /, ''), audience); }
       catch { res.writeHead(401).end(); return; }
       const required = req.method === 'POST' ? write : read;
       if (!scopes(claims).includes(required)) { res.writeHead(403).end(); return; }
+      if (audience === mcp) {
+        try {
+          const downstream = await exchange(req.headers.authorization.replace(/^Bearer /, ''), { scope: required });
+          if (downstream.status !== 200) { res.writeHead(502).end(); return; }
+          const response = await boundedFetch(api, { method: req.method,
+            headers: { authorization: 'Bearer ' + downstream.json.access_token } });
+          const body = await response.text();
+          if (response.ok) mcpAcceptedCalls++;
+          res.writeHead(response.status, { 'content-type': 'application/json' }).end(body);
+        } catch { res.writeHead(502).end(); }
+        return;
+      }
       if (req.method === 'POST') writes++;
       res.setHeader('content-type', 'application/json');
       res.end(JSON.stringify({ sub: claims.sub, writes }));
@@ -207,7 +220,9 @@ async function main() {
         await Promise.race([page.waitForURL(url => url.href.startsWith(redirect)),
           page.locator('[name="accept"]').waitFor({ state: 'visible' })]);
         if (!page.url().startsWith(redirect)) {
-          assert.ok((await page.locator('body').innerText()).includes('Synthetic read permission'));
+          const requestedPermission = scope.split(' ').includes(write) ? 'Synthetic write permission' : 'Synthetic read permission';
+          assert.ok((await page.locator('body').innerText()).includes(requestedPermission),
+            'Consent must display the newly requested permission');
           report.explicitConsentShown = true;
           await page.locator('[name="accept"]').click();
         }
@@ -252,6 +267,7 @@ async function main() {
       const body = new URLSearchParams({ grant_type: grant, client_id: clientId, client_secret: clientSecret,
         subject_token: subject, subject_token_type: accessType, requested_token_type: accessType, audience });
       if (scope !== null) body.set('scope', scope);
+      exchangeRequests++;
       const response = await boundedFetch(metadata.token_endpoint, { method: 'POST', body });
       const json = await response.json();
       report.lastExchange = { status: response.status, error: json.error };
@@ -272,7 +288,13 @@ async function main() {
       return boundedFetch(route, { method, headers: token ? { authorization: 'Bearer ' + token } : {} });
     }
     assert.equal((await call(api, downstream.json.access_token)).status, 200);
+    const beforeRead = { apiRequests, exchangeRequests };
     assert.equal((await call(mcp, incoming.access_token)).status, 200);
+    assert.equal(apiRequests, beforeRead.apiRequests + 1);
+    assert.equal(exchangeRequests, beforeRead.exchangeRequests + 1);
+    const beforeReadOnlyWrite = { apiRequests, exchangeRequests, writes };
+    assert.equal((await call(mcp, incoming.access_token, 'POST')).status, 403);
+    assert.deepEqual({ apiRequests, exchangeRequests, writes }, beforeReadOnlyWrite);
     for (const [route, token] of [[api, incoming.access_token], [mcp, downstream.json.access_token],
       [api, undefined], [api, 'invalid'], [api, downstream.json.access_token.slice(0, -12) + 'invalidsuffix']]) {
       assert.equal((await call(route, token, 'POST')).status, 401);
@@ -306,13 +328,32 @@ async function main() {
     assert.equal(allowed.status, 200);
     const writeClaims = await verify(allowed.json.access_token, api);
     assert.equal(writeClaims.sub, initial.sub);
-    assert.equal((await call(api, allowed.json.access_token, 'POST')).status, 200);
+    assert.equal((await call(mcp, writeIncoming.access_token, 'POST')).status, 200);
     assert.equal(writes, 1);
     pass('AQ06: explicit write consent permits exactly one protected synthetic API effect');
-    const wrongSubjectAudience = await exchange(downstream.json.access_token);
+    // Keycloak permits a confidential client to exchange a token issued for itself, independently of aud.
+    const ownToken = await exchange(downstream.json.access_token);
+    assert.equal(ownToken.status, 200);
+    const ownClaims = await verify(ownToken.json.access_token, api);
+    assert.equal(ownClaims.sub, initial.sub);
+    assert.deepEqual(scopes(ownClaims), [read]);
+    const ownGateCounters = { apiRequests, exchangeRequests, writes };
+    assert.equal((await call(mcp, ownToken.json.access_token, 'POST')).status, 401);
+    assert.deepEqual({ apiRequests, exchangeRequests, writes }, ownGateCounters);
+    pass('AQ07: own-client exchange characterized; API token still refused at MCP before any exchange/API call');
+    const otherAudienceGrant = await authorize(read, api);
+    const otherAudienceToken = await exchangeAuthorization(issuer, otherAudienceGrant);
+    const otherAudienceClaims = await verify(otherAudienceToken.access_token, api);
+    assert.equal(otherAudienceClaims.azp, 'reference-public');
+    const gateCounters = { apiRequests, exchangeRequests, writes };
+    assert.equal((await call(mcp, otherAudienceToken.access_token, 'POST')).status, 401);
+    assert.deepEqual({ apiRequests, exchangeRequests, writes }, gateCounters);
+    const wrongSubjectAudience = await exchange(otherAudienceToken.access_token);
     assert.ok(wrongSubjectAudience.status >= 400 && !wrongSubjectAudience.json.access_token);
+    assert.equal(apiRequests, gateCounters.apiRequests);
     assert.equal(writes, 1);
-    pass('AQ07: API-audience subject cannot be reused by the MCP exchanger');
+    assert.ok(mcpAcceptedCalls >= 2, 'Accepted MCP fixture calls really traverse exchange and API');
+    pass('AQ07: public-client API audience subject denied by both MCP gate and native exchange; no API effect');
     const altered = incoming.access_token.slice(0, -12) + 'invalidsuffix';
     const badSubject = await exchange(altered);
     assert.ok(badSubject.status >= 400 && !badSubject.json.access_token);
@@ -335,6 +376,8 @@ async function main() {
       throw error;
     }
   } finally {
+    const authenticatedFlowSucceeded = report.qualified;
+    report.qualified = false;
     clearTimeout(deadline);
     const localCleanup = await Promise.allSettled([
       browser?.close(), server?.listening ? close(server) : undefined
@@ -351,9 +394,11 @@ async function main() {
       await fs.rm(seedDir, { recursive: true, force: true });
       assert.ok(localCleanup.every(result => result.status === 'fulfilled'), 'Browser and HTTP server cleanup');
       report.cleanup = true;
+      report.qualified = authenticatedFlowSucceeded;
       pass(composeStarted ? 'AQ08: project containers/volumes/network absent; synthetic seed removed' : 'AQ08: no Docker project started; synthetic seed removed');
     } finally {
       report.apiWriteCounter = writes;
+      report.calls = { apiRequests, exchangeRequests, mcpAcceptedCalls };
       await fs.mkdir(reportDir, { recursive: true });
       await fs.writeFile(path.join(reportDir, process.argv.includes('--failure-cleanup') ? 'report-failure-cleanup.json' : 'report.json'), JSON.stringify(report, null, 2) + '\n');
     }
