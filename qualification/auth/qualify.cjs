@@ -75,7 +75,7 @@ function realmSeed({ mcp, api, redirect, password, exchangeSecret, otherSecret }
       { executor: 'downscope-assertion-grant-enforcer', configuration: {} }
     ] }] },
     clientPolicies: { policies: [{ name: 'downscope-all-exchanges', enabled: true,
-      conditions: [{ condition: 'grant-type', configuration: { 'grant-types': [grant] } }],
+      conditions: [{ condition: 'grant-type', configuration: { grant_types: [grant] } }],
       profiles: ['strict-downscope'] }] }
   };
 }
@@ -262,7 +262,7 @@ async function main() {
     assert.equal(downstream.status, 200, 'Nominal exchange status; details are intentionally redacted');
     const issued = await verify(downstream.json.access_token, api);
     assert.equal(issued.sub, initial.sub);
-    report.nominalExchange = { incomingScopes: scopes(initial), issuedScopes: scopes(issued),
+    report.nominalExchange = { incomingScopes: scopes(initial), requestedScopes: [read], issuedScopes: scopes(issued),
       apiRoles: issued.api_roles || [], sameSubject: issued.sub === initial.sub };
     assert.deepEqual(scopes(issued), [read], 'Exact downstream scopes: ' + JSON.stringify(scopes(issued)));
     assert.equal(issued.synthetic_marker, 'qualification-only');
