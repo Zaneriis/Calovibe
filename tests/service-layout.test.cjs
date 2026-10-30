@@ -16,6 +16,10 @@ for (const service of ['backend', 'web', 'mcp']) {
     });
     fs.mkdirSync(path.join(directory, service), { recursive: true });
     for (const file of ['build.cjs', 'package.json']) fs.copyFileSync(path.join(root, service, file), path.join(directory, service, file));
+    if (service === 'mcp') {
+      fs.copyFileSync(path.join(root, 'mcp/tsconfig.json'), path.join(directory, 'mcp/tsconfig.json'));
+      fs.cpSync(path.join(root, 'mcp/src'), path.join(directory, 'mcp/src'), { recursive: true });
+    }
     if (service === 'web') {
       fs.copyFileSync(path.join(root, 'web/page.cjs'), path.join(directory, 'web/page.cjs'));
       fs.mkdirSync(path.join(directory, 'web/mockups'));
@@ -30,8 +34,15 @@ for (const service of ['backend', 'web', 'mcp']) {
     assert.equal(result.status, 0, result.stderr);
     const output = path.join(directory, service, 'dist');
     assert.deepEqual(fs.readdirSync(output).sort(), service === 'web' ? ['index.html', 'lucide.js']
-      : [service === 'backend' ? 'api.openapi.json' : 'mcp-tools.json']);
+      : service === 'backend' ? ['api.openapi.json'] : ['config.js', 'main.js', 'mcp-tools.json', 'security.js', 'server.js']);
     for (const sibling of ['backend', 'web', 'mcp'].filter(name => name !== service)) assert.equal(fs.existsSync(path.join(directory, sibling)), false);
+    if (service === 'mcp') {
+      const runtimeSource = path.join(directory, 'mcp/src/security.ts');
+      const original = fs.readFileSync(runtimeSource);
+      fs.unlinkSync(runtimeSource);
+      assert.notEqual(run().status, 0, 'Une source runtime MCP absente doit faire échouer le build');
+      fs.writeFileSync(runtimeSource, original);
+    }
     const source = service === 'web' ? path.join(directory, 'web/mockups/calovibe-accueil.html') : path.join(directory, 'shared/contracts/api.openapi.json');
     fs.unlinkSync(source);
     assert.notEqual(run().status, 0, 'Une source absente doit faire échouer le build');

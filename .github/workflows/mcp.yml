@@ -1,0 +1,43 @@
+name: MCP service
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mcp-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  service:
+    name: MCP strict, HTTP and image
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version-file: .node-version
+          cache: npm
+      - name: Fixer npm sur le runner éphémère
+        run: npm install --global npm@11.13.0 --ignore-scripts
+      - run: node --version && npm --version
+      - run: npm ci --ignore-scripts
+      - run: npm audit
+      - run: npm run lint --workspace @calovibe/mcp
+      - run: npm run types --workspace @calovibe/mcp
+      - run: npm run build:mcp
+      - name: Vrai serveur HTTP, configuration et référence préservée
+        run: npm test --workspace @calovibe/mcp
+      - name: Image MCP indépendante et smoke du commit exact
+        shell: bash
+        run: |
+          version=$(git rev-parse HEAD)
+          docker build --file mcp/Dockerfile --build-arg APP_VERSION="$version" --tag "calovibe-mcp:$version" .
+          node mcp/tests/image-smoke.cjs "calovibe-mcp:$version" "$version"
