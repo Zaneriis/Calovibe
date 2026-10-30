@@ -207,7 +207,6 @@ try {await p.query(sql);process.exitCode=1;}catch(e){if(e.code!=='42501')process
     report.success = true;
   } catch (error) {
     originalFailure = error;
-    throw error;
   } finally {
     try {
       compose(['down', '--volumes', '--remove-orphans']);
@@ -216,7 +215,7 @@ try {await p.query(sql);process.exitCode=1;}catch(e){if(e.code!=='42501')process
       report.cleaned = true;
     } catch (cleanupError) {
       report.cleaned = false;
-      if (!originalFailure) throw cleanupError;
+      originalFailure ??= cleanupError;
       console.error('Nettoyage Docker non confirmé ; projet isolé : ' + project);
     } finally {
       assert.equal(path.dirname(path.resolve(directory)), artifacts);
@@ -224,4 +223,5 @@ try {await p.query(sql);process.exitCode=1;}catch(e){if(e.code!=='42501')process
       fs.writeFileSync(path.join(artifacts, 'backend-report.json'), JSON.stringify(report, null, 2));
     }
   }
+  if (originalFailure) throw originalFailure;
 })().catch(error => { console.error(error.message); process.exitCode = 1; });
