@@ -6,14 +6,18 @@
     "node": "24.22.1"
   },
   "scripts": {
-    "preview": "node scripts/preview.cjs",
+    "preview": "npm run preview --workspace @calovibe/web",
     "check": "node scripts/check.cjs",
-    "test": "node --test tests/review-gate.test.cjs tests/ci-mirror.test.cjs mockups/tests/navigation.test.cjs tests/contracts-data.test.cjs tests/contracts-api-mcp.test.cjs tests/mcp-reference.test.cjs tests/toolchain.test.cjs",
-    "test:browser": "node mockups/tests/browser-check.cjs",
+    "test": "node --test tests/review-gate.test.cjs tests/ci-mirror.test.cjs web/mockups/tests/navigation.test.cjs tests/contracts-data.test.cjs tests/contracts-api-mcp.test.cjs mcp/tests/mcp-reference.test.cjs tests/toolchain.test.cjs tests/service-layout.test.cjs",
+    "test:browser": "node web/mockups/tests/browser-check.cjs",
     "gate": "node scripts/review-gate.cjs",
     "lint": "eslint . --max-warnings 0",
     "types": "tsc --project tsconfig.toolchain.json",
-    "build": "node scripts/build-contracts.cjs contracts artifacts/contracts"
+    "build": "npm run build --workspaces",
+    "build:backend": "npm run build --workspace @calovibe/backend",
+    "build:web": "npm run build --workspace @calovibe/web",
+    "build:mcp": "npm run build --workspace @calovibe/mcp",
+    "build:contracts": "node scripts/build-contracts.cjs shared/contracts artifacts/contracts"
   },
   "devDependencies": {
     "@apidevtools/swagger-parser": "13.1.0",
@@ -30,5 +34,10 @@
     "playwright": "1.64.1",
     "typescript": "6.0.3"
   },
-  "packageManager": "npm@11.13.0"
+  "packageManager": "npm@11.13.0",
+  "workspaces": [
+    "backend",
+    "web",
+    "mcp"
+  ]
 }

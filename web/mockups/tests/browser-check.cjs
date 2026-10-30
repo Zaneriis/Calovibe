@@ -3,7 +3,7 @@ const path = require('node:path');
 const assert = require('node:assert/strict');
 const { chromium } = require('playwright');
 const source = path.join(__dirname, '..', 'calovibe-photo.html');
-const { createPreviewServer } = require('../../scripts/preview.cjs');
+const { createPreviewServer } = require('../../preview.cjs');
 
 (async () => {
   const browser = await chromium.launch({ headless: true });
@@ -65,7 +65,7 @@ const { createPreviewServer } = require('../../scripts/preview.cjs');
       assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true, `Débordement à ${width}px`);
     }
     assert.deepEqual(errors, []);
-    const checkDir=path.join(__dirname,'..','..','artifacts','browser');fs.mkdirSync(checkDir,{recursive:true});
+    const checkDir=path.join(__dirname,'..','..','..','artifacts','browser');fs.mkdirSync(checkDir,{recursive:true});
     await page.setViewportSize({width:1024,height:1000});
     await page.setContent('<style>body{margin:0}[hidden]{display:none!important}</style>'+fs.readFileSync(source,'utf8'));
     for(const [variant,label] of ['desktop-light','desktop-dark','phone-light','phone-dark'].entries()){

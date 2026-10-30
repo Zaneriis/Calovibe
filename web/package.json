@@ -1,0 +1,6 @@
+{
+  "name": "@calovibe/web",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": { "build": "node build.cjs", "preview": "node preview.cjs", "test": "node --test mockups/tests/navigation.test.cjs", "test:browser": "node mockups/tests/browser-check.cjs" }
+}

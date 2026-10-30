@@ -1,0 +1,6 @@
+{
+  "name": "@calovibe/mcp",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": { "build": "node build.cjs", "test": "node --test tests/mcp-reference.test.cjs" }
+}

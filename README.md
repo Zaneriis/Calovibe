@@ -23,7 +23,40 @@ des propositions de [données](docs/contracts/DATA.md) et de [contrats API/MCP](
 Le backend, le serveur MCP, la base et le déploiement de production ne sont pas implémentés.
 Les choix encore ouverts sont identifiés dans les ADR du cahier des charges.
 
-Références : [accueil](mockups/calovibe-accueil.html), [ajout manuel](mockups/calovibe-ajout.html), [photo](mockups/calovibe-photo.html). Les fragments sont destinés à l’aperçu conversationnel ; ils ne constituent pas des pages de production autonomes.
+## Organisation et builds indépendants
+
+```text
+backend/           API : artefact OpenAPI actuel, futur runtime et Dockerfile
+web/               Front web : aperçu, maquettes, build et tests propres
+mcp/               MCP : catalogue et référence de test, futur runtime et Dockerfile
+shared/contracts/  Source unique des schémas communs
+docs/              Spécification, décisions et documentation transversale
+scripts/           Contrôles et outillage communs
+tests/             Contrôles transversaux et tests des contrats
+.github/           CI commune
+```
+
+Installer les dépendances une fois à la racine avec `npm ci --ignore-scripts`.
+Les espaces npm partagent un verrou ; chaque build fonctionne ensuite seul :
+
+```sh
+npm run build:backend
+npm run build:web
+npm run build:mcp
+```
+
+On peut aussi faire `npm run build` directement dans `backend/`, `web/` ou `mcp/`.
+Les sorties restent dans le `dist/` du composant choisi. Depuis la racine,
+`npm run build` construit les trois ; `npm run build:contracts` conserve la sortie
+commune des contrats dans `artifacts/contracts/`.
+
+Les builds backend/MCP produisent actuellement **des contrats, pas des services
+applicatifs**. Le web produit un aperçu autonome. Les futures images Docker et
+leurs runtimes seront construits dans leurs dossiers respectifs au lot L1.
+Les documents propres à un composant restent avec son code ; `docs/` porte les
+documents qui concernent plusieurs composants.
+
+Références : [accueil](web/mockups/calovibe-accueil.html), [ajout manuel](web/mockups/calovibe-ajout.html), [photo](web/mockups/calovibe-photo.html). Les fragments sont destinés à l’aperçu conversationnel ; ils ne constituent pas des pages de production autonomes.
 
 ## Ouvrir uniquement l’aperçu web
 
@@ -73,10 +106,10 @@ aucune installation globale locale n’est effectuée par le projet. Les capture
 Ces tests portent sur le cadre, les maquettes, les schémas DATA/API/MCP et le miroir CI.
 La référence HTTP utilise les vrais SDK MCP avec 31 outils et des identités/réponses
 synthétiques ; elle ne prouve pas une authentification ni une fonctionnalité de production.
-Le build produit dans `artifacts/contracts/` un OpenAPI à références internes et un
+`npm run build:contracts` produit dans `artifacts/contracts/` un OpenAPI à références internes et un
 catalogue dont chaque schéma MCP est autonome. Un test consomme ces seuls artefacts
 avec le client officiel, sans les schémas sources. Les types couvrent uniquement
-`contracts/loader.cjs` et `scripts/build-contracts.cjs` (checkJs strict), pas les futures apps. Les tests des futurs services restent à ajouter. Le format base64
+`shared/contracts/loader.cjs` et `scripts/build-contracts.cjs` (checkJs strict), pas les futures apps. Les tests des futurs services restent à ajouter. Le format base64
 photo proposé exige une assertion canonique bornée, documentée dans le contrat API/MCP ;
 la détection du média et la conservation attendent ADR-05.
 

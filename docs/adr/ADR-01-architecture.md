@@ -54,7 +54,7 @@ Client MCP ── HTTPS /mcp ────> MCP Fastify/SDK ── HTTP interne �
   ressource : ce schéma n'autorise pas de transmettre tel quel un jeton MCP à l'API.
 - `contracts` porte les schémas et exemples approuvés du contrat, partagés par les
   validateurs/adaptateurs et vérifiés automatiquement. Il n'importe pas l'accès SQL
-  et n'expose pas de secret. Le [schéma de données L0-DATA](../../contracts/data.schema.json)
+  et n'expose pas de secret. Le [schéma de données L0-DATA](../../shared/contracts/data.schema.json)
   et sa [documentation](../contracts/DATA.md), désormais intégrés à develop, sont à
   réutiliser ; le regroupement éventuel ne doit pas créer de copie divergente.
   Format OpenAPI/JSON Schema et noms API/MCP restent à définir par L0-CONTRACTS.

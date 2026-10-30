@@ -5,9 +5,9 @@ const { Client, StreamableHTTPClientTransport } = require('@modelcontextprotocol
 const { Server, createMcpHandler, requireBearerAuth, OAuthError, ProtocolError,
   bearerAuthChallengeResponse } = require('@modelcontextprotocol/server');
 const { toNodeHandler, localhostHostValidation, localhostOriginValidation } = require('@modelcontextprotocol/node');
-const fixtures = require('../../contracts/examples/api-mcp-valid.json').capabilities;
-const invalid = require('../../contracts/examples/api-mcp-invalid.json');
-const errorFixtures = require('../../contracts/examples/api-mcp-errors.json');
+const fixtures = require('../../../shared/contracts/examples/api-mcp-valid.json').capabilities;
+const invalid = require('../../../shared/contracts/examples/api-mcp-invalid.json');
+const errorFixtures = require('../../../shared/contracts/examples/api-mcp-errors.json');
 const TOKENS = { read: 'SYNTHETIC_MCP_READ', write: 'SYNTHETIC_MCP_WRITE', both: 'SYNTHETIC_MCP_READ_WRITE' };
 const API_TOKENS = { 'calovibe:read': 'SYNTHETIC_API_READ', 'calovibe:write': 'SYNTHETIC_API_WRITE' };
 

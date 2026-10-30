@@ -8,14 +8,14 @@ Sur Node 24.22.1 et npm 11.13.0, runtime courant du cadre (Node26.2.0 pour la pr
 
 ```text
 npm ci --ignore-scripts
-node --test tests/mcp-reference.test.cjs
+node --test mcp/tests/mcp-reference.test.cjs
 npm test
 npm run check
 npm run test:browser
 npm audit
 ```
 
-L’assemblage des contrats est partagé dans `contracts/loader.cjs`, hors du support de tests.
+L’assemblage des contrats est partagé dans `shared/contracts/loader.cjs`, hors du support de tests.
 `npm run build` en produit des artefacts autoportants ; `tests/toolchain.test.cjs` les consomme
 avec ce même client de référence sans accès aux schémas sources. TypeScript checkJs strict
 vérifie le loader et le build, pas le serveur synthétique complet.

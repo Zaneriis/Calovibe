@@ -136,7 +136,7 @@ datés disponibles en premier. Aucune formule ni coefficient codé dans cette pr
 
 ## Preuves et limites
 
-Fichiers proposés : contracts/api.openapi.json et contracts/mcp-tools.json ; DATA v0.1.0 intégré sur develop 33f736276d31bd9c245a5987db905e10ce643a95. Une validation
+Fichiers proposés : shared/contracts/api.openapi.json et shared/contracts/mcp-tools.json ; DATA v0.1.0 intégré sur develop 33f736276d31bd9c245a5987db905e10ce643a95. Une validation
 de manifest démontre des types et une cohérence statique, **pas l'interopérabilité**. Une étape
 séparée doit négocier le protocole et exécuter lecture/écriture/refus avec un vrai client MCP
 de référence ; L0 reste ouvert jusque-là. Les E2E web/API/MCP, droits et transactions avec

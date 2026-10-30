@@ -145,6 +145,13 @@ Les erreurs distinguent au minimum : authentification, autorisation, validation,
 
 ### Découpage
 
+Précision humaine du 30 octobre 2026 : le dépôt possède un dossier par service
+(`backend/`, `web/`, `mcp/`), chacun avec sa commande de build indépendante.
+`docs/` regroupe la documentation transversale ; les documents propres à un service
+restent dans son dossier. Les contrats partagés ont une source unique dans
+`shared/contracts/`. L’installation commune des dépendances ne doit pas imposer
+la construction des autres services pour en construire un.
+
 Le développement et les essais Docker peuvent se faire sur le PC actuel. L'accès au
 serveur Ubuntu sert à préparer et vérifier le déploiement de production ; il n'est pas
 un prérequis au développement local ni à la CI.
@@ -182,9 +189,9 @@ L’automatisation de production est autorisée. Cela n’autorise pas à efface
 
 ### Références locales
 
-- [Accueil](../mockups/calovibe-accueil.html).
-- [Ajout manuel et parcours combinés](../mockups/calovibe-ajout.html).
-- [Analyse photo et correction des propositions](../mockups/calovibe-photo.html).
+- [Accueil](../web/mockups/calovibe-accueil.html).
+- [Ajout manuel et parcours combinés](../web/mockups/calovibe-ajout.html).
+- [Analyse photo et correction des propositions](../web/mockups/calovibe-photo.html).
 
 Chaque référence contient les variantes ordinateur/téléphone et clair/sombre. Les captures dans `mockups/checks/` sont des preuves de contrôle, pas une autorisation de changer le design. La direction générale est validée ; les derniers ajustements issus de la revue ont été appliqués. Les écrans code-barres, bibliothèque/plats, poids, objectifs et paramètres restent à détailler avant leur réalisation.
 

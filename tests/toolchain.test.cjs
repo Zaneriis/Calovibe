@@ -3,9 +3,9 @@ const { test } = require('node:test');
 const fs = require('node:fs');
 const path = require('node:path');
 const { spawnSync } = require('node:child_process');
-const { loadContract } = require('../contracts/loader.cjs');
+const { loadContract } = require('../shared/contracts/loader.cjs');
 const { buildContracts } = require('../scripts/build-contracts.cjs');
-const { startReference, fixtures, invalid } = require('./support/mcp-reference.cjs');
+const { startReference, fixtures, invalid } = require('../mcp/tests/support/mcp-reference.cjs');
 const root = path.resolve(__dirname, '..');
 const artifacts = path.join(root, 'artifacts');
 
@@ -21,7 +21,7 @@ function temporary(t) {
 function sourceCopy(t) {
   const directory = temporary(t);
   for (const name of ['api.openapi.json', 'mcp-tools.json', 'data.schema.json']) {
-    fs.copyFileSync(path.join(root, 'contracts', name), path.join(directory, name));
+    fs.copyFileSync(path.join(root, 'shared/contracts', name), path.join(directory, name));
   }
   return directory;
 }
@@ -44,8 +44,8 @@ test('runtime et npm exacts, garde refuse une version différente avant les cont
 });
 
 test('lint rejette une variable inconnue dans le vrai loader, sans ignorer le fichier', () => {
-  const result = command('node_modules/eslint/bin/eslint.js', ['--stdin', '--stdin-filename', 'contracts/loader.cjs', '--format', 'json', '--max-warnings', '0'], {
-    input: fs.readFileSync(path.join(root, 'contracts/loader.cjs'), 'utf8') + '\nmissingToolchainName();\n'
+  const result = command('node_modules/eslint/bin/eslint.js', ['--stdin', '--stdin-filename', 'shared/contracts/loader.cjs', '--format', 'json', '--max-warnings', '0'], {
+    input: fs.readFileSync(path.join(root, 'shared/contracts/loader.cjs'), 'utf8') + '\nmissingToolchainName();\n'
   });
   assert.equal(result.status, 1, result.stderr);
   const [report] = JSON.parse(result.stdout);
@@ -54,7 +54,7 @@ test('lint rejette une variable inconnue dans le vrai loader, sans ignorer le fi
 
 test('types rejette un appel incorrect du vrai loader dans une copie isolée', t => {
   const directory = temporary(t);
-  fs.writeFileSync(path.join(directory, 'loader.cjs'), fs.readFileSync(path.join(root, 'contracts/loader.cjs'), 'utf8') + '\nloadContract(42);\n');
+  fs.writeFileSync(path.join(directory, 'loader.cjs'), fs.readFileSync(path.join(root, 'shared/contracts/loader.cjs'), 'utf8') + '\nloadContract(42);\n');
   fs.writeFileSync(path.join(directory, 'tsconfig.json'), JSON.stringify({
     extends: path.join(root, 'tsconfig.toolchain.json'), files: ['loader.cjs']
   }));
@@ -124,7 +124,7 @@ for (const mode of ['référence locale cassée', 'référence HTTP interdite', 
 test('consommateur refuse une sortie absente ou corrompue, sans reprise silencieuse des sources', async t => {
   const directory = temporary(t);
   await assert.rejects(loadContract(directory));
-  await buildContracts(path.join(root, 'contracts'), directory);
+  await buildContracts(path.join(root, 'shared/contracts'), directory);
   fs.writeFileSync(path.join(directory, 'mcp-tools.json'), '{');
   await assert.rejects(loadContract(directory), SyntaxError);
 });

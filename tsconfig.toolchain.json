@@ -14,7 +14,7 @@
     "skipLibCheck": false
   },
   "files": [
-    "contracts/loader.cjs",
+    "shared/contracts/loader.cjs",
     "scripts/build-contracts.cjs"
   ]
 }

@@ -1,15 +1,16 @@
 const { mkdir, writeFile } = require('node:fs/promises');
 const path = require('node:path');
 const SwaggerParser = require('@apidevtools/swagger-parser');
-const { loadContract } = require('../contracts/loader.cjs');
+const { loadContract } = require('../shared/contracts/loader.cjs');
 
-/** @param {string} source @param {string} destination */
-async function buildContracts(source, destination) {
+/** @param {string} source @param {string} destination @param {'all'|'api'|'mcp'} [channel] */
+async function buildContracts(source, destination, channel = 'all') {
+  if (!['all', 'api', 'mcp'].includes(channel)) throw new Error('Canal de build inconnu.');
   const contract = await loadContract(source);
   const api = await SwaggerParser.bundle(path.resolve(source, 'api.openapi.json'), { resolve: { http: false } });
   const outputs = {
-    'api.openapi.json': JSON.stringify(api, null, 2) + '\n',
-    'mcp-tools.json': JSON.stringify({ ...contract.manifest, tools: contract.tools }, null, 2) + '\n'
+    ...(channel !== 'mcp' ? { 'api.openapi.json': JSON.stringify(api, null, 2) + '\n' } : {}),
+    ...(channel !== 'api' ? { 'mcp-tools.json': JSON.stringify({ ...contract.manifest, tools: contract.tools }, null, 2) + '\n' } : {})
   };
   // Chaque schéma envoyé doit être autonome, sans chemin du dépôt à résoudre.
   for (const [name, text] of Object.entries(outputs)) {

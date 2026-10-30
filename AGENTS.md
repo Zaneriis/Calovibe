@@ -10,6 +10,7 @@ Lire `docs/CAHIER-DES-CHARGES.md` et `docs/BACKLOG.md` avant toute implémentati
 - Avant le code, rendre ses critères d’acceptation et sa stratégie de vérification explicites.
 - Ne pas transformer une décision ouverte en exigence validée. Préparer une recommandation concrète ; remonter les seuls choix réellement nécessaires.
 - Réutiliser les composants et règles métier partagés. Ne pas multiplier services ou abstractions sans bénéfice démontré.
+- Garder chaque service dans son dossier (`backend/`, `web/`, `mcp/`), avec documentation propre et build indépendant. La documentation transversale reste dans `docs/` ; les contrats communs ont une seule source dans `shared/contracts/`. Ne pas imposer le build d’un autre service pour construire le service concerné.
 - Pas d’agent conversationnel dans l’application : Hermès porte ce rôle. Le fournisseur photo reste une intégration distincte.
 
 ## Vérification

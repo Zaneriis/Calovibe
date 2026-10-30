@@ -6,7 +6,7 @@ Les exigences humaines et le cahier des charges restent prioritaires.
 
 ## Utilisation et version
 
-`contracts/data.schema.json` déclare JSON Schema Draft 2020-12 et l'identifiant
+`shared/contracts/data.schema.json` déclare JSON Schema Draft 2020-12 et l'identifiant
 `urn:calovibe:contracts:data:0.1.0`. Les objets racine portent `schemaVersion: "0.1.0"`.
 Un consommateur cible une définition par `$ref`, par exemple
 `urn:calovibe:contracts:data:0.1.0#/$defs/quantity`, après avoir enregistré le schéma.
@@ -145,7 +145,7 @@ npm run test:browser
 npm audit
 ```
 
-Les deux fichiers `contracts/examples/valid.json` et `invalid.json` associent définition
+Les deux fichiers `shared/contracts/examples/valid.json` et `invalid.json` associent définition
 et valeur ; les tests les valident avec Ajv, compilent toutes les définitions, exercent les
 bornes et les champs obligatoires. `npm test` et `check` incluent le contrat en permanence ;
 la CI existante appelle `check`, sans filtre ajouté. Les tests navigateur restent ceux des
