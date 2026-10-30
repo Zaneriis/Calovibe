@@ -2,5 +2,21 @@
   "name": "@calovibe/mcp",
   "private": true,
   "version": "0.0.0",
-  "scripts": { "build": "node build.cjs", "test": "node --test tests/mcp-reference.test.cjs" }
+  "type": "module",
+  "engines": { "node": "24.22.1" },
+  "scripts": {
+    "build": "node build.cjs",
+    "types": "tsc --noEmit -p tsconfig.json",
+    "lint": "eslint --config eslint.config.js src build.cjs tests --max-warnings 0",
+    "start": "node dist/main.js",
+    "test": "node build.cjs && node --test tests/*.test.cjs"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/server": "2.4.0",
+    "@modelcontextprotocol/node": "2.1.2",
+    "jose": "6.2.13"
+  },
+  "devDependencies": {
+    "typescript-eslint": "8.72.0"
+  }
 }
