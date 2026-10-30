@@ -14,6 +14,7 @@ assert.match(version, /^[a-f0-9]{40}$/);
 const env = { ...process.env, BE_SECRET_DIR: directory.replaceAll('\\', '/'), BE_VERSION: version };
 const args = ['compose', '--project-name', project, '--file', path.join(root, 'backend/compose.test.yml')];
 const checks = [];
+const readiness = [];
 const issuer = 'https://identity.test/realms/calovibe';
 const owner = 'SYNTHETIC_OWNER_' + randomBytes(16).toString('hex');
 const secrets = [owner, randomBytes(24).toString('hex'), randomBytes(24).toString('hex'), randomBytes(24).toString('hex')];
@@ -42,12 +43,32 @@ function migration() {
 function write(name, value) {
   fs.writeFileSync(path.join(directory, name), typeof value === 'string' ? value : JSON.stringify(value), { mode: 0o600 });
 }
-async function waitReady(url, expected) {
+async function waitReady(url, expected, phase) {
+  const trace = { phase, expected, lastStatus: 'not-requested', attempts: 0 };
+  readiness.push(trace);
+  console.info(`Disponibilité ${phase} : attendu HTTP ${expected}.`);
   for (let attempt = 0; attempt < 40; attempt++) {
-    try { if ((await fetch(url, { signal: AbortSignal.timeout(2500) })).status === expected) return; } catch { /* bounded startup */ }
+    trace.attempts++;
+    try {
+      const response = await fetch(url, { signal: AbortSignal.timeout(2500) });
+      trace.lastStatus = response.status;
+      await response.body?.cancel();
+      if (response.status === expected) {
+        console.info(`Disponibilité ${phase} : HTTP ${response.status}, essai ${trace.attempts}.`);
+        return;
+      }
+    } catch { trace.lastStatus = 'transport-error'; }
     await new Promise(resolve => setTimeout(resolve, 250));
   }
-  throw new Error('État de disponibilité attendu absent.');
+  // Only phases, statuses and container state/loopback ports: no body, token or config.
+  trace.requestedPort = new URL(url).port;
+  try {
+    trace.publishedPort = new URL('http://' + compose(['port', 'backend', '3000'])).port;
+    const container = compose(['ps', '--all', '--quiet', 'backend']);
+    trace.backendState = docker(['inspect', '--format', '{{.State.Status}} health={{.State.Health.Status}} exit={{.State.ExitCode}} restarts={{.RestartCount}}', container]);
+  } catch { trace.backendState = 'diagnostic-unavailable'; }
+  console.error('Diagnostic disponibilité : ' + JSON.stringify(trace));
+  throw new Error(`Disponibilité absente : phase=${phase}, attendu=${expected}, dernier=${trace.lastStatus}.`);
 }
 function psql(sql) { return compose(['exec', '-T', 'postgres', 'psql', '-U', 'bootstrap', '-d', 'calovibe_test', '-tAc', sql]); }
 function record(label) { checks.push(label); console.info('OK : ' + label); }
@@ -77,7 +98,7 @@ GRANT CONNECT ON DATABASE calovibe_test TO calovibe_runtime;
 `);
   // Mount permissions for the non-root image; these are generated fixture files only.
   for (const name of fs.readdirSync(directory)) fs.chmodSync(path.join(directory, name), 0o644);
-  const report = { version, dirty: Boolean(spawnSync('git', ['status', '--porcelain'], { cwd: root, encoding: 'utf8' }).stdout.trim()), checks, success: false };
+  const report = { version, dirty: Boolean(spawnSync('git', ['status', '--porcelain'], { cwd: root, encoding: 'utf8' }).stdout.trim()), checks, readiness, success: false };
   let started = false, originalFailure;
   try {
     console.info('Construction des images backend isolées.');
@@ -95,7 +116,7 @@ GRANT CONNECT ON DATABASE calovibe_test TO calovibe_runtime;
       for (const secret of secrets) assert.equal(JSON.stringify(body).includes(secret), false);
       return body;
     };
-    await waitReady(base + '/health/ready', 503);
+    await waitReady(base + '/health/ready', 503, 'before-migration');
     assert.equal((await fetch(base + '/health/live')).status, 200);
     await request(null, 401);
     record('démarrage réel fermé avant migration ; live200 et ready503');
@@ -103,7 +124,7 @@ GRANT CONNECT ON DATABASE calovibe_test TO calovibe_runtime;
     assert.equal(results.length, 2);
     assert.equal(psql('SELECT count(*) FROM calovibe.schema_migrations'), '1');
     assert.equal(psql('SELECT count(*) FROM calovibe.owner'), '1');
-    await waitReady(base + '/health/ready', 200);
+    await waitReady(base + '/health/ready', 200, 'after-concurrent-migrations');
     record('deux migrations concurrentes, une application et un propriétaire');
 
     const token = async (claims = {}, signingKey = key.privateKey) => new SignJWT({ scope: 'calovibe:read', azp: 'web-client', ...claims })
@@ -152,23 +173,23 @@ try {await p.query(sql);process.exitCode=1;}catch(e){if(e.code!=='42501')process
     await request(valid, 200);
     record('échec SQL atomique et propriétaire existant conservé');
     psql("UPDATE calovibe.schema_migrations SET checksum=repeat('0',64)");
-    await waitReady(base + '/health/ready', 503);
+    await waitReady(base + '/health/ready', 503, 'invalid-migration-checksum');
     await request(valid, 503);
     const { createHash } = require('node:crypto');
     const checksum = createHash('sha256').update(fs.readFileSync(path.join(root, 'backend/migrations/001_owner.sql'))).digest('hex');
     psql(`UPDATE calovibe.schema_migrations SET checksum='${checksum}'`);
-    await waitReady(base + '/health/ready', 200);
+    await waitReady(base + '/health/ready', 200, 'restored-migration-checksum');
     record('version/empreinte de migration incorrecte refuse la disponibilité');
 
     compose(['stop', 'postgres']);
-    await waitReady(base + '/health/ready', 503);
+    await waitReady(base + '/health/ready', 503, 'postgres-stopped');
     await request(valid, 503);
     await request(null, 401);
     assert.equal((await fetch(base + '/health/live')).status, 200);
     compose(['up', '--detach', '--wait', 'postgres']);
-    await waitReady(base + '/health/ready', 200);
+    await waitReady(base + '/health/ready', 200, 'postgres-restarted');
     compose(['restart', 'backend']);
-    await waitReady(base + '/health/ready', 200);
+    await waitReady(base + '/health/ready', 200, 'backend-restarted');
     await request(valid, 200);
     assert.equal(psql('SELECT count(*) FROM calovibe.schema_migrations'), '1');
     assert.equal(psql('SELECT count(*) FROM calovibe.owner'), '1');
