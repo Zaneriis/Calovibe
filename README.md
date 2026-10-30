@@ -25,6 +25,26 @@ Les choix encore ouverts sont identifiés dans les ADR du cahier des charges.
 
 Références : [accueil](mockups/calovibe-accueil.html), [ajout manuel](mockups/calovibe-ajout.html), [photo](mockups/calovibe-photo.html). Les fragments sont destinés à l’aperçu conversationnel ; ils ne constituent pas des pages de production autonomes.
 
+## Ouvrir uniquement l’aperçu web
+
+Avec les dépendances installées (`npm ci --ignore-scripts`), lancer :
+
+```sh
+npm run preview
+```
+
+Ouvrir http://127.0.0.1:4173 dans le navigateur ; arrêter avec Ctrl+C.
+Cet aperçu n’affiche qu’une interface web responsive, avec un bouton « Mode sombre »
+qui conserve le parcours en cours. Les quatre variantes des fragments restent des
+références de comparaison, pas quatre applications ni une application mobile native.
+Lucide est chargé localement, sans CDN ; ouvrir directement un fragment HTML ne charge
+pas cette bibliothèque et peut laisser ses pictos vides.
+
+La frise remplace le champ date séparé. Au démarrage et via « Aujourd’hui », le jour
+courant est calculé dans Europe/Paris. Les journées consultées restent distinctes.
+Il s’agit toujours d’un prototype avec données d’exemple et état temporaire : aucun
+backend ou stockage durable. Le serveur d’aperçu écoute uniquement sur ce PC.
+
 ## Contrôles existants
 
 Le [cadre de développement autonome](docs/DEVELOPPEMENT-AUTONOME.md) définit les rôles,

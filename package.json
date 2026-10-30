@@ -6,6 +6,7 @@
     "node": "24.22.1"
   },
   "scripts": {
+    "preview": "node scripts/preview.cjs",
     "check": "node scripts/check.cjs",
     "test": "node --test tests/review-gate.test.cjs tests/ci-mirror.test.cjs mockups/tests/navigation.test.cjs tests/contracts-data.test.cjs tests/contracts-api-mcp.test.cjs tests/mcp-reference.test.cjs tests/toolchain.test.cjs",
     "test:browser": "node mockups/tests/browser-check.cjs",
