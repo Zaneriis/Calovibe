@@ -41,3 +41,10 @@ dépendance transitive ni son usage SDK ne sont modifiés par cette tâche ; l�
 utilise node:http et une liste fermée de deux routes. Cet avis n’est pas ignoré :
 si l’audit requis échoue en CI, l’intégration reste interdite et son correctif doit
 être traité séparément. Aucun succès d’audit zéro ni livraison de production revendiqué.
+
+Revue UI : UI-PREVIEW-FOCUS-01, première correction. La reconstruction de la frise
+détruisait la flèche activée au clavier ; régression Playwright reproduite rouge
+sur 86775c9 (`activeElement` différent de la flèche après Enter). Restaurer le focus
+sur la même flèche ou le jour choisi après navigation, dans les trois références.
+Le test exige aussi le maintien du focus lors de la sélection d’un jour ; aucun
+contrôle remplacé ou réduit. Les verdicts doivent porter sur le nouveau commit.

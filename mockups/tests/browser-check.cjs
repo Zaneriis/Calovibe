@@ -7,7 +7,7 @@ const { createPreviewServer } = require('../../scripts/preview.cjs');
 
 (async () => {
   const browser = await chromium.launch({ headless: true });
-  const page = await browser.newPage({ viewport: { width: 1024, height: 1000 } });
+  const page = await browser.newPage({ viewport: { width: 1024, height: 1000 }, timezoneId: 'UTC' });
   const errors = [];
   await page.clock.install({ time: new Date('2026-10-22T10:00:00Z') });
   page.on('pageerror', error => errors.push(error.message));
@@ -100,8 +100,11 @@ const { createPreviewServer } = require('../../scripts/preview.cjs');
       assert.equal(await web.locator('[data-date="2027-01-01"]').getAttribute('aria-pressed'), 'true');
       assert.equal(await web.locator('i[data-lucide]').count(), 0, 'Toutes les icônes doivent être rendues');
       assert.ok(await web.locator('svg[data-lucide]').count() > 20);
-      await web.locator('[data-shift="-1"]').click();
+      await web.locator('[data-shift="-1"]').press('Enter');
       assert.match(await web.locator('.cv-date').innerText(), /25 décembre 2026/);
+      assert.equal(await web.locator('[data-shift="-1"]').evaluate(el => el === el.ownerDocument.activeElement), true, 'Le focus reste sur la flèche après navigation');
+      await web.locator('[data-date="2026-12-24"]').press('Enter');
+      assert.equal(await web.locator('[data-date="2026-12-24"]').evaluate(el => el === el.ownerDocument.activeElement), true, 'Le focus reste sur le jour sélectionné');
       await web.locator('[data-today]').press('Enter');
       assert.match(await web.locator('.cv-date').innerText(), /1 janvier 2027/);
       await web.locator('[data-add="2"]').click();
@@ -126,6 +129,7 @@ const { createPreviewServer } = require('../../scripts/preview.cjs');
         }
       }
       await page.clock.setFixedTime(new Date('2027-01-01T23:30:00Z'));
+      assert.match(await web.locator('.cv-date').innerText(), /1 janvier 2027/, 'La journée consultée reste sélectionnée au changement de jour');
       await web.locator('[data-today]').click();
       assert.match(await web.locator('.cv-date').innerText(), /2 janvier 2027/);
       assert.equal((await web.locator('.cv-water-value').innerText()).replace(/\s/g, ''), '0');
