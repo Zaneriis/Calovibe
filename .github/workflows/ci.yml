@@ -41,3 +41,35 @@ jobs:
           name: browser-${{ github.sha }}
           path: artifacts/browser/
           retention-days: 3
+
+  auth:
+    name: Qualification OAuth Keycloak isolée
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version-file: .node-version
+          cache: npm
+      - run: npm install --global npm@11.13.0 --ignore-scripts
+      - run: npm ci --ignore-scripts
+      - name: Utiliser le dépôt Ubuntu principal sur le runner éphémère
+        run: sudo "$(command -v node)" scripts/configure-apt-mirror.cjs /etc/apt/apt-mirrors.txt
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:auth
+      - run: npm run test:auth -- --failure-cleanup
+        if: always()
+      - run: npm run test:auth -- --without-consent
+        if: always()
+      - run: npm run test:auth -- --without-write-consent
+        if: always()
+      - name: Conserver seulement le rapport expurgé
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: auth-${{ github.sha }}
+          path: artifacts/auth-qualification/report*.json
+          retention-days: 3
