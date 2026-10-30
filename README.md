@@ -18,8 +18,7 @@ Règle Git : `master` est figée, **jamais de fusion ni de push vers `master`**.
 exigent CI verte et revues indépendantes sur le commit exact. Le dépôt reste privé,
 sans protection GitHub payante : cette discipline est formalisée dans [AGENTS.md](AGENTS.md).
 
-Spécification version 1.1 et prototypes interactifs. Le cadre de travail et la CI sont en place ;
-des propositions de [données](docs/contracts/DATA.md) et de [contrats API/MCP](docs/contracts/API-MCP.md) sont vérifiables localement. L0 reste à qualifier, puis le socle L1 et les fonctionnalités restent à réaliser.
+Spécification version1.1, prototypes interactifs et contrats [DATA](docs/contracts/DATA.md)/[API-MCP](docs/contracts/API-MCP.md) vérifiables. Le cadre, la CI et les builds par composant sont en place. Les choix techniques et prérequis de passage à L1 sont consignés dans [le registre](docs/DECISIONS-L0.md) ; le socle applicatif L1 et les fonctionnalités restent à réaliser.
 Le backend, le serveur MCP, la base et le déploiement de production ne sont pas implémentés.
 Les choix encore ouverts sont identifiés dans les ADR du cahier des charges.
 

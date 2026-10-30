@@ -1,6 +1,6 @@
 # ADR-01 — Architecture, runtime et commandes de validation
 
-- Statut : **ouverte ; amorçage de contrats qualifié localement, CI/revues en attente**.
+- Statut : **choix technique arrêté pour le développement le30 octobre2026 ; convergence soumise aux revues/CI sur commit exact. Services L1 non livrés.**
 - Date de vérification des sources et métadonnées : 23 octobre 2026.
 - Tâche : [L0-ADR01](../tasks/L0-ADR01.md).
 - Autorité : [cahier des charges](../CAHIER-DES-CHARGES.md), [backlog L0](../BACKLOG.md), décisions humaines ; cette recommandation ne vaut pas approbation du propriétaire.
@@ -14,6 +14,33 @@ réservées au propriétaire et les limites de dépense, de données et d'exposi
 administrative restent applicables.
 
 ## Contexte et comparaison
+
+### Décision de développement du30 octobre2026
+
+Le coordinateur retient l’option A sous mandat : TypeScript6.0.3, React/ReactDOM19.3.1
+avec Vite8.3.5/pluginReact6.1.2, API Fastify5.12.7, pilote SQLpg8.23.1 et PostgreSQL18.6.
+Les packages applicatifs seront installés/verrouillés et leurs runtimes qualifiés
+dans les tâches L1 qui les consomment ; leurs seules métadonnées ne prouvent pas
+des services opérationnels. Pas d’ORM, bus, worker ou service par domaine ajouté.
+
+Runtime/outillage qualifiés : Node24.22.1/npm11.13.0 ; contrats partagés uniques,
+SDK client/server/core2.4.0 et adaptateur Node2.1.2, Hono2.1.3, selon
+[SDK-SECURITY](../tasks/SDK-SECURITY.md), commita197c0ff463a5dce94eb5f2a5f99ccbcc82276cd
+intégré sur develop après deux CI et trois revues exactes. Audit0,259 tests,
+lint/types/builds et navigateur réels. Le MCP utilisera cet adaptateur Node officiel
+déjà qualifié ; l’adaptateur Fastify de l’étude historique n’est pas requis.
+
+Services dans backend/, web/, mcp/, contrats dans shared/contracts/, docs générales
+dans docs/. Chaque service a son build/image propre ; installation npm commune.
+Les builds actuels backend/MCP produisent seulement les contrats ; le build web
+produit un aperçu. Les vrais points d’entrée, images, SQL, santé et accès L1 sont
+à implémenter suivant [L1-SERVICES](../contracts/L1-SERVICES.md), sans recopier les
+fragments de maquette en code de production. Cette décision fixe un choix technique,
+pas un résultat fictif de qualification applicative.
+
+La comparaison et les versions proposées ci-dessous conservent l’étude historique
+du23 octobre ; la présente décision et les manifestes verrouillés font foi pour
+le périmètre effectivement consommé.
 
 Le serveur Ubuntu personnel héberge trois services applicatifs conteneurisés : web,
 API métier commune et MCP. Le MCP appelle l'API ; seule l'API possède les accès aux
@@ -176,7 +203,7 @@ tailles, clavier, contexte date/repas, brouillons, erreurs et annulation. Le tau
 couverture indicatif 70 % ne remplace aucun scénario critique. Statuts/revues Git et
 déploiement restent ceux d'AGENTS.md ; cet ADR ne les assouplit pas.
 
-## Preuves de cette proposition et conditions de clôture
+## Preuves historiques et conditions initiales de clôture
 
 Le [compte rendu de l’étude initiale](../tasks/L0-ADR01.md) conserve les preuves historiques sous Node26 :
 `npm ci --ignore-scripts`, `npm test`, `npm run check` (75/75 après fusion de develop),
@@ -189,7 +216,7 @@ applicatifs n'a été exécuté : les composants correspondants n'existent pas e
 Au dernier contrôle Docker de cette étude, la CLI répondait mais le moteur Linux
 n'était pas joignable ; ce constat ne prouve pas son état courant.
 
-ADR-01 reste ouverte jusqu'à : choix d'architecture/runtime arrêté et consigné par
+Lors de l’étude initiale, ADR01 restait ouverte jusqu’au choix d’architecture/runtime arrêté et consigné par
 le coordinateur dans son mandat après qualification et revues indépendantes ;
 convergence avec ADR-02 et contrat API/MCP ; versions directes/transitives verrouillées pour le périmètre consommé L0 ;
 commandes lint/types/tests/build qualifiées dans un amorçage technique L0 sans métier
@@ -203,5 +230,7 @@ ADR-01/L0. Les scripts d'intégration et E2E applicatifs seront activés avec le
 qu'ils vérifient ; un script vide ou ignoré ne vaut pas qualification.
 Le fournisseur/authentification ne sont pas choisis ici. Domaine, accès production et
 inventaire matériel restent ADR-03 ; absence de serveur n'empêche pas la proposition L0.
-L0 et L1 ne sont pas clos par ce document. Aucun achat, déploiement ou changement de
-visibilité n'est engagé.
+Ces preuves historiques seules ne clôturaient ni L0 ni L1. La décision du30 octobre
+ci-dessus fixe désormais le choix de développement, après qualification du périmètre
+L0 consommé ; sa candidate exige toujours revues et CI avant intégration. Aucun
+achat, déploiement ou changement de visibilité n’est engagé.

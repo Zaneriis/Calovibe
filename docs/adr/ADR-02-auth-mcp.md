@@ -1,8 +1,43 @@
 # ADR-02 — Accès personnel web/API et autorisation MCP HTTP
 
-Date : 23 octobre 2026. **Statut : proposition technique, qualification d'interopérabilité en attente.** L'étude L0-ADR02 ne clôt ni ADR-02, ni L0, ni L1. Aucun service d'authentification n'est implémenté. [Fiche et critères](../tasks/L0-ADR02.md).
+Date initiale :23 octobre2026. **Décision technique de développement : Keycloak local26.8.1, arrêtée le30 octobre2026 ; convergence soumise aux revues/CI exactes. Authentification applicative L1 non livrée.** [Fiche historique](../tasks/L0-ADR02.md).
 
-## Contexte et recommandation
+## Décision de développement du30 octobre2026
+
+Le coordinateur retient Keycloak OSS26.8.1 local, clients web/MCP/API distincts et
+préenregistrés, inscription publique désactivée, propriétaire autorisé par issuer/sub.
+Pas d’autorité distante ni de dépense nouvelle. L’administration reste privée/LAN.
+L’échange natif conserve sujet et intersection des droits, sans token passthrough
+ou repli sur compte plus puissant. La session web et ses défenses restent celles
+définies ci-dessous et dans [L1-SERVICES](../contracts/L1-SERVICES.md).
+
+Preuve de qualification : banc9e12d91c2ee0b2554641b5062008a259115c84c9, CI40552241506
+et40552251772 vertes, trois avis indépendants renouvelés le30 octobre sur ce SHA
+(fonctionnel et tests favorables, UI N/A motivée). Consentements read/write visibles
+et acceptés obligatoires ; les deux injections réelles sans consentement attendu
+échouent avec codes précis, zéro écriture et nettoyage. L’ancien faux positif2720c766
+ne vaut plus preuve ; la [fiche](../tasks/L0-AUTH-QUALIFICATION.md) conserve l’historique.
+La convergence avec SDK2.4.0 et la structure actuelle doit repasser le banc en CI
+et les revues sur son nouveau SHA avant intégration. Ces preuves ne livrent aucun
+service applicatif, session web, CSRF, sauvegarde ou exploitation de production.
+
+Logto OSS1.45.0 est écarté pour le flux visé sur analyse de ses sources exactes,
+sans prétendre un essai runtime ni une vulnérabilité. Justification et liens immuables
+dans la fiche de qualification. L’étude initiale ci-dessous reste historique et ne
+constitue plus une recommandation de qualifier Logto en priorité.
+
+Limites acceptées pour le développement : resource-indicators expérimental,
+clients préenregistrés pour éviter CIMD ; audience API distincte et URI explicites.
+L’échange utilise le paramètre natif audience, pas un support RFC8693 resource
+inventé. L’exception native de rééchange du propre jeton d’un client ne permet jamais
+au gate MCP d’accepter un jeton API ; le vrai client public hors audience reste
+refusé. Aucun contournement par reclassement du client tiers.
+
+La livraison L1 reste soumise à AUTH01–10 selon leurs lots : HTTPS, propriétaire,
+sessions/CSRF, expiration/logout, rotation/révocation et réel MCP→API. Le domaine,
+les secrets et l’accès serveur de production restent [ADR03](ADR-03-deployment.md).
+
+## Étude historique du23 octobre — contexte et recommandation initiale
 
 Le cahier des charges exige un accès Internet personnel en HTTPS, une API commune et un adaptateur MCP qui appelle cette API. Hermès est externe : ne consulter ni modifier sa configuration. L'identité vient d'une autorité approuvée ; un nom d'utilisateur dans les arguments d'un outil n'est jamais une preuve d'identité.
 

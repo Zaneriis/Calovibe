@@ -1,6 +1,37 @@
 # L0 — Registre des décisions et accès
 
-État du 24 octobre 2026. Aucun lot n'est déclaré terminé par ce registre.
+État courant du30 octobre2026, puis historique du24 octobre conservé ci-dessous.
+
+## Convergence vers le développement réel
+
+Mandat humain renouvelé : services réels et première tranche alimentaire persistante,
+maquettes limitées aux références. Le coordinateur arrête les choix techniques sous
+mandat, sans demander une approbation humaine routinière ni prétendre une livraison.
+
+- Architecture : [ADR01](adr/ADR-01-architecture.md), TypeScript/React/Vite, API
+  Fastify, SQLpg/PostgreSQL et SDK MCP officiel. backend/, web/, mcp/ ont leurs
+  builds ; shared/contracts/ est la source unique ; docs/ est transversal.
+- SDK/outillage : a197c0ff463a5dce94eb5f2a5f99ccbcc82276cd intégré sur develop le30
+  après deux CI et trois revues exactes ; audit0,259 tests et navigateur/builds.
+  Node24.22.1/npm11.13.0 ; SDKclient/server/core2.4.0, adaptateurNode2.1.2.
+- Autorité locale de développement : [ADR02](adr/ADR-02-auth-mcp.md), Keycloak26.8.1,
+  clients préenregistrés, audiences distinctes et droits en intersection. Le banc
+  9e12d91 est revu ; sa fusion avec le SDK actuel doit repasser CI et revues sur le
+  nouveau SHA de convergence avant intégration. Aucun runtime applicatif livré.
+- Accès et production : [ADR03](adr/ADR-03-deployment.md), données d’accès manquantes
+  identifiées. Cela bloque une déclaration de production, pas le développement/CI.
+- Contrat technique L1 : [L1-SERVICES](contracts/L1-SERVICES.md), vrais points d’entrée,
+  session sécurisée, statut privé et réel MCP→API, sans31 outils métier simulés.
+- Clarifications : vérificateur fonctionnel/UI puis question humaine contextualisée
+  si nécessaire ; suspendre seulement la tâche concernée et travailler sur une autre
+  tâche indépendante. Règles persistées dans AGENTS et ORCHESTRATION.
+
+Après réussite des contrôles/revues exactes de cette convergence, FF vers develop
+et CI post-intégration, les prérequis techniques L0 de démarrage L1 sont clos.
+L1 et les lots métier restent à implémenter et vérifier ; leurs critères ne sont
+ni réduits ni présentés comme réussis par un contrat ou un banc.
+
+## Historique du24 octobre2026
 
 ## Livraisons vérifiées, qualifications restantes
 

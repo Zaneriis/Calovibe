@@ -26,3 +26,12 @@ Critères avant code documentaire :
 Vérification : trois revues indépendantes sur SHA exact (auteur exclu), cohérence
 références/preuves/état réel, aucun changement contrats métier JSON, suite requise
 et CI vertes. Après FF et CI post-intégration, autoriser les tâches L1 prêtes.
+
+Vérifications locales de la convergence : installation verrouillée hors ligne
+réussie, audit zéro, check259/259 et lint/types/build réussis, parcours navigateur
+complets réussis. Le banc OAuth n’est pas relancé sur le moteur local indisponible ;
+les quatre modes réels restent exigés dans le job CI Docker de cette candidate.
+Fusion normale de9e12d91, sans rebase : conflit package.json résolu en conservant
+tous les builds par service, le SDK corrigé et test:auth/jose. Aucun JSON de contrat,
+code du banc ou règle de contrôle modifié par la convergence. Revues/CI finales
+consignées dans la PR sur SHA exact, pas de nouveau commit pour leurs seuls résultats.
