@@ -60,7 +60,7 @@ services:
       interval: 1s
       timeout: 3s
       retries: 30
-    networks: [data]
+    networks: [data, ingress]
     mem_limit: 256m
     pids_limit: 64
   migrate:
@@ -80,5 +80,6 @@ services:
     pids_limit: 64
 networks:
   data: { internal: true }
+  ingress: {}
 volumes:
   database:
