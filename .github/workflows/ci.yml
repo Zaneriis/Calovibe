@@ -39,7 +39,9 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: browser-${{ github.sha }}
-          path: artifacts/browser/
+          path: |
+            artifacts/browser/
+            web/checks/
           retention-days: 3
 
   auth:
@@ -73,3 +75,4 @@ jobs:
           name: auth-${{ github.sha }}
           path: artifacts/auth-qualification/report*.json
           retention-days: 3
+
