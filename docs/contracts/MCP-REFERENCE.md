@@ -1,6 +1,6 @@
 # Référence MCP HTTP — L0-MCP-REFERENCE
 
-Cette suite exécute de vrais échanges HTTP entre le client officiel MCP 2.3.1, le serveur officiel 2.3.1 et une API de référence en mémoire. **Les identités, droits et réponses sont SYNTHÉTIQUES.** Elle ne livre aucun service de production, ne qualifie ni OAuth/Logto ni la délégation réelle vers l'API et ne réalise aucune opération alimentaire.
+Cette suite exécute de vrais échanges HTTP entre le client officiel MCP 2.4.0, le serveur officiel 2.4.0 et une API de référence en mémoire. **Les identités, droits et réponses sont SYNTHÉTIQUES.** Elle ne livre aucun service de production, ne qualifie ni OAuth/Logto ni la délégation réelle vers l'API et ne réalise aucune opération alimentaire.
 
 ## Lancer
 
@@ -20,7 +20,7 @@ L’assemblage des contrats est partagé dans `shared/contracts/loader.cjs`, hor
 avec ce même client de référence sans accès aux schémas sources. TypeScript checkJs strict
 vérifie le loader et le build, pas le serveur synthétique complet.
 
-Les trois paquets sont verrouillés en dépendances de développement : `@modelcontextprotocol/client` 2.3.1, `@modelcontextprotocol/server` 2.3.1 et `@modelcontextprotocol/node` 2.1.1. Les dépendances transitives sont dans le verrou unique. Aucun processus permanent, port fixe, Docker, base SQL, accès Internet au runtime des tests ou secret utilisateur n'est requis. `test` et `check` incluent la nouvelle suite et conservent les 165 tests préexistants. Le navigateur reste celui des prototypes.
+Les trois paquets sont verrouillés en dépendances de développement : `@modelcontextprotocol/client` 2.4.0, `@modelcontextprotocol/server` 2.4.0 et `@modelcontextprotocol/node` 2.1.2. Client et serveur partagent `@modelcontextprotocol/core` 2.4.0. Le verrou transitif fixe `@hono/node-server` à 2.1.3, première version corrigée de [GHSA-rmxm-3fg6-px4f](https://github.com/advisories/GHSA-rmxm-3fg6-px4f) dans la plage officiellement acceptée par l'adaptateur. Aucun override ni peer forcé ; les autres dépendances restent inchangées. Le contrôle permanent `npm audit` de la CI détectait le verrou initial vulnérable et vérifie le verrou corrigé ; la suite HTTP existante protège l'interopérabilité de cette migration. La fonction fournisseur `serveStatic` concernée n'est pas utilisée ni reproduite dans les tests Calovibe ; cette limite est à examiner en revue indépendante ([SDK-SECURITY](../tasks/SDK-SECURITY.md)). Aucun processus permanent, port fixe, Docker, base SQL, accès Internet au runtime des tests ou secret utilisateur n'est requis. `test` et `check` incluent la suite MCP et conservent les tests préexistants. Le navigateur reste celui des prototypes.
 
 ## Ce que prouve la suite
 
