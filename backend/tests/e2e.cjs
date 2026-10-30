@@ -105,9 +105,9 @@ GRANT CONNECT ON DATABASE calovibe_test TO calovibe_runtime;
     compose(['build', 'backend', 'jwks']);
     compose(['up', '--detach', '--wait', 'postgres', 'jwks', 'backend']);
     started = true;
-    const address = compose(['port', 'backend', '3000']);
+    let address = compose(['port', 'backend', '3000']);
     assert.match(address, /^127\.0\.0\.1:\d+$/);
-    const base = 'http://' + address;
+    let base = 'http://' + address;
     const request = async (token, status, headers = {}) => {
       const response = await fetch(base + '/api/_technical/status', { headers: { ...(token ? { authorization: 'Bearer ' + token } : {}), ...headers }, signal: AbortSignal.timeout(5000) });
       const body = await response.json();
@@ -189,6 +189,11 @@ try {await p.query(sql);process.exitCode=1;}catch(e){if(e.code!=='42501')process
     compose(['up', '--detach', '--wait', 'postgres']);
     await waitReady(base + '/health/ready', 200, 'postgres-restarted');
     compose(['restart', 'backend']);
+    // Docker can allocate a new ephemeral host port when restarting this container.
+    // Refresh both HTTP targets and the final assertion that its current port closes.
+    address = compose(['port', 'backend', '3000']);
+    assert.match(address, /^127\.0\.0\.1:\d+$/);
+    base = 'http://' + address;
     await waitReady(base + '/health/ready', 200, 'backend-restarted');
     await request(valid, 200);
     assert.equal(psql('SELECT count(*) FROM calovibe.schema_migrations'), '1');
