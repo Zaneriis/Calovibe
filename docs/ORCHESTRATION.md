@@ -55,6 +55,31 @@ attendant les décisions L0. Après L0, suivre les dépendances des lots du back
 
 ## Fiche et suivi de chaque tâche
 
+### Clarifications fonctionnelles et design
+
+Décision humaine du 30 octobre2026 : le développeur cherche d’abord dans les
+exigences/décisions validées puis consulte le vérificateur fonctionnel ou UI compétent
+si l’ambiguïté change le comportement attendu. Celui-ci peut expliquer une exigence,
+pas inventer une décision produit. Les petits choix réversibles déjà couverts restent
+dans l’autonomie normale ; ne pas ajouter une validation préalable à chaque détail.
+
+Si une décision humaine est indispensable, prévenir le coordinateur avant d’escalader.
+Enregistrer dans la tâche et sa PR le statut « en attente de décision humaine »,
+l’ID de question et le dernier commit/travail sauvegardé ; libérer le créneau de
+l’agent, sans garder un développeur actif en attente. Le coordinateur lance une autre
+tâche prête et indépendante si possible, après vérification des contrats/fichiers et
+ressources partagés. Ne pas remplacer une attente par plusieurs tâches qui dépendent
+de la même réponse. Les autres tâches et intégrations non concernées continuent.
+
+La question humaine contient : fonctionnalité et comportement convenu ; ambiguïté
+précise et références déjà consultées ; deux ou trois options avec conséquences ;
+recommandation argumentée ; éléments suspendus et travail pouvant continuer.
+Ne pas présenter comme humaine une décision technique déjà déléguée au coordinateur.
+Après réponse, consigner la décision, actualiser critères/contrats concernés puis
+réattribuer la tâche avec son contexte. Ce statut local ne vaut pas clôture du goal.
+La consultation ne remplace pas les revues finales sur SHA exact ; si le vérificateur
+a conçu la solution en détail, il ne peut pas en être le seul approbateur.
+
 Avant le code, le coordinateur crée une fiche dans docs/tasks/ avec :
 
 | Champ | Contenu requis |
