@@ -73,3 +73,29 @@ jobs:
           name: auth-${{ github.sha }}
           path: artifacts/auth-qualification/report*.json
           retention-days: 3
+
+  backend:
+    name: Backend réel et PostgreSQL isolé
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version-file: .node-version
+          cache: npm
+      - run: npm install --global npm@11.13.0 --ignore-scripts
+      - run: npm ci --ignore-scripts
+      - run: npm run build:backend
+      - run: npm test --workspace @calovibe/backend
+      - run: npm run test:e2e --workspace @calovibe/backend
+      - name: Conserver le rapport backend expurgé
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: backend-${{ github.event.pull_request.head.sha || github.sha }}
+          path: artifacts/backend-report.json
+          retention-days: 3

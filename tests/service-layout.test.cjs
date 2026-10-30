@@ -21,6 +21,11 @@ for (const service of ['backend', 'web', 'mcp']) {
       fs.mkdirSync(path.join(directory, 'web/mockups'));
       fs.copyFileSync(path.join(root, 'web/mockups/calovibe-accueil.html'), path.join(directory, 'web/mockups/calovibe-accueil.html'));
     } else {
+      if (service === 'backend') {
+        fs.cpSync(path.join(root, 'backend/src'), path.join(directory, 'backend/src'), { recursive: true });
+        fs.cpSync(path.join(root, 'backend/migrations'), path.join(directory, 'backend/migrations'), { recursive: true });
+        fs.copyFileSync(path.join(root, 'backend/tsconfig.json'), path.join(directory, 'backend/tsconfig.json'));
+      }
       fs.cpSync(path.join(root, 'shared/contracts'), path.join(directory, 'shared/contracts'), { recursive: true });
       fs.mkdirSync(path.join(directory, 'scripts'));
       fs.copyFileSync(path.join(root, 'scripts/build-contracts.cjs'), path.join(directory, 'scripts/build-contracts.cjs'));
@@ -30,8 +35,15 @@ for (const service of ['backend', 'web', 'mcp']) {
     assert.equal(result.status, 0, result.stderr);
     const output = path.join(directory, service, 'dist');
     assert.deepEqual(fs.readdirSync(output).sort(), service === 'web' ? ['index.html', 'lucide.js']
-      : [service === 'backend' ? 'api.openapi.json' : 'mcp-tools.json']);
+      : service === 'backend' ? ['api.openapi.json', 'app.js', 'config.js', 'database.js', 'main.js', 'migrate.js'] : ['mcp-tools.json']);
     for (const sibling of ['backend', 'web', 'mcp'].filter(name => name !== service)) assert.equal(fs.existsSync(path.join(directory, sibling)), false);
+    if (service === 'backend') {
+      const runtimeSource = path.join(directory, 'backend/src/app.ts');
+      const original = fs.readFileSync(runtimeSource);
+      fs.unlinkSync(runtimeSource);
+      assert.notEqual(run().status, 0, 'Une source runtime absente doit faire échouer le build');
+      fs.writeFileSync(runtimeSource, original);
+    }
     const source = service === 'web' ? path.join(directory, 'web/mockups/calovibe-accueil.html') : path.join(directory, 'shared/contracts/api.openapi.json');
     fs.unlinkSync(source);
     assert.notEqual(run().status, 0, 'Une source absente doit faire échouer le build');

@@ -2,5 +2,18 @@
   "name": "@calovibe/backend",
   "private": true,
   "version": "0.0.0",
-  "scripts": { "build": "node build.cjs" }
+  "type": "module",
+  "scripts": {
+    "build": "node build.cjs",
+    "types": "tsc --project tsconfig.json --noEmit",
+    "start": "node dist/main.js",
+    "migrate": "node dist/migrate.js",
+    "test": "node --test tests/unit.test.cjs",
+    "test:e2e": "node tests/e2e.cjs"
+  },
+  "dependencies": {
+    "fastify": "5.12.7",
+    "jose": "6.2.13",
+    "pg": "8.23.1"
+  }
 }
