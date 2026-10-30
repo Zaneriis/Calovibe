@@ -189,9 +189,9 @@ L’automatisation de production est autorisée. Cela n’autorise pas à efface
 
 ### Références locales
 
-- [Accueil](../web/mockups/calovibe-accueil.html).
-- [Ajout manuel et parcours combinés](../web/mockups/calovibe-ajout.html).
-- [Analyse photo et correction des propositions](../web/mockups/calovibe-photo.html).
+- [Accueil](../mockups/calovibe-accueil.html).
+- [Ajout manuel et parcours combinés](../mockups/calovibe-ajout.html).
+- [Analyse photo et correction des propositions](../mockups/calovibe-photo.html).
 
 Chaque référence contient les variantes ordinateur/téléphone et clair/sombre. Les captures dans `mockups/checks/` sont des preuves de contrôle, pas une autorisation de changer le design. La direction générale est validée ; les derniers ajustements issus de la revue ont été appliqués. Les écrans code-barres, bibliothèque/plats, poids, objectifs et paramètres restent à détailler avant leur réalisation.
 
@@ -302,3 +302,4 @@ Références de design : [Material 3 Expressive](https://design.google/library/e
 | ADR-07 | Maquettes et états des écrans non encore détaillés | Avant chaque lot concerné |
 
 Les agents peuvent préparer les comparaisons et des recommandations concrètes. Ils ne doivent pas inventer un budget, des accès, un domaine, des identifiants serveur ou une validation de fournisseur encore absents.
+

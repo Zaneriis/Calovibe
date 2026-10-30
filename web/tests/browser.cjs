@@ -20,6 +20,9 @@ const { contractApi } = require('./contract-api.cjs');
     await page.goto(origin); await wait('Connectez-vous à votre espace');
     assert.equal(await page.getByRole('link', { name: 'Se connecter' }).getAttribute('href'), '/auth/login');
     assert.equal(await page.locator('input').count(), 0);
+    await page.getByRole('link', { name: 'Se connecter' }).click();
+    assert.equal(api.state.calls.at(-1).url, '/auth/login');
+    await page.goto(origin); await wait('Connectez-vous à votre espace');
     for (const width of [320, 1024]) {
       await page.setViewportSize({ width, height: 900 });
       for (const theme of ['light', 'dark']) {
@@ -54,6 +57,8 @@ const { contractApi } = require('./contract-api.cjs');
     await page.reload(); await wait('Connectez-vous à votre espace');
     api.state.status = 403; await page.reload(); await wait('Accès non autorisé');
     assert.equal(await page.getByRole('button', { name: 'Se déconnecter' }).isVisible(), true);
+    api.state.session = 403; await page.reload(); await wait('Accès non autorisé');
+    api.state.session = 200;
     api.state.malformed = true; await page.reload(); await wait('Connexion au service impossible');
     api.state.malformed = false; api.state.status = 200;
     await page.route('**/api/session', route => route.abort());
@@ -64,3 +69,4 @@ const { contractApi } = require('./contract-api.cjs');
     console.log('WEB E2E contrat HTTP : nominal, refus401/403, panne/réessai, réponse invalide, CSRF, logout/doubleclic, clavier, 320/1024 clair/sombre : OK. Ce banc ne qualifie pas Keycloak/session backend.');
   } finally { await browser.close(); await app.close(); await api.close(); }
 })().catch(error => { console.error(error); process.exitCode = 1; });
+

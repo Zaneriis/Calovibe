@@ -1,4 +1,5 @@
 const path = require('node:path');
+const fs = require('node:fs');
 const Fastify = require('fastify');
 const staticFiles = require('@fastify/static');
 const proxy = require('@fastify/http-proxy');
@@ -10,6 +11,7 @@ function upstreamOrigin(value) {
 }
 async function createWebServer({ backendOrigin, directory = path.join(__dirname, 'dist') } = {}) {
   const upstream = upstreamOrigin(backendOrigin);
+  fs.accessSync(path.join(directory, 'index.html'));
   const app = Fastify({ logger: false, trustProxy: false });
   app.addHook('onRequest', async (request, reply) => {
     const pathname = request.raw.url.split('?')[0];
@@ -35,5 +37,6 @@ if (require.main === module) {
   }).catch(() => { console.error('Démarrage web impossible : vérifier la configuration et les actifs.'); process.exitCode = 1; });
 }
 module.exports = { createWebServer, upstreamOrigin };
+
 
 

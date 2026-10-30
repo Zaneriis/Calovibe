@@ -13,9 +13,11 @@ async function contractApi() {
       if (res.statusCode === 204) { state.writes++; state.session = 401; }
       res.end();
     } else if (req.url === '/auth/login') { res.writeHead(302, { Location: '/identity-test-only' }); res.end(); }
+    else if (req.url.startsWith('/auth/callback?') && req.method === 'GET') { res.writeHead(302, { Location: '/', 'Set-Cookie': '__Host-calovibe-session=test-opaque; Secure; HttpOnly; SameSite=Lax; Path=/' }); res.end(); }
     else { res.statusCode = 404; res.end('{}'); }
   });
   await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
   return { state, origin: `http://127.0.0.1:${server.address().port}`, close: () => new Promise(resolve => server.close(resolve)) };
 }
 module.exports = { contractApi };
+

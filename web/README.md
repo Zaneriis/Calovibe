@@ -52,7 +52,8 @@ Les contextes date/repas, brouillons et annulation métier ne sont pas applicabl
 
 ## Prototypes conservés
 
-`npm run prototype --workspace @calovibe/web` démarre explicitement la maquette
-historique, via `preview.cjs` et `prototype-build.cjs`. Les fichiers sous `mockups/`
-et `page.cjs` restent des prototypes. Tests dédiés : `test:prototype` et
-`test:prototype:browser`. Aucun prototype n’est inclus par le build Vite.
+`npm run prototype` démarre explicitement la maquette
+historique, via `mockups/helpers/preview.cjs` et `mockups/helpers/build.cjs`. Les fichiers sous `mockups/` à la racine
+et `mockups/helpers/page.cjs` restent des prototypes. Tests dédiés : `node --test mockups/tests/navigation.test.cjs` et
+`node mockups/tests/browser-check.cjs`. Aucun prototype n’est inclus par le build Vite.
+

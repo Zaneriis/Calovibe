@@ -44,3 +44,50 @@ exact/PR vers develop, aucune intégration. Trois revues indépendantes et CI co
 requises. Si la session backend n’est pas livrée, garder l’intégration L1 globale
 explicitement en attente ; jamais qualifier le mock API de test de backend produit.
 Image web/TLS et E2E complet seront coordonnés avec le socle et l’authentification.
+
+## Livraison du 30 octobre2026
+
+WIP initial sauvegardé en33bcb22 avant séparation des prototypes. Le commit candidat
+final figure dans la PR ; aucune intégration autonome. Profil hérité du coordinateur,
+aucun changement de modèle ou achat.
+
+Propriété étendue explicitement par coordination : manifestes/verrou puis capacité
+libérée pour MCP ; mockups/ et helpers hors web/, liens CAHIER/README ; partie web
+isolation, contrôles/check/ESLint et CI. Les nouvelles assertions backend/MCP sont
+conservées dans leurs branches et seront réunies par la convergence, sans être
+supprimées ni prétendues exécutées dans cette branche issue de f5.
+
+Critères couverts : build React réel indépendant, TS strict, lint React Hooks,
+chargement/connexion/statut/logout, refus401/403, pannes/réessai, schéma invalide,
+CSRF en mémoire, aucun stockage client, doubleclic, destinations proxy fixes,
+refus chemins/méthodes non autorisés, santé live minimale, actifs manquants refusés,
+clair/sombre320/1024, clavier et captures sous web/checks/. Le prototype a été déplacé
+vers mockups/ racine avec ses tests et helpers, sous commande `npm run prototype`.
+Pas de code alimentaire ou d’identités simulées dans les actifs du produit.
+
+Dépendances réellement installées : React/DOM19.3.1 (peer ReactDOM^19.3.1),
+Vite8.3.5/pluginReact6.1.2 (peer Vite^8, Node^20.19 ou>=22.12), Fastify5.12.7,
+static10.1.7/proxy11.6.5 (documentation installée : Fastify5), typesReact/DOM19.3.0,
+typescript-eslint8.72.0 et hooks7.1.1. `npm ls` ne signale aucun peer invalide ;
+installation et runtime/build réels complètent la lecture des métadonnées.
+
+Commandes réellement exécutées sous Node24.22.1/npm11.13.0 :
+
+- `npm ci --ignore-scripts` : succès, audit261 paquets, zéro vulnérabilité signalée.
+- `npm run check` :263/263, aucun skip, puis lint incluant TS/Hooks, types contrats
+  et web strict, build contrats : succès. Les trois builds isolés sont couverts.
+- `npm run test:browser` : build Vite réel, ancien prototype déplacé et vrai web
+  via proxy/serveur HTTP de contrat test : succès, deux thèmes320/1024 et clavier.
+- `npm run lint --workspace @calovibe/web` et `npm run types --workspace
+  @calovibe/web` : succès après correction des erreurs initiales, sans désactiver
+  de règle. Les captures320 sombre et1024 clair ont été inspectées visuellement.
+- `docker version --format '{{.Server.Version}}'` après escalade : moteur retourne
+  HTTP500 sur la socket Docker Desktop ; aucune image construite/démarrée localement.
+
+Limites : ces tests E2E utilisent uniquement le serveur HTTP de contrat sous
+web/tests, jamais un backend de production. Ils ne qualifient pas Keycloak, TLS,
+cookie Secure en navigateur, stockage PostgreSQL ou session L1 complète. Le Dockerfile
+web est fourni, construction/digest/image et Compose restent à qualifier dans L1.
+Date/repas/brouillons/annulation alimentaire non applicables à cet écran d’accès ;
+ils restent obligatoires avec les premiers parcours métier. Revues indépendantes,
+CI du commit exact et intégration L1 restent nécessaires.

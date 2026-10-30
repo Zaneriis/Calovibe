@@ -7,9 +7,6 @@
     "types": "tsc --noEmit -p tsconfig.json",
     "start": "node server.cjs",
     "preview": "node server.cjs",
-    "prototype": "node preview.cjs",
-    "test:prototype": "node --test mockups/tests/navigation.test.cjs",
-    "test:prototype:browser": "node mockups/tests/browser-check.cjs",
     "test": "node --test tests/server.test.cjs",
     "test:browser": "node tests/browser.cjs",
     "lint": "eslint . --config eslint.config.cjs --max-warnings 0"

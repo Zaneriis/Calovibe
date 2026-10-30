@@ -1,7 +1,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const { renderPage } = require('./page.cjs');
-function buildWeb(destination = path.join(__dirname, 'prototype-dist')) {
+function buildWeb(destination = path.join(__dirname, '../../artifacts/prototype-dist')) {
   const html = renderPage();
   const icons = fs.readFileSync(require.resolve('lucide/dist/umd/lucide.js'));
   fs.mkdirSync(destination, { recursive: true });
@@ -11,4 +11,5 @@ function buildWeb(destination = path.join(__dirname, 'prototype-dist')) {
 }
 if (require.main === module) buildWeb();
 module.exports = { buildWeb };
+
 
