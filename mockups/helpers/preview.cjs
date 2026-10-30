@@ -26,3 +26,5 @@ if (require.main === module) {
   server.listen(4173, '127.0.0.1', () => console.log('Aperçu web : http://127.0.0.1:4173 — Ctrl+C pour arrêter.'));
 }
 module.exports = { createPreviewServer };
+
+

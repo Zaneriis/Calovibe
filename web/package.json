@@ -2,5 +2,28 @@
   "name": "@calovibe/web",
   "private": true,
   "version": "0.0.0",
-  "scripts": { "build": "node build.cjs", "preview": "node preview.cjs", "test": "node --test mockups/tests/navigation.test.cjs", "test:browser": "node mockups/tests/browser-check.cjs" }
+  "scripts": {
+    "build": "node build.cjs",
+    "types": "tsc --noEmit -p tsconfig.json",
+    "start": "node server.cjs",
+    "preview": "node server.cjs",
+    "test": "node --test tests/server.test.cjs",
+    "test:browser": "node tests/browser.cjs",
+    "lint": "eslint . --config eslint.config.cjs --max-warnings 0"
+  },
+  "dependencies": {
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "fastify": "5.12.7",
+    "@fastify/static": "10.1.7",
+    "@fastify/http-proxy": "11.6.5"
+  },
+  "devDependencies": {
+    "vite": "8.3.5",
+    "@vitejs/plugin-react": "6.1.2",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "typescript-eslint": "8.72.0",
+    "eslint-plugin-react-hooks": "7.1.1"
+  }
 }

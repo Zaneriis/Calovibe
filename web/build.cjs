@@ -1,13 +1,9 @@
-const fs = require('node:fs');
 const path = require('node:path');
-const { renderPage } = require('./page.cjs');
-function buildWeb(destination = path.join(__dirname, 'dist')) {
-  const html = renderPage();
-  const icons = fs.readFileSync(require.resolve('lucide/dist/umd/lucide.js'));
-  fs.mkdirSync(destination, { recursive: true });
-  fs.writeFileSync(path.join(destination, 'index.html'), html);
-  fs.writeFileSync(path.join(destination, 'lucide.js'), icons);
+async function buildWeb(destination = path.join(__dirname, 'dist')) {
+  const { build } = await import('vite');
+  const { default: react } = await import('@vitejs/plugin-react');
+  await build({ root: __dirname, configFile: false, plugins: [react()], build: { outDir: destination, emptyOutDir: true } });
   return destination;
 }
-if (require.main === module) buildWeb();
+if (require.main === module) buildWeb().catch(() => { console.error('Échec du build web.'); process.exitCode = 1; });
 module.exports = { buildWeb };

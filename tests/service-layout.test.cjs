@@ -17,9 +17,8 @@ for (const service of ['backend', 'web', 'mcp']) {
     fs.mkdirSync(path.join(directory, service), { recursive: true });
     for (const file of ['build.cjs', 'package.json']) fs.copyFileSync(path.join(root, service, file), path.join(directory, service, file));
     if (service === 'web') {
-      fs.copyFileSync(path.join(root, 'web/page.cjs'), path.join(directory, 'web/page.cjs'));
-      fs.mkdirSync(path.join(directory, 'web/mockups'));
-      fs.copyFileSync(path.join(root, 'web/mockups/calovibe-accueil.html'), path.join(directory, 'web/mockups/calovibe-accueil.html'));
+      fs.copyFileSync(path.join(root, 'web/index.html'), path.join(directory, 'web/index.html'));
+      fs.cpSync(path.join(root, 'web/src'), path.join(directory, 'web/src'), { recursive: true });
     } else {
       fs.cpSync(path.join(root, 'shared/contracts'), path.join(directory, 'shared/contracts'), { recursive: true });
       fs.mkdirSync(path.join(directory, 'scripts'));
@@ -29,11 +28,12 @@ for (const service of ['backend', 'web', 'mcp']) {
     const result = run();
     assert.equal(result.status, 0, result.stderr);
     const output = path.join(directory, service, 'dist');
-    assert.deepEqual(fs.readdirSync(output).sort(), service === 'web' ? ['index.html', 'lucide.js']
+    assert.deepEqual(fs.readdirSync(output).sort(), service === 'web' ? ['assets', 'index.html']
       : [service === 'backend' ? 'api.openapi.json' : 'mcp-tools.json']);
     for (const sibling of ['backend', 'web', 'mcp'].filter(name => name !== service)) assert.equal(fs.existsSync(path.join(directory, sibling)), false);
-    const source = service === 'web' ? path.join(directory, 'web/mockups/calovibe-accueil.html') : path.join(directory, 'shared/contracts/api.openapi.json');
+    const source = service === 'web' ? path.join(directory, 'web/src/main.tsx') : path.join(directory, 'shared/contracts/api.openapi.json');
     fs.unlinkSync(source);
     assert.notEqual(run().status, 0, 'Une source absente doit faire échouer le build');
   });
 }
+
