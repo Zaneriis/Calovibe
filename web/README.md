@@ -57,3 +57,23 @@ historique, via `mockups/helpers/preview.cjs` et `mockups/helpers/build.cjs`. Le
 et `mockups/helpers/page.cjs` restent des prototypes. Tests dédiés : `node --test mockups/tests/navigation.test.cjs` et
 `node mockups/tests/browser-check.cjs`. Aucun prototype n’est inclus par le build Vite.
 
+
+## Image web : qualification indépendante en CI
+
+`.github/workflows/web.yml` construit la vraie tête de PR, sans commit de fusion
+virtuel. Le tag, APP_VERSION et le label OCI revision reprennent `git rev-parse HEAD`.
+`web/tests/image-smoke.cjs` prépare un contexte isolé : seules les sources web et
+les métadonnées npm des workspaces sont présentes, sans sources backend/MCP,
+prototypes, sorties hôte ou fixtures. Il construit uniquement `web/Dockerfile`.
+
+Le smoke démarre la vraie entrée sous l’utilisateur node, port aléatoire publié
+sur127.0.0.1 seulement. Il vérifie les actifs JS/CSS, live minimal, refus des routes
+proxy hors contrat, backend indisponible502, identité nonroot et arrêt SIGTERM avec
+code0. Une sentinelle synthétique du contexte et une variable secrète synthétique
+runtime sont absentes des fichiers/actifs de l’image, des métadonnées, de l’historique
+et des logs. Aucun secret personnel n’est utilisé. Le contexte temporaire et le
+conteneur nommé pour le banc sont nettoyés de manière ciblée, sans prune ni volume.
+
+Lancer avec Docker Linux disponible, `WEB_VERSION=<SHA40>` et
+`WEB_IMAGE=calovibe-web:<même SHA>` : `node web/tests/image-smoke.cjs`.
+Ce smoke ne qualifie ni TLS ni session/Keycloak ni L1 global.

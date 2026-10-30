@@ -91,3 +91,18 @@ web est fourni, construction/digest/image et Compose restent à qualifier dans L
 Date/repas/brouillons/annulation alimentaire non applicables à cet écran d’accès ;
 ils restent obligatoires avec les premiers parcours métier. Revues indépendantes,
 CI du commit exact et intégration L1 restent nécessaires.
+
+## Complément image avant revues finales
+
+Demande du coordinateur : qualification indépendante de l’image par un nouveau
+workflow `.github/workflows/web.yml`, sans modifier les jobs auth/checks existants.
+Checkout de la vraie tête PR, tag/version/label dérivés du SHA réel, actions épinglées,
+permissions read et timeout12min. Build limité au service web via contexte isolé.
+Smoke réel de l’entrée nonroot/actifs/live/proxy/indisponibilité/arrêt/sentinelles
+synthétiques, sans autorité de test ni affirmation d’intégration L1 complète.
+
+Vérifications locales de ce complément : `node --check web/tests/image-smoke.cjs`
+et ESLint du script réussis. Aucun smoke Docker local lancé (moteur500 déjà établi).
+Le succès de construction/exécution image doit venir du nouveau job CI sur le nouveau
+commit exact ; le Dockerfile seul n’est toujours pas présenté comme une image qualifiée.
+Aucune dépendance ni verrou modifié. Tous les avis devront cibler ce nouveau commit.
